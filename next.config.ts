@@ -9,7 +9,7 @@ export default {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "placehold.co",
+        hostname: "images.unsplash.com",
       },
     ],
   },
