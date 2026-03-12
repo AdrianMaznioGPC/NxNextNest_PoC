@@ -18,38 +18,44 @@ export async function Navbar({
   const { megaMenu, featuredLinks } = await layoutDataPromise;
 
   return (
-    <header>
-      <FeaturedLinksBar links={featuredLinks} />
-      <nav className="relative flex items-center justify-between p-4 lg:px-6">
+    <header className="border-b border-neutral-200 dark:border-neutral-700">
+      {/* Row 1: Logo | Search | Actions */}
+      <div className="flex items-center justify-between gap-4 p-4 lg:px-6">
+        {/* Mobile menu button */}
         <div className="block flex-none md:hidden">
           <Suspense fallback={null}>
             <MobileMenu megaMenu={megaMenu} />
           </Suspense>
         </div>
-        <div className="flex w-full items-center">
-          <div className="flex w-full md:w-1/3">
-            <Link
-              href="/"
-              prefetch={true}
-              className="mr-2 flex w-full items-center justify-center md:w-auto lg:mr-6"
-            >
-              <LogoSquare />
-              <div className="ml-2 flex-none text-sm font-medium uppercase md:hidden lg:block">
-                {SITE_NAME}
-              </div>
-            </Link>
-            <div className="hidden md:flex md:items-center">
-              <MegaMenu items={megaMenu} />
-            </div>
-          </div>
-          <div className="hidden justify-center md:flex md:w-1/3">
+
+        {/* Logo */}
+        <Link href="/" prefetch={true} className="flex items-center gap-2">
+          <LogoSquare />
+          <span className="hidden text-sm font-medium uppercase lg:block">
+            {SITE_NAME}
+          </span>
+        </Link>
+
+        {/* Search (center) */}
+        <div className="hidden flex-1 justify-center md:flex">
+          <div className="w-full max-w-xl">
             <Suspense fallback={<SearchSkeleton />}>
               <Search />
             </Suspense>
           </div>
-          <div className="flex justify-end md:w-1/3">
-            <CartModal />
-          </div>
+        </div>
+
+        {/* Actions (right) */}
+        <div className="flex items-center gap-3">
+          <CartModal />
+        </div>
+      </div>
+
+      {/* Row 2: Browse Products + Featured Links */}
+      <nav className="hidden border-t border-neutral-200 md:block dark:border-neutral-700">
+        <div className="flex items-center gap-6 px-4 lg:px-6">
+          <MegaMenu items={megaMenu} />
+          <FeaturedLinksBar links={featuredLinks} />
         </div>
       </nav>
     </header>
