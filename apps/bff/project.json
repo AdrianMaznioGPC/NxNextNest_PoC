@@ -1,0 +1,15 @@
+{
+  "name": "bff",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "targets": {
+    "dev": {
+      "command": "ts-node -r tsconfig-paths/register src/main.ts",
+      "options": { "cwd": "apps/bff" }
+    },
+    "build": {
+      "command": "tsc -p tsconfig.json",
+      "options": { "cwd": "apps/bff" }
+    }
+  }
+}

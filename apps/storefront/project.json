@@ -1,0 +1,19 @@
+{
+  "name": "storefront",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "targets": {
+    "dev": {
+      "command": "next dev --turbopack",
+      "options": { "cwd": "apps/storefront" }
+    },
+    "build": {
+      "command": "next build",
+      "options": { "cwd": "apps/storefront" }
+    },
+    "start": {
+      "command": "next start",
+      "options": { "cwd": "apps/storefront" }
+    }
+  }
+}
