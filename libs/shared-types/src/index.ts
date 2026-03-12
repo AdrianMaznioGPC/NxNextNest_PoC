@@ -159,6 +159,20 @@ export type CmsBlock =
   | ProductCarouselBlock
   | RichTextBlock;
 
+// -- Navigation types --------------------------------------------------------
+
+export type MegaMenuItem = {
+  title: string;
+  path: string;
+  image?: Image;
+  children?: MegaMenuItem[];
+};
+
+export type FeaturedLink = {
+  title: string;
+  path: string;
+};
+
 // -- Page data contracts -----------------------------------------------------
 
 export type HomePageData = {
@@ -186,4 +200,9 @@ export type SearchPageData = {
   query: string;
   products: Product[];
   totalResults: number;
+};
+
+export type GlobalLayoutData = {
+  megaMenu: MegaMenuItem[];
+  featuredLinks: FeaturedLink[];
 };

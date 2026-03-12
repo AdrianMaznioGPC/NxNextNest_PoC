@@ -1,9 +1,20 @@
-import { Controller, Get, NotFoundException, Param, Query } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  Query,
+} from "@nestjs/common";
 import { PageDataService } from "./page-data.service";
 
 @Controller("page-data")
 export class PageDataController {
   constructor(private readonly pageData: PageDataService) {}
+
+  @Get("layout")
+  getLayoutData() {
+    return this.pageData.getLayoutData();
+  }
 
   @Get("home")
   getHomePage() {

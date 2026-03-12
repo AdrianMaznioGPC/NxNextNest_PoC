@@ -2,7 +2,7 @@ import { CartProvider } from "components/cart/cart-context";
 import Footer from "components/layout/footer";
 import { Navbar } from "components/layout/navbar";
 import { GeistSans } from "geist/font/sans";
-import { getCart } from "lib/api";
+import { getCart, getLayoutData } from "lib/api";
 import { baseUrl } from "lib/utils";
 import { ReactNode } from "react";
 import { Toaster } from "sonner";
@@ -27,14 +27,15 @@ export default async function RootLayout({
 }: {
   children: ReactNode;
 }) {
-  // Don't await the fetch, pass the Promise to the context provider
+  // Don't await the fetches, pass the Promises down
   const cart = getCart();
+  const layoutData = getLayoutData();
 
   return (
     <html lang="en" className={GeistSans.variable}>
       <body className="bg-neutral-50 text-black selection:bg-teal-300 dark:bg-neutral-900 dark:text-white dark:selection:bg-pink-500 dark:selection:text-white">
         <CartProvider cartPromise={cart}>
-          <Navbar />
+          <Navbar layoutDataPromise={layoutData} />
           <main className="min-h-screen">
             {children}
             <Toaster closeButton />

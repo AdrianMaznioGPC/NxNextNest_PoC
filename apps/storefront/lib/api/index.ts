@@ -4,6 +4,7 @@ import type {
   CategoryListPageData,
   CategoryPageData,
   Collection,
+  GlobalLayoutData,
   HomePageData,
   Menu,
   Page,
@@ -149,6 +150,16 @@ export async function getPage(handle: string): Promise<Page> {
 
 export async function getPages(): Promise<Page[]> {
   return bffFetch("/pages");
+}
+
+// -- Layout data -------------------------------------------------------------
+
+export async function getLayoutData(): Promise<GlobalLayoutData> {
+  "use cache";
+  cacheTag(TAGS.collections);
+  cacheLife("days");
+
+  return bffFetch("/page-data/layout");
 }
 
 // -- Page data contracts -----------------------------------------------------

@@ -3,6 +3,7 @@ import type {
   CategoryListPageData,
   CategoryPageData,
   Collection,
+  GlobalLayoutData,
   HomePageData,
   ProductPageData,
   SearchPageData,
@@ -10,6 +11,7 @@ import type {
 import { Inject, Injectable } from "@nestjs/common";
 import { CMS_PORT, CmsPort } from "../../ports/cms.port";
 import { COLLECTION_PORT, CollectionPort } from "../../ports/collection.port";
+import { NAVIGATION_PORT, NavigationPort } from "../../ports/navigation.port";
 import { PRODUCT_PORT, ProductPort } from "../../ports/product.port";
 import { resolveBlocks } from "./block-resolver-registry";
 import "./block-resolvers";
@@ -20,7 +22,17 @@ export class PageDataService {
     @Inject(PRODUCT_PORT) private readonly products: ProductPort,
     @Inject(COLLECTION_PORT) private readonly collections: CollectionPort,
     @Inject(CMS_PORT) private readonly cms: CmsPort,
+    @Inject(NAVIGATION_PORT) private readonly navigation: NavigationPort,
   ) {}
+
+  async getLayoutData(): Promise<GlobalLayoutData> {
+    const [megaMenu, featuredLinks] = await Promise.all([
+      this.navigation.getMegaMenu(),
+      this.navigation.getFeaturedLinks(),
+    ]);
+
+    return { megaMenu, featuredLinks };
+  }
 
   async getHomePage(): Promise<HomePageData> {
     const cmsPage = await this.cms.getPage("home");

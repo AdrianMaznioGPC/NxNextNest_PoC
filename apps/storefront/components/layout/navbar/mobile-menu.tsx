@@ -5,11 +5,15 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Fragment, Suspense, useEffect, useState } from "react";
 
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { Menu } from "lib/types";
+import {
+  Bars3Icon,
+  ChevronDownIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
+import type { MegaMenuItem } from "lib/types";
 import Search, { SearchSkeleton } from "./search";
 
-export default function MobileMenu({ menu }: { menu: Menu[] }) {
+export default function MobileMenu({ megaMenu }: { megaMenu: MegaMenuItem[] }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
@@ -76,21 +80,14 @@ export default function MobileMenu({ menu }: { menu: Menu[] }) {
                     <Search />
                   </Suspense>
                 </div>
-                {menu.length ? (
+                {megaMenu.length ? (
                   <ul className="flex w-full flex-col">
-                    {menu.map((item: Menu) => (
-                      <li
-                        className="py-2 text-xl text-black transition-colors hover:text-neutral-500 dark:text-white"
-                        key={item.title}
-                      >
-                        <Link
-                          href={item.path}
-                          prefetch={true}
-                          onClick={closeMobileMenu}
-                        >
-                          {item.title}
-                        </Link>
-                      </li>
+                    {megaMenu.map((item) => (
+                      <MobileMenuItem
+                        key={item.path}
+                        item={item}
+                        onNavigate={closeMobileMenu}
+                      />
                     ))}
                   </ul>
                 ) : null}
@@ -100,5 +97,60 @@ export default function MobileMenu({ menu }: { menu: Menu[] }) {
         </Dialog>
       </Transition>
     </>
+  );
+}
+
+function MobileMenuItem({
+  item,
+  onNavigate,
+}: {
+  item: MegaMenuItem;
+  onNavigate: () => void;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const hasChildren = item.children && item.children.length > 0;
+
+  return (
+    <li className="border-b border-neutral-200 dark:border-neutral-700">
+      <div className="flex items-center justify-between">
+        <Link
+          href={item.path}
+          prefetch={true}
+          onClick={onNavigate}
+          className="flex-1 py-3 text-lg text-black transition-colors hover:text-neutral-500 dark:text-white"
+        >
+          {item.title}
+        </Link>
+        {hasChildren ? (
+          <button
+            onClick={() => setExpanded(!expanded)}
+            aria-label={`Expand ${item.title}`}
+            className="p-3 text-neutral-500 dark:text-neutral-400"
+          >
+            <ChevronDownIcon
+              className={`h-4 w-4 transition-transform ${
+                expanded ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+        ) : null}
+      </div>
+      {hasChildren && expanded ? (
+        <ul className="pb-3 pl-4">
+          {item.children!.map((child) => (
+            <li key={child.path}>
+              <Link
+                href={child.path}
+                prefetch={true}
+                onClick={onNavigate}
+                className="block py-1.5 text-base text-neutral-500 transition-colors hover:text-black dark:text-neutral-400 dark:hover:text-white"
+              >
+                {child.title}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </li>
   );
 }
