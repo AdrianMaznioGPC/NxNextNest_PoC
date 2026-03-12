@@ -13,7 +13,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const tag = body?.tag;
 
   if (tag && Object.values(TAGS).includes(tag)) {
-    revalidateTag(tag);
+    revalidateTag(tag, "days");
     return NextResponse.json({
       status: 200,
       revalidated: true,
