@@ -1,4 +1,10 @@
-import { Controller, Get, Inject, Param } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  Inject,
+  NotFoundException,
+  Param,
+} from "@nestjs/common";
 import { PAGE_PORT, PagePort } from "../../ports/page.port";
 
 @Controller("pages")
@@ -11,7 +17,9 @@ export class PageController {
   }
 
   @Get(":handle")
-  getPage(@Param("handle") handle: string) {
-    return this.pages.getPage(handle);
+  async getPage(@Param("handle") handle: string) {
+    const page = await this.pages.getPage(handle);
+    if (!page) throw new NotFoundException();
+    return page;
   }
 }

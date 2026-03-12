@@ -5,6 +5,8 @@ export interface CollectionPort {
 
   getCollection(handle: string): Promise<Collection | undefined>;
 
+  getCollectionByPath(slugs: string[]): Promise<Collection | undefined>;
+
   getCollectionProducts(params: {
     collection: string;
     reverse?: boolean;

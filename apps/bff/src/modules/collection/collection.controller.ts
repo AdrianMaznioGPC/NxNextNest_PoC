@@ -12,9 +12,25 @@ export class CollectionController {
     return this.collections.getCollections();
   }
 
-  @Get(":handle")
-  getCollection(@Param("handle") handle: string) {
-    return this.collections.getCollection(handle);
+  @Get("by-path/*")
+  getCollectionByPath(
+    @Param("*") path: string,
+    @Query("sortKey") sortKey?: string,
+    @Query("reverse") reverse?: string,
+  ) {
+    const segments = path.split("/").filter(Boolean);
+
+    // If path ends with /products, return products for that collection
+    if (segments.at(-1) === "products") {
+      const collection = segments.slice(0, -1).join("/");
+      return this.collections.getCollectionProducts({
+        collection,
+        sortKey,
+        reverse: reverse === "true",
+      });
+    }
+
+    return this.collections.getCollectionByPath(segments);
   }
 
   @Get(":handle/products")
@@ -28,5 +44,10 @@ export class CollectionController {
       sortKey,
       reverse: reverse === "true",
     });
+  }
+
+  @Get(":handle")
+  getCollection(@Param("handle") handle: string) {
+    return this.collections.getCollection(handle);
   }
 }

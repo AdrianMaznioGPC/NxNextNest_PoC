@@ -1,7 +1,12 @@
-import { Injectable } from "@nestjs/common";
 import type { Collection, Product } from "@commerce/shared-types";
+import { Injectable } from "@nestjs/common";
 import { CollectionPort } from "../../ports/collection.port";
-import { collections, collectionProductMap, products } from "./mock-data";
+import {
+  collectionProductMap,
+  collections,
+  getAllCollectionsFlat,
+  products,
+} from "./mock-data";
 
 @Injectable()
 export class MockCollectionAdapter implements CollectionPort {
@@ -10,7 +15,25 @@ export class MockCollectionAdapter implements CollectionPort {
   }
 
   async getCollection(handle: string): Promise<Collection | undefined> {
-    return collections.find((c) => c.handle === handle);
+    return getAllCollectionsFlat().find((c) => c.handle === handle);
+  }
+
+  async getCollectionByPath(slugs: string[]): Promise<Collection | undefined> {
+    if (slugs.length === 0) return undefined;
+
+    // First slug is a top-level collection
+    const top = collections.find((c) => c.handle === slugs[0]);
+    if (!top) return undefined;
+    if (slugs.length === 1) return top;
+
+    // Walk down the tree
+    let current: Collection = top;
+    for (let i = 1; i < slugs.length; i++) {
+      const child = current.subcollections?.find((c) => c.handle === slugs[i]);
+      if (!child) return undefined;
+      current = child;
+    }
+    return current;
   }
 
   async getCollectionProducts(params: {

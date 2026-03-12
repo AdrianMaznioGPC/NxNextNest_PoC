@@ -1,14 +1,16 @@
 import { Module } from "@nestjs/common";
-import { PRODUCT_PORT } from "../../ports/product.port";
-import { COLLECTION_PORT } from "../../ports/collection.port";
 import { CART_PORT } from "../../ports/cart.port";
-import { PAGE_PORT } from "../../ports/page.port";
+import { CMS_PORT } from "../../ports/cms.port";
+import { COLLECTION_PORT } from "../../ports/collection.port";
 import { MENU_PORT } from "../../ports/menu.port";
-import { MockProductAdapter } from "./mock-product.adapter";
-import { MockCollectionAdapter } from "./mock-collection.adapter";
+import { PAGE_PORT } from "../../ports/page.port";
+import { PRODUCT_PORT } from "../../ports/product.port";
 import { MockCartAdapter } from "./mock-cart.adapter";
-import { MockPageAdapter } from "./mock-page.adapter";
+import { MockCmsAdapter } from "./mock-cms.adapter";
+import { MockCollectionAdapter } from "./mock-collection.adapter";
 import { MockMenuAdapter } from "./mock-menu.adapter";
+import { MockPageAdapter } from "./mock-page.adapter";
+import { MockProductAdapter } from "./mock-product.adapter";
 
 const providers = [
   { provide: PRODUCT_PORT, useClass: MockProductAdapter },
@@ -16,6 +18,7 @@ const providers = [
   { provide: CART_PORT, useClass: MockCartAdapter },
   { provide: PAGE_PORT, useClass: MockPageAdapter },
   { provide: MENU_PORT, useClass: MockMenuAdapter },
+  { provide: CMS_PORT, useClass: MockCmsAdapter },
 ];
 
 @Module({

@@ -1,5 +1,12 @@
-export { ProductPort, PRODUCT_PORT } from "./product.port";
-export { CollectionPort, COLLECTION_PORT } from "./collection.port";
-export { CartPort, CART_PORT } from "./cart.port";
-export { PagePort, PAGE_PORT } from "./page.port";
-export { MenuPort, MENU_PORT } from "./menu.port";
+export { CART_PORT } from "./cart.port";
+export type { CartPort } from "./cart.port";
+export { CMS_PORT } from "./cms.port";
+export type { CmsPort } from "./cms.port";
+export { COLLECTION_PORT } from "./collection.port";
+export type { CollectionPort } from "./collection.port";
+export { MENU_PORT } from "./menu.port";
+export type { MenuPort } from "./menu.port";
+export { PAGE_PORT } from "./page.port";
+export type { PagePort } from "./page.port";
+export { PRODUCT_PORT } from "./product.port";
+export type { ProductPort } from "./product.port";

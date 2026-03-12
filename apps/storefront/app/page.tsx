@@ -1,6 +1,6 @@
-import { Carousel } from "components/carousel";
-import { ThreeItemGrid } from "components/grid/three-items";
-import Footer from "components/layout/footer";
+import { BlockRenderer } from "components/cms/block-renderer";
+import Container from "components/layout/container";
+import { getHomePageData } from "lib/api";
 
 export const metadata = {
   description: "High-performance ecommerce store built with Next.js.",
@@ -9,12 +9,12 @@ export const metadata = {
   },
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  const { blocks } = await getHomePageData();
+
   return (
-    <>
-      <ThreeItemGrid />
-      <Carousel />
-      <Footer />
-    </>
+    <Container>
+      <BlockRenderer blocks={blocks} />
+    </Container>
   );
 }

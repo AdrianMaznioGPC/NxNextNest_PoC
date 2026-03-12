@@ -1,5 +1,16 @@
 import { TAGS } from "lib/constants";
-import type { Cart, Collection, Menu, Page, Product } from "lib/types";
+import type {
+  Cart,
+  CategoryListPageData,
+  CategoryPageData,
+  Collection,
+  HomePageData,
+  Menu,
+  Page,
+  Product,
+  ProductPageData,
+  SearchPageData,
+} from "lib/types";
 import {
   unstable_cacheLife as cacheLife,
   unstable_cacheTag as cacheTag,
@@ -89,6 +100,16 @@ export async function getCollection(
   return bffFetch(`/collections/${handle}`);
 }
 
+export async function getCollectionByPath(
+  slugs: string[],
+): Promise<Collection | undefined> {
+  "use cache";
+  cacheTag(TAGS.collections);
+  cacheLife("days");
+
+  return bffFetch(`/collections/by-path/${slugs.join("/")}`);
+}
+
 export async function getCollectionProducts({
   collection,
   reverse,
@@ -102,9 +123,12 @@ export async function getCollectionProducts({
   cacheTag(TAGS.collections, TAGS.products);
   cacheLife("days");
 
-  return bffFetch(
-    `/collections/${collection}/products${qs({ sortKey, reverse })}`,
-  );
+  // Use by-path endpoint for nested collection keys (e.g. "brakes/pads")
+  const path = collection.includes("/")
+    ? `/collections/by-path/${collection}/products`
+    : `/collections/${collection}/products`;
+
+  return bffFetch(`${path}${qs({ sortKey, reverse })}`);
 }
 
 // -- Menu --------------------------------------------------------------------
@@ -125,6 +149,64 @@ export async function getPage(handle: string): Promise<Page> {
 
 export async function getPages(): Promise<Page[]> {
   return bffFetch("/pages");
+}
+
+// -- Page data contracts -----------------------------------------------------
+
+export async function getHomePageData(): Promise<HomePageData> {
+  "use cache";
+  cacheTag(TAGS.products);
+  cacheLife("days");
+
+  return bffFetch("/page-data/home");
+}
+
+export async function getCategoryListPageData(): Promise<CategoryListPageData> {
+  "use cache";
+  cacheTag(TAGS.collections);
+  cacheLife("days");
+
+  return bffFetch("/page-data/categories");
+}
+
+export async function getCategoryPageData(
+  slugs: string[],
+  sortKey?: string,
+  reverse?: boolean,
+): Promise<CategoryPageData> {
+  "use cache";
+  cacheTag(TAGS.collections, TAGS.products);
+  cacheLife("days");
+
+  return bffFetch(
+    `/page-data/categories/${slugs.join("/")}${qs({ sortKey, reverse })}`,
+  );
+}
+
+export async function getProductPageData(
+  handle: string,
+): Promise<ProductPageData> {
+  "use cache";
+  cacheTag(TAGS.products);
+  cacheLife("days");
+
+  return bffFetch(`/page-data/product/${handle}`);
+}
+
+export async function getSearchPageData({
+  query,
+  sortKey,
+  reverse,
+}: {
+  query?: string;
+  sortKey?: string;
+  reverse?: boolean;
+}): Promise<SearchPageData> {
+  "use cache";
+  cacheTag(TAGS.products);
+  cacheLife("days");
+
+  return bffFetch(`/page-data/search${qs({ q: query, sortKey, reverse })}`);
 }
 
 // -- Cart --------------------------------------------------------------------

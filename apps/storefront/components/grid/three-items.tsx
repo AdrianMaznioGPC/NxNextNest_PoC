@@ -1,5 +1,4 @@
 import { GridTileImage } from "components/grid/tile";
-import { getCollectionProducts } from "lib/api";
 import type { Product } from "lib/types";
 import Link from "next/link";
 
@@ -47,15 +46,10 @@ function ThreeItemGridItem({
   );
 }
 
-export async function ThreeItemGrid() {
-  // Collections that start with `hidden-*` are hidden from the search page.
-  const homepageItems = await getCollectionProducts({
-    collection: "hidden-homepage-featured-items",
-  });
+export function ThreeItemGrid({ products }: { products: Product[] }) {
+  if (!products[0] || !products[1] || !products[2]) return null;
 
-  if (!homepageItems[0] || !homepageItems[1] || !homepageItems[2]) return null;
-
-  const [firstProduct, secondProduct, thirdProduct] = homepageItems;
+  const [firstProduct, secondProduct, thirdProduct] = products;
 
   return (
     <section className="mx-auto grid max-w-(--breakpoint-2xl) gap-4 px-4 pb-4 md:grid-cols-6 md:grid-rows-2 lg:max-h-[calc(100vh-200px)]">
