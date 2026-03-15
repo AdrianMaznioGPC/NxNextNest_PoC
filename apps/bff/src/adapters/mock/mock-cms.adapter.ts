@@ -6,18 +6,55 @@ const mockPages: CmsRawPage[] = [
     slug: "home",
     blocks: [
       {
-        type: "hero-banner",
+        type: "homepage-hero",
         id: "block-1",
-        heading: "Summer Sale",
-        subheading: "Up to 40% off performance parts",
-        ctaLabel: "Shop Now",
-        ctaUrl: "/categories",
-        image: {
-          url: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1200&h=400&fit=crop",
-          altText: "Summer sale banner",
-          width: 1200,
-          height: 400,
+        mainBanner: {
+          heading: "Summer Sale",
+          subheading: "Up to 40% off performance parts",
+          ctaLabel: "Shop Now",
+          ctaUrl: "/categories",
+          image: {
+            url: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1200&h=400&fit=crop",
+            altText: "Summer sale banner",
+            width: 1200,
+            height: 400,
+          },
         },
+        smallBanners: [
+          {
+            heading: "Brake Pads",
+            ctaLabel: "Shop Brakes",
+            ctaUrl: "/categories/brakes",
+            image: {
+              url: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=400&h=250&fit=crop",
+              altText: "Brake pads",
+              width: 400,
+              height: 250,
+            },
+          },
+          {
+            heading: "Exhaust Systems",
+            ctaLabel: "Shop Exhaust",
+            ctaUrl: "/categories/exhaust",
+            image: {
+              url: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=400&h=250&fit=crop",
+              altText: "Exhaust systems",
+              width: 400,
+              height: 250,
+            },
+          },
+          {
+            heading: "Suspension Kits",
+            ctaLabel: "Shop Suspension",
+            ctaUrl: "/categories/suspension",
+            image: {
+              url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=250&fit=crop",
+              altText: "Suspension kits",
+              width: 400,
+              height: 250,
+            },
+          },
+        ],
       },
       {
         type: "featured-products",

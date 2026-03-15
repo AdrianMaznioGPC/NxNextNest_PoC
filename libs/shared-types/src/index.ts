@@ -186,8 +186,15 @@ export type SocialProofBlock = CmsBlockBase<"social-proof"> & {
   testimonials: Testimonial[];
 };
 
+export type HomepageHeroBlock = CmsBlockBase<"homepage-hero"> & {
+  megaMenu: MegaMenuItem[];
+  mainBanner: CmsBannerItem;
+  smallBanners: CmsBannerItem[];
+};
+
 export type CmsBlock =
   | HeroBannerBlock
+  | HomepageHeroBlock
   | FeaturedProductsBlock
   | ProductCarouselBlock
   | RichTextBlock

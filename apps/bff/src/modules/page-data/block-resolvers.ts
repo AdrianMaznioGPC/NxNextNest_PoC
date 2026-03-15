@@ -91,3 +91,16 @@ registerBlockResolver("social-proof", async (raw) => ({
   heading: raw.heading,
   testimonials: raw.testimonials,
 }));
+
+// homepage-hero: enrich with mega menu from navigation port
+registerBlockResolver("homepage-hero", async (raw, ctx) => {
+  const megaMenu = await ctx.navigation.getMegaMenu();
+
+  return {
+    type: "homepage-hero" as const,
+    id: raw.id,
+    megaMenu,
+    mainBanner: raw.mainBanner,
+    smallBanners: raw.smallBanners,
+  };
+});

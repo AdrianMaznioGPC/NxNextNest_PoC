@@ -3,9 +3,17 @@
 import { Bars3Icon } from "@heroicons/react/24/outline";
 import type { MegaMenuItem } from "lib/types";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useCallback, useRef, useState } from "react";
 
 export function MegaMenu({ items }: { items: MegaMenuItem[] }) {
+  const pathname = usePathname();
+
+  // On homepage the sidebar in the hero block serves as the mega menu
+  if (pathname === "/") {
+    return null;
+  }
+
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -33,7 +41,7 @@ export function MegaMenu({ items }: { items: MegaMenuItem[] }) {
     >
       {/* Trigger */}
       <button
-        className="flex items-center gap-2 py-3 text-sm font-semibold text-neutral-700 transition-colors hover:text-black dark:text-neutral-300 dark:hover:text-white"
+        className="flex w-56 items-center gap-2 py-3 text-sm font-semibold text-neutral-700 transition-colors hover:text-black dark:text-neutral-300 dark:hover:text-white"
         aria-expanded={open}
       >
         <Bars3Icon className="h-4 w-4" />

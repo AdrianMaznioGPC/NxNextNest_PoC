@@ -5,6 +5,7 @@ import "./cms-banner";
 import "./featured-category";
 import "./featured-products";
 import "./hero-banner";
+import "./homepage-hero";
 import "./product-carousel";
 import "./rich-text";
 import "./social-proof";

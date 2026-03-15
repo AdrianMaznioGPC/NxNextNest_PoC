@@ -70,8 +70,16 @@ export type CmsRawSocialProof = {
   }[];
 };
 
+export type CmsRawHomepageHero = {
+  type: "homepage-hero";
+  id: string;
+  mainBanner: CmsRawBannerItem;
+  smallBanners: CmsRawBannerItem[];
+};
+
 export type CmsRawBlock =
   | CmsRawHeroBanner
+  | CmsRawHomepageHero
   | CmsRawFeaturedProducts
   | CmsRawProductCarousel
   | CmsRawRichText

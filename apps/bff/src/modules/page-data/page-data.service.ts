@@ -41,6 +41,7 @@ export class PageDataService {
     const blocks = await resolveBlocks(rawBlocks, {
       products: this.products,
       collections: this.collections,
+      navigation: this.navigation,
     });
 
     return { blocks };

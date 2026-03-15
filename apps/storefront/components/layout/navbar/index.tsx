@@ -53,7 +53,7 @@ export async function Navbar({
 
       {/* Row 2: Browse Products + Featured Links */}
       <nav className="hidden border-t border-neutral-200 md:block dark:border-neutral-700">
-        <div className="flex items-center gap-6 px-4 lg:px-6">
+        <div className="mx-auto flex h-11 w-full max-w-7xl items-center gap-6 px-4 sm:px-6 lg:px-8">
           <MegaMenu items={megaMenu} />
           <FeaturedLinksBar links={featuredLinks} />
         </div>
