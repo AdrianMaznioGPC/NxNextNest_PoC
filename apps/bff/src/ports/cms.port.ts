@@ -30,11 +30,55 @@ export type CmsRawRichText = {
   html: string;
 };
 
+export type CmsRawBannerItem = {
+  heading: string;
+  subheading?: string;
+  ctaLabel?: string;
+  ctaUrl?: string;
+  image: Image;
+  overlayOpacity?: number;
+};
+
+export type CmsRawCmsBanner = {
+  type: "cms-banner";
+  id: string;
+} & CmsRawBannerItem;
+
+export type CmsRawBannerGrid = {
+  type: "banner-grid";
+  id: string;
+  columns: number;
+  banners: CmsRawBannerItem[];
+};
+
+export type CmsRawFeaturedCategory = {
+  type: "featured-category";
+  id: string;
+  heading: string;
+  collectionHandles: string[];
+};
+
+export type CmsRawSocialProof = {
+  type: "social-proof";
+  id: string;
+  heading: string;
+  testimonials: {
+    quote: string;
+    author: string;
+    rating: number;
+    avatar?: Image;
+  }[];
+};
+
 export type CmsRawBlock =
   | CmsRawHeroBanner
   | CmsRawFeaturedProducts
   | CmsRawProductCarousel
-  | CmsRawRichText;
+  | CmsRawRichText
+  | CmsRawCmsBanner
+  | CmsRawBannerGrid
+  | CmsRawFeaturedCategory
+  | CmsRawSocialProof;
 
 export type CmsRawPage = {
   slug: string;

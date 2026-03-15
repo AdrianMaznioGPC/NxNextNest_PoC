@@ -10,7 +10,7 @@ export default function SearchLayout({
   children: React.ReactNode;
 }) {
   return (
-    <Container className="py-8">
+    <Container>
       <div className="flex flex-col gap-8 text-black md:flex-row dark:text-white">
         <div className="min-h-screen w-full">
           <Suspense fallback={null}>

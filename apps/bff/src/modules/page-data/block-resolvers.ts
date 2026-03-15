@@ -1,4 +1,4 @@
-import type { Product } from "@commerce/shared-types";
+import type { Collection, Product } from "@commerce/shared-types";
 import { registerBlockResolver } from "./block-resolver-registry";
 
 // hero-banner: no backend data to resolve, pass through
@@ -48,3 +48,46 @@ registerBlockResolver("product-carousel", async (raw, ctx) => {
     products,
   };
 });
+
+// cms-banner: pass through (pure content, single full-width banner)
+registerBlockResolver("cms-banner", async (raw) => ({
+  type: "cms-banner" as const,
+  id: raw.id,
+  heading: raw.heading,
+  subheading: raw.subheading,
+  ctaLabel: raw.ctaLabel,
+  ctaUrl: raw.ctaUrl,
+  image: raw.image,
+  overlayOpacity: raw.overlayOpacity,
+}));
+
+// banner-grid: container block holding multiple banners in a column layout
+registerBlockResolver("banner-grid", async (raw) => ({
+  type: "banner-grid" as const,
+  id: raw.id,
+  columns: raw.columns,
+  banners: raw.banners,
+}));
+
+// featured-category: resolve handles → full collections
+registerBlockResolver("featured-category", async (raw, ctx) => {
+  const all = await ctx.collections.getCollections();
+  const collections = raw.collectionHandles
+    .map((h: string) => all.find((c) => c.handle === h))
+    .filter((c): c is Collection => c !== undefined);
+
+  return {
+    type: "featured-category" as const,
+    id: raw.id,
+    heading: raw.heading,
+    collections,
+  };
+});
+
+// social-proof: pass through (pure content)
+registerBlockResolver("social-proof", async (raw) => ({
+  type: "social-proof" as const,
+  id: raw.id,
+  heading: raw.heading,
+  testimonials: raw.testimonials,
+}));

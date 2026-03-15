@@ -4,7 +4,7 @@ import { registerBlockRenderer } from "../block-registry";
 
 function RichText({ block }: { block: RichTextBlock }) {
   return (
-    <section className="py-8 px-4">
+    <section>
       <Prose html={block.html} />
     </section>
   );

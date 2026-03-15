@@ -153,11 +153,48 @@ export type RichTextBlock = CmsBlockBase<"rich-text"> & {
   html: string;
 };
 
+export type CmsBannerItem = {
+  heading: string;
+  subheading?: string;
+  ctaLabel?: string;
+  ctaUrl?: string;
+  image: Image;
+  overlayOpacity?: number;
+};
+
+export type CmsBannerBlock = CmsBlockBase<"cms-banner"> & CmsBannerItem;
+
+export type BannerGridBlock = CmsBlockBase<"banner-grid"> & {
+  columns: number;
+  banners: CmsBannerItem[];
+};
+
+export type FeaturedCategoryBlock = CmsBlockBase<"featured-category"> & {
+  heading: string;
+  collections: Collection[];
+};
+
+export type Testimonial = {
+  quote: string;
+  author: string;
+  rating: number;
+  avatar?: Image;
+};
+
+export type SocialProofBlock = CmsBlockBase<"social-proof"> & {
+  heading: string;
+  testimonials: Testimonial[];
+};
+
 export type CmsBlock =
   | HeroBannerBlock
   | FeaturedProductsBlock
   | ProductCarouselBlock
-  | RichTextBlock;
+  | RichTextBlock
+  | CmsBannerBlock
+  | BannerGridBlock
+  | FeaturedCategoryBlock
+  | SocialProofBlock;
 
 // -- Navigation types --------------------------------------------------------
 

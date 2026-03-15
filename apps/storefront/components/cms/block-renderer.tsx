@@ -4,7 +4,7 @@ import "./blocks"; // ensures all blocks are registered
 
 export function BlockRenderer({ blocks }: { blocks: CmsBlock[] }) {
   return (
-    <>
+    <div className="flex flex-col gap-4">
       {blocks.map((block) => {
         const Component = getBlockRenderer(block.type);
         if (!Component) {
@@ -13,6 +13,6 @@ export function BlockRenderer({ blocks }: { blocks: CmsBlock[] }) {
         }
         return <Component key={block.id} block={block} />;
       })}
-    </>
+    </div>
   );
 }

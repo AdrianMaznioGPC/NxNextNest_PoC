@@ -249,6 +249,12 @@ export const collections: Collection[] = [
     description: "Brake pads, rotors, and calipers",
     seo: { title: "Brakes", description: "Brake pads, rotors, and calipers" },
     path: "/categories/brakes",
+    image: {
+      url: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=600&h=400&fit=crop&q=80",
+      altText: "Brakes",
+      width: 600,
+      height: 400,
+    },
     subcollections: [brakePads, brakeRotors],
     updatedAt: new Date().toISOString(),
   },
@@ -261,6 +267,12 @@ export const collections: Collection[] = [
       description: "Air filters, spark plugs, and intake systems",
     },
     path: "/categories/engine",
+    image: {
+      url: "https://images.unsplash.com/photo-1489824904134-891ab64532f1?w=600&h=400&fit=crop&q=80",
+      altText: "Engine",
+      width: 600,
+      height: 400,
+    },
     subcollections: [engineFilters, engineIgnition],
     updatedAt: new Date().toISOString(),
   },
@@ -273,6 +285,12 @@ export const collections: Collection[] = [
       description: "Coilovers, sway bars, and bushings",
     },
     path: "/categories/suspension",
+    image: {
+      url: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=600&h=400&fit=crop&q=80",
+      altText: "Suspension",
+      width: 600,
+      height: 400,
+    },
     updatedAt: new Date().toISOString(),
   },
   {
@@ -284,6 +302,12 @@ export const collections: Collection[] = [
       description: "Headlights, tail lights, and LED upgrades",
     },
     path: "/categories/lighting",
+    image: {
+      url: "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=600&h=400&fit=crop&q=80",
+      altText: "Lighting",
+      width: 600,
+      height: 400,
+    },
     updatedAt: new Date().toISOString(),
   },
   {
@@ -295,6 +319,12 @@ export const collections: Collection[] = [
       description: "Cat-back systems, mufflers, and exhaust tips",
     },
     path: "/categories/exhaust",
+    image: {
+      url: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=600&h=400&fit=crop&q=80",
+      altText: "Exhaust",
+      width: 600,
+      height: 400,
+    },
     updatedAt: new Date().toISOString(),
   },
 ];
