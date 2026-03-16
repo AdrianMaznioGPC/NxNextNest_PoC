@@ -70,10 +70,15 @@ export type CmsRawSocialProof = {
   }[];
 };
 
+export type CmsRawUspItem = {
+  icons: Image[];
+};
+
 export type CmsRawHomepageHero = {
   type: "homepage-hero";
   id: string;
   mainBanner: CmsRawBannerItem;
+  usps: CmsRawUspItem[];
   smallBanners: CmsRawBannerItem[];
 };
 

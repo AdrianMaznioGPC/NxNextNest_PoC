@@ -101,6 +101,7 @@ registerBlockResolver("homepage-hero", async (raw, ctx) => {
     id: raw.id,
     megaMenu,
     mainBanner: raw.mainBanner,
+    usps: raw.usps,
     smallBanners: raw.smallBanners,
   };
 });

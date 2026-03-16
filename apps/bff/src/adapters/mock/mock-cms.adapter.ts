@@ -20,6 +20,62 @@ const mockPages: CmsRawPage[] = [
             height: 400,
           },
         },
+        usps: [
+          {
+            icons: [
+              {
+                url: "https://cdn-icons-png.flaticon.com/64/6491/6491490.png",
+                altText: "Trusted shop",
+                width: 32,
+                height: 32,
+              },
+              {
+                url: "https://cdn-icons-png.flaticon.com/64/5968/5968528.png",
+                altText: "Verified",
+                width: 32,
+                height: 32,
+              },
+            ],
+          },
+          {
+            icons: [
+              {
+                url: "https://cdn-icons-png.flaticon.com/64/349/349221.png",
+                altText: "Visa",
+                width: 32,
+                height: 32,
+              },
+              {
+                url: "https://cdn-icons-png.flaticon.com/64/349/349228.png",
+                altText: "Mastercard",
+                width: 32,
+                height: 32,
+              },
+              {
+                url: "https://cdn-icons-png.flaticon.com/64/174/174861.png",
+                altText: "PayPal",
+                width: 32,
+                height: 32,
+              },
+            ],
+          },
+          {
+            icons: [
+              {
+                url: "https://cdn-icons-png.flaticon.com/64/2203/2203124.png",
+                altText: "Fast delivery",
+                width: 32,
+                height: 32,
+              },
+              {
+                url: "https://cdn-icons-png.flaticon.com/64/609/609361.png",
+                altText: "UPS",
+                width: 32,
+                height: 32,
+              },
+            ],
+          },
+        ],
         smallBanners: [
           {
             heading: "Brake Pads",

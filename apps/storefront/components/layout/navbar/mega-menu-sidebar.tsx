@@ -8,20 +8,32 @@ import { useCallback, useRef, useState } from "react";
 export function MegaMenuSidebar({ items }: { items: MegaMenuItem[] }) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const closeTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const setActiveDebounced = useCallback((index: number) => {
     if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
+    if (closeTimeout.current) clearTimeout(closeTimeout.current);
     hoverTimeout.current = setTimeout(() => setActiveIndex(index), 200);
   }, []);
 
-  const cancelDebounce = useCallback(() => {
+  const cancelTimers = useCallback(() => {
     if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
+    if (closeTimeout.current) clearTimeout(closeTimeout.current);
   }, []);
 
-  const handleMouseLeave = useCallback(() => {
-    cancelDebounce();
+  const scheduleClose = useCallback(() => {
+    cancelTimers();
+    closeTimeout.current = setTimeout(() => setActiveIndex(null), 150);
+  }, [cancelTimers]);
+
+  const cancelClose = useCallback(() => {
+    if (closeTimeout.current) clearTimeout(closeTimeout.current);
+  }, []);
+
+  const handleOverlayEnter = useCallback(() => {
+    cancelTimers();
     setActiveIndex(null);
-  }, [cancelDebounce]);
+  }, [cancelTimers]);
 
   const activeItem = activeIndex !== null ? items[activeIndex] : null;
   const flyoutChildren = activeItem?.children;
@@ -33,14 +45,15 @@ export function MegaMenuSidebar({ items }: { items: MegaMenuItem[] }) {
       {showFlyout ? (
         <div
           className="fixed inset-0 z-40 bg-black/30"
-          onMouseEnter={handleMouseLeave}
+          onMouseEnter={handleOverlayEnter}
         />
       ) : null}
 
       {/* Sidebar */}
       <div
         className="relative z-50 h-full w-56 shrink-0"
-        onMouseLeave={handleMouseLeave}
+        onMouseLeave={scheduleClose}
+        onMouseEnter={cancelClose}
       >
         <div
           className={`flex h-full flex-col overflow-hidden rounded-lg border border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-900 ${
@@ -78,8 +91,8 @@ export function MegaMenuSidebar({ items }: { items: MegaMenuItem[] }) {
       {showFlyout && activeItem ? (
         <div
           className="absolute inset-y-0 left-56 right-0 z-50 flex flex-col rounded-r-lg border border-l-0 border-neutral-200 bg-white shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
-          onMouseEnter={cancelDebounce}
-          onMouseLeave={handleMouseLeave}
+          onMouseEnter={cancelClose}
+          onMouseLeave={scheduleClose}
         >
           {/* Divider line between sidebar and flyout */}
           <div className="absolute inset-y-0 left-0 w-px bg-neutral-200 dark:bg-neutral-700" />

@@ -186,9 +186,14 @@ export type SocialProofBlock = CmsBlockBase<"social-proof"> & {
   testimonials: Testimonial[];
 };
 
+export type UspItem = {
+  icons: Image[];
+};
+
 export type HomepageHeroBlock = CmsBlockBase<"homepage-hero"> & {
   megaMenu: MegaMenuItem[];
   mainBanner: CmsBannerItem;
+  usps: UspItem[];
   smallBanners: CmsBannerItem[];
 };
 
