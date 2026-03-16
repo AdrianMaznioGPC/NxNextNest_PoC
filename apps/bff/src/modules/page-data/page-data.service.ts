@@ -14,7 +14,7 @@ import { COLLECTION_PORT, CollectionPort } from "../../ports/collection.port";
 import { NAVIGATION_PORT, NavigationPort } from "../../ports/navigation.port";
 import { PRODUCT_PORT, ProductPort } from "../../ports/product.port";
 import { resolveBlocks } from "./block-resolver-registry";
-import "./block-resolvers";
+import "./blocks";
 
 @Injectable()
 export class PageDataService {
