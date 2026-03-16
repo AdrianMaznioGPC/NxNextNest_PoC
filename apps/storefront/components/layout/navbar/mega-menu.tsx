@@ -2,12 +2,14 @@
 
 import { Bars3Icon } from "@heroicons/react/24/outline";
 import type { MegaMenuItem } from "lib/types";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useRef, useState } from "react";
 
 export function MegaMenu({ items }: { items: MegaMenuItem[] }) {
   const pathname = usePathname();
+  const t = useTranslations("nav");
 
   // On homepage the sidebar in the hero block serves as the mega menu
   if (pathname === "/") {
@@ -45,7 +47,7 @@ export function MegaMenu({ items }: { items: MegaMenuItem[] }) {
         aria-expanded={open}
       >
         <Bars3Icon className="h-4 w-4" />
-        Browse Products
+        {t("browseProducts")}
       </button>
 
       {/* Dropdown */}
@@ -79,7 +81,7 @@ export function MegaMenu({ items }: { items: MegaMenuItem[] }) {
                 prefetch={true}
                 className="block px-4 py-2 text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
               >
-                View all categories
+                {t("viewAllCategories")}
               </Link>
             </li>
           </ul>
@@ -107,7 +109,7 @@ export function MegaMenu({ items }: { items: MegaMenuItem[] }) {
                 prefetch={true}
                 className="mt-4 inline-block text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
               >
-                View all {activeItem.title}
+                {t("viewAll", { category: activeItem.title })}
               </Link>
             </div>
           ) : null}

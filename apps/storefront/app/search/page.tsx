@@ -2,11 +2,7 @@ import Grid from "components/grid";
 import ProductGridItems from "components/layout/product-grid-items";
 import { getSearchPageData, getStoreCode } from "lib/api";
 import { defaultSort, sorting } from "lib/constants";
-
-export const metadata = {
-  title: "Search",
-  description: "Search for products in the store.",
-};
+import { getTranslations } from "next-intl/server";
 
 export default async function SearchPage(props: {
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -22,15 +18,16 @@ export default async function SearchPage(props: {
     sortKey,
     reverse,
   });
-  const resultsText = totalResults > 1 ? "results" : "result";
+
+  const t = await getTranslations("search");
 
   return (
     <>
       {searchValue ? (
         <p className="mb-4">
           {totalResults === 0
-            ? "There are no products that match "
-            : `Showing ${totalResults} ${resultsText} for `}
+            ? t("noResults")
+            : t("showingResults", { count: totalResults })}
           <span className="font-bold">&quot;{searchValue}&quot;</span>
         </p>
       ) : null}

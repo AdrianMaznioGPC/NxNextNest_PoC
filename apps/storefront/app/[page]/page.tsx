@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import Prose from "components/prose";
 import { getPage, getStoreCode } from "lib/api";
+import { getLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 export async function generateMetadata(props: {
@@ -37,16 +38,21 @@ export default async function Page(props: {
     <>
       <h1 className="mb-8 text-5xl font-bold">{page.title}</h1>
       <Prose className="mb-8" html={page.body} />
-      <p className="text-sm italic">
-        {`This document was last updated on ${new Intl.DateTimeFormat(
-          undefined,
-          {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          },
-        ).format(new Date(page.updatedAt))}.`}
-      </p>
+      <LastUpdated date={page.updatedAt} />
     </>
+  );
+}
+
+async function LastUpdated({ date }: { date: string }) {
+  const t = await getTranslations("page");
+  const locale = await getLocale();
+  const formatted = new Intl.DateTimeFormat(locale, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(new Date(date));
+
+  return (
+    <p className="text-sm italic">{t("lastUpdated", { date: formatted })}</p>
   );
 }

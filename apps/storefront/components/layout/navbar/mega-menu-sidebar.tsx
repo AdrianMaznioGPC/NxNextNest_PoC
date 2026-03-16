@@ -2,10 +2,12 @@
 
 import { Bars3Icon } from "@heroicons/react/24/outline";
 import type { MegaMenuItem } from "lib/types";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useCallback, useRef, useState } from "react";
 
 export function MegaMenuSidebar({ items }: { items: MegaMenuItem[] }) {
+  const t = useTranslations("nav");
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const closeTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -62,7 +64,7 @@ export function MegaMenuSidebar({ items }: { items: MegaMenuItem[] }) {
         >
           <h2 className="flex shrink-0 items-center gap-2 border-b border-neutral-200 px-4 py-3 text-sm font-semibold text-neutral-900 dark:border-neutral-700 dark:text-white">
             <Bars3Icon className="h-4 w-4" />
-            Browse Products
+            {t("browseProducts")}
           </h2>
           <ul className="flex-1 py-1">
             {items.map((item, i) => (
@@ -121,7 +123,7 @@ export function MegaMenuSidebar({ items }: { items: MegaMenuItem[] }) {
               prefetch={true}
               className="mt-4 inline-block text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
             >
-              View all {activeItem.title}
+              {t("viewAll", { category: activeItem.title })}
             </Link>
           </div>
         </div>

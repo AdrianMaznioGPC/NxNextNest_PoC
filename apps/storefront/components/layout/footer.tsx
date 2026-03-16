@@ -3,6 +3,7 @@ import Link from "next/link";
 import FooterMenu from "components/layout/footer-menu";
 import LogoSquare from "components/logo-square";
 import { getMenu, getStoreCode } from "lib/api";
+import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 
 const { COMPANY_NAME, SITE_NAME } = process.env;
@@ -15,6 +16,7 @@ export default async function Footer() {
   const storeCode = await getStoreCode();
   const menu = await getMenu(storeCode, "next-js-frontend-footer-menu");
   const copyrightName = COMPANY_NAME || SITE_NAME || "";
+  const t = await getTranslations("footer");
 
   return (
     <footer className="text-sm text-neutral-500 dark:text-neutral-400">
@@ -61,7 +63,7 @@ export default async function Footer() {
             {copyrightName.length && !copyrightName.endsWith(".")
               ? "."
               : ""}{" "}
-            All rights reserved.
+            {t("allRightsReserved")}
           </p>
           <hr className="mx-4 hidden h-4 w-[1px] border-l border-neutral-400 md:inline-block" />
           <p>

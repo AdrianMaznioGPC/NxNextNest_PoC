@@ -2,12 +2,14 @@
 
 import { type StoreConfig, stores } from "@commerce/store-config";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
 const storeList = Object.values(stores);
 
 export function StoreSwitcher({ currentCode }: { currentCode: string }) {
   const current = stores[currentCode] ?? storeList[0]!;
+  const t = useTranslations("storeSwitcher");
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -35,14 +37,16 @@ export function StoreSwitcher({ currentCode }: { currentCode: string }) {
         className="flex items-center gap-1.5 rounded-md border border-neutral-200 px-3 py-2 text-sm font-medium text-black transition-colors hover:bg-neutral-100 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800"
       >
         <span className="text-base leading-none">{current.flag}</span>
-        <span className="hidden sm:inline">{current.storeCode.toUpperCase()}</span>
+        <span className="hidden sm:inline">
+          {current.storeCode.toUpperCase()}
+        </span>
         <ChevronDownIcon className="h-3.5 w-3.5 text-neutral-500" />
       </button>
 
       {open && (
         <div className="absolute right-0 top-full z-50 mt-1 min-w-[200px] rounded-lg border border-neutral-200 bg-white py-2 shadow-lg dark:border-neutral-700 dark:bg-black">
           <p className="px-4 pb-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
-            Country / Region
+            {t("countryRegion")}
           </p>
           {storeList.map((store) => (
             <button
@@ -58,8 +62,16 @@ export function StoreSwitcher({ currentCode }: { currentCode: string }) {
                 </span>
               </span>
               {store.storeCode === currentCode && (
-                <svg className="h-4 w-4 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                <svg
+                  className="h-4 w-4 text-blue-600"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               )}
             </button>

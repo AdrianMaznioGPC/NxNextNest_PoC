@@ -75,10 +75,12 @@ export default async function CategoryPage(props: Props) {
   const { collection, canonicalSlug, breadcrumbs, subcollections, products } =
     data;
 
-  const t = await getTranslations("breadcrumbs");
+  const tBreadcrumbs = await getTranslations("breadcrumbs");
+  const tCategories = await getTranslations("categories");
+  const tSearch = await getTranslations("search");
   const allBreadcrumbs = [
-    { title: t("home"), path: "/" },
-    { title: t("categories"), path: "/categories" },
+    { title: tBreadcrumbs("home"), path: "/" },
+    { title: tBreadcrumbs("categories"), path: "/categories" },
     ...breadcrumbs,
   ];
 
@@ -113,14 +115,14 @@ export default async function CategoryPage(props: Props) {
           {collection.title}
         </h1>
         <div className="w-[200px]">
-          <FilterList list={sorting} title="Sort by" />
+          <FilterList list={sorting} title={tSearch("sortBy")} />
         </div>
       </div>
       <p className="mt-2 mb-8 text-neutral-500 dark:text-neutral-400">
         {collection.description}
       </p>
       {!products || products.length === 0 ? (
-        <p className="py-3 text-lg">No products found in this category</p>
+        <p className="py-3 text-lg">{tCategories("noProducts")}</p>
       ) : (
         <Grid className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           <ProductGridItems products={products} />

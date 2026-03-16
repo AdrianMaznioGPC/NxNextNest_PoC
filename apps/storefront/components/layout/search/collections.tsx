@@ -2,12 +2,14 @@ import clsx from "clsx";
 import { Suspense } from "react";
 
 import { getCollections, getStoreCode } from "lib/api";
+import { getTranslations } from "next-intl/server";
 import FilterList from "./filter";
 
 async function CollectionList() {
   const storeCode = await getStoreCode();
   const collections = await getCollections(storeCode);
-  return <FilterList list={collections} title="Collections" />;
+  const t = await getTranslations("search");
+  return <FilterList list={collections} title={t("collections")} />;
 }
 
 const skeleton = "mb-3 h-4 w-5/6 animate-pulse rounded-sm";

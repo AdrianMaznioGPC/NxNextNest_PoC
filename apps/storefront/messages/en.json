@@ -2,5 +2,74 @@
   "breadcrumbs": {
     "home": "Home",
     "categories": "Categories"
+  },
+  "notFound": {
+    "title": "404",
+    "description": "The page you're looking for doesn't exist or may have been moved.",
+    "goHome": "Go to Homepage",
+    "searchProducts": "Search Products"
+  },
+  "error": {
+    "title": "Oh no!",
+    "description": "There was an issue with our storefront. This could be a temporary issue, please try your action again.",
+    "tryAgain": "Try Again"
+  },
+  "search": {
+    "title": "Search",
+    "description": "Search for products in the store.",
+    "placeholder": "Search for products...",
+    "noResults": "There are no products that match ",
+    "showingResults": "Showing {count} {count, plural, one {result} other {results}} for ",
+    "sortBy": "Sort by",
+    "collections": "Collections"
+  },
+  "categories": {
+    "allCategories": "All Categories",
+    "allCategoriesDescription": "Browse all product categories.",
+    "noProducts": "No products found in this category",
+    "subcategoryCount": "{count} {count, plural, one {subcategory} other {subcategories}}"
+  },
+  "product": {
+    "relatedProducts": "Related Products",
+    "previousImage": "Previous product image",
+    "nextImage": "Next product image",
+    "selectImage": "Select product image"
+  },
+  "cart": {
+    "myCart": "My Cart",
+    "empty": "Your cart is empty.",
+    "taxes": "Taxes",
+    "shipping": "Shipping",
+    "shippingCalculated": "Calculated at checkout",
+    "total": "Total",
+    "checkout": "Proceed to Checkout",
+    "addToCart": "Add To Cart",
+    "outOfStock": "Out Of Stock",
+    "removeItem": "Remove cart item",
+    "openCart": "Open cart",
+    "closeCart": "Close cart"
+  },
+  "storeSwitcher": {
+    "countryRegion": "Country / Region"
+  },
+  "footer": {
+    "allRightsReserved": "All rights reserved."
+  },
+  "variants": {
+    "outOfStock": "(Out of Stock)"
+  },
+  "nav": {
+    "browseProducts": "Browse Products",
+    "viewAllCategories": "View all categories",
+    "viewAll": "View all {category}",
+    "openMobileMenu": "Open mobile menu",
+    "closeMobileMenu": "Close mobile menu",
+    "expand": "Expand {title}"
+  },
+  "accessibility": {
+    "breadcrumb": "Breadcrumb"
+  },
+  "page": {
+    "lastUpdated": "This document was last updated on {date}."
   }
 }

@@ -2,6 +2,7 @@
 
 import clsx from "clsx";
 import { ProductOption, ProductVariant } from "lib/types";
+import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 
 type Combination = {
@@ -19,6 +20,7 @@ export function VariantSelector({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const t = useTranslations("variants");
   const hasNoOptionsOrJustOneOption =
     !options.length ||
     (options.length === 1 && options[0]?.values.length === 1);
@@ -83,7 +85,7 @@ export function VariantSelector({
                 key={value}
                 aria-disabled={!isAvailableForSale}
                 disabled={!isAvailableForSale}
-                title={`${option.name} ${value}${!isAvailableForSale ? " (Out of Stock)" : ""}`}
+                title={`${option.name} ${value}${!isAvailableForSale ? " " + t("outOfStock") : ""}`}
                 className={clsx(
                   "flex min-w-[48px] items-center justify-center rounded-full border bg-neutral-100 px-2 py-1 text-sm dark:border-neutral-800 dark:bg-neutral-900",
                   {

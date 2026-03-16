@@ -65,8 +65,12 @@ export default async function ProductPage(props: Props) {
   }
 
   const { product, canonicalSlug, breadcrumbs, recommendations } = data;
-  const t = await getTranslations("breadcrumbs");
-  const allBreadcrumbs = [{ title: t("home"), path: "/" }, ...breadcrumbs];
+  const tBreadcrumbs = await getTranslations("breadcrumbs");
+  const tProduct = await getTranslations("product");
+  const allBreadcrumbs = [
+    { title: tBreadcrumbs("home"), path: "/" },
+    ...breadcrumbs,
+  ];
 
   if (parsed.slug !== canonicalSlug) {
     redirect(productUrl(product));
@@ -118,18 +122,27 @@ export default async function ProductPage(props: Props) {
             </Suspense>
           </div>
         </div>
-        <RelatedProducts products={recommendations} />
+        <RelatedProducts
+          products={recommendations}
+          heading={tProduct("relatedProducts")}
+        />
       </Container>
     </>
   );
 }
 
-function RelatedProducts({ products }: { products: Product[] }) {
+function RelatedProducts({
+  products,
+  heading,
+}: {
+  products: Product[];
+  heading: string;
+}) {
   if (!products.length) return null;
 
   return (
     <div className="py-8">
-      <h2 className="mb-4 text-2xl font-bold">Related Products</h2>
+      <h2 className="mb-4 text-2xl font-bold">{heading}</h2>
       <ul className="flex w-full gap-4 overflow-x-auto pt-1">
         {products.map((product) => (
           <li

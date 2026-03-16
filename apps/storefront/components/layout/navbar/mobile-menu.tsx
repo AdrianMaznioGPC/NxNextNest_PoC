@@ -11,11 +11,13 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import type { MegaMenuItem } from "lib/types";
+import { useTranslations } from "next-intl";
 import Search, { SearchSkeleton } from "./search";
 
 export default function MobileMenu({ megaMenu }: { megaMenu: MegaMenuItem[] }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const t = useTranslations("nav");
   const [isOpen, setIsOpen] = useState(false);
   const openMobileMenu = () => setIsOpen(true);
   const closeMobileMenu = () => setIsOpen(false);
@@ -38,7 +40,7 @@ export default function MobileMenu({ megaMenu }: { megaMenu: MegaMenuItem[] }) {
     <>
       <button
         onClick={openMobileMenu}
-        aria-label="Open mobile menu"
+        aria-label={t("openMobileMenu")}
         className="flex h-11 w-11 items-center justify-center rounded-md border border-neutral-200 text-black transition-colors md:hidden dark:border-neutral-700 dark:text-white"
       >
         <Bars3Icon className="h-4" />
@@ -70,7 +72,7 @@ export default function MobileMenu({ megaMenu }: { megaMenu: MegaMenuItem[] }) {
                 <button
                   className="mb-4 flex h-11 w-11 items-center justify-center rounded-md border border-neutral-200 text-black transition-colors dark:border-neutral-700 dark:text-white"
                   onClick={closeMobileMenu}
-                  aria-label="Close mobile menu"
+                  aria-label={t("closeMobileMenu")}
                 >
                   <XMarkIcon className="h-6" />
                 </button>
@@ -108,6 +110,7 @@ function MobileMenuItem({
   onNavigate: () => void;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const t = useTranslations("nav");
   const hasChildren = item.children && item.children.length > 0;
 
   return (
@@ -124,7 +127,7 @@ function MobileMenuItem({
         {hasChildren ? (
           <button
             onClick={() => setExpanded(!expanded)}
-            aria-label={`Expand ${item.title}`}
+            aria-label={t("expand", { title: item.title })}
             className="p-3 text-neutral-500 dark:text-neutral-400"
           >
             <ChevronDownIcon

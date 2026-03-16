@@ -2,5 +2,74 @@
   "breadcrumbs": {
     "home": "Accueil",
     "categories": "Catégories"
+  },
+  "notFound": {
+    "title": "404",
+    "description": "La page que vous recherchez n'existe pas ou a été déplacée.",
+    "goHome": "Retour à l'accueil",
+    "searchProducts": "Rechercher des produits"
+  },
+  "error": {
+    "title": "Oh non !",
+    "description": "Un problème est survenu avec notre boutique. Il peut s'agir d'un problème temporaire, veuillez réessayer.",
+    "tryAgain": "Réessayer"
+  },
+  "search": {
+    "title": "Recherche",
+    "description": "Rechercher des produits dans la boutique.",
+    "placeholder": "Rechercher des produits...",
+    "noResults": "Aucun produit ne correspond à ",
+    "showingResults": "{count} {count, plural, one {résultat} other {résultats}} pour ",
+    "sortBy": "Trier par",
+    "collections": "Collections"
+  },
+  "categories": {
+    "allCategories": "Toutes les catégories",
+    "allCategoriesDescription": "Parcourir toutes les catégories de produits.",
+    "noProducts": "Aucun produit trouvé dans cette catégorie",
+    "subcategoryCount": "{count} {count, plural, one {sous-catégorie} other {sous-catégories}}"
+  },
+  "product": {
+    "relatedProducts": "Produits similaires",
+    "previousImage": "Image précédente du produit",
+    "nextImage": "Image suivante du produit",
+    "selectImage": "Sélectionner l'image du produit"
+  },
+  "cart": {
+    "myCart": "Mon panier",
+    "empty": "Votre panier est vide.",
+    "taxes": "Taxes",
+    "shipping": "Livraison",
+    "shippingCalculated": "Calculé lors du paiement",
+    "total": "Total",
+    "checkout": "Passer la commande",
+    "addToCart": "Ajouter au panier",
+    "outOfStock": "Rupture de stock",
+    "removeItem": "Supprimer l'article",
+    "openCart": "Ouvrir le panier",
+    "closeCart": "Fermer le panier"
+  },
+  "storeSwitcher": {
+    "countryRegion": "Pays / Région"
+  },
+  "footer": {
+    "allRightsReserved": "Tous droits réservés."
+  },
+  "variants": {
+    "outOfStock": "(Rupture de stock)"
+  },
+  "nav": {
+    "browseProducts": "Parcourir les produits",
+    "viewAllCategories": "Voir toutes les catégories",
+    "viewAll": "Voir tout : {category}",
+    "openMobileMenu": "Ouvrir le menu",
+    "closeMobileMenu": "Fermer le menu",
+    "expand": "Développer {title}"
+  },
+  "accessibility": {
+    "breadcrumb": "Fil d'Ariane"
+  },
+  "page": {
+    "lastUpdated": "Ce document a été mis à jour le {date}."
   }
 }

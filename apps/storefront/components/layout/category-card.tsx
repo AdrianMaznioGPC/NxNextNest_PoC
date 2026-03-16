@@ -1,11 +1,14 @@
 import type { Collection } from "lib/types";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
-export default function CategoryCard({
+export default async function CategoryCard({
   collection,
 }: {
   collection: Collection;
 }) {
+  const t = await getTranslations("categories");
+
   return (
     <Link
       href={collection.path}
@@ -19,7 +22,9 @@ export default function CategoryCard({
       </p>
       {collection.subcollections && collection.subcollections.length > 0 && (
         <p className="mt-4 text-xs text-neutral-400 dark:text-neutral-500">
-          {collection.subcollections.length} subcategories
+          {t("subcategoryCount", {
+            count: collection.subcollections.length,
+          })}
         </p>
       )}
     </Link>

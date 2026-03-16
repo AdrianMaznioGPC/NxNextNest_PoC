@@ -1,16 +1,15 @@
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import type { Breadcrumb } from "lib/types";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
-export default function Breadcrumbs({
-  items,
-}: {
-  items: Breadcrumb[];
-}) {
+export default async function Breadcrumbs({ items }: { items: Breadcrumb[] }) {
   if (!items.length) return null;
 
+  const t = await getTranslations("accessibility");
+
   return (
-    <nav aria-label="Breadcrumb" className="mb-6">
+    <nav aria-label={t("breadcrumb")} className="mb-6">
       <ol className="flex flex-wrap items-center gap-1 text-sm text-neutral-500 dark:text-neutral-400">
         {items.map((item, i) => {
           const isLast = i === items.length - 1;
