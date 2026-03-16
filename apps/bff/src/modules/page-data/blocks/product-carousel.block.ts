@@ -4,7 +4,7 @@ import { registerBlockResolver } from "../block-resolver-registry";
 registerBlockResolver(
   "product-carousel",
   async (raw: CmsRawProductCarousel, ctx) => {
-    const products = await ctx.collections.getCollectionProducts({
+    const products = await ctx.productDomain.getCollectionProducts({
       collection: raw.collectionHandle,
     });
 

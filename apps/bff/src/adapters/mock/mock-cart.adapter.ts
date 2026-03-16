@@ -1,13 +1,18 @@
 import type { Cart, CartItem } from "@commerce/shared-types";
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { CartPort } from "../../ports/cart.port";
+import { PRICING_PORT, type PricingPort } from "../../ports/pricing.port";
+import { PRODUCT_PORT, type ProductPort } from "../../ports/product.port";
 import { createEmptyCart } from "./data/cart-data";
-import { getVariantPrice } from "./data/pricing-data";
-import { productRecords } from "./data/product-data";
 
 @Injectable()
 export class MockCartAdapter implements CartPort {
   private carts = new Map<string, Cart>();
+
+  constructor(
+    @Inject(PRODUCT_PORT) private readonly products: ProductPort,
+    @Inject(PRICING_PORT) private readonly pricing: PricingPort,
+  ) {}
 
   async createCart(): Promise<Cart> {
     const cart = createEmptyCart();
@@ -38,12 +43,14 @@ export class MockCartAdapter implements CartPort {
           unitPrice * existing.quantity
         ).toFixed(2);
       } else {
-        const match = productRecords
+        const allBase = await this.products.getProducts({});
+        const match = allBase
           .flatMap((p) => p.variants.map((v) => ({ variant: v, product: p })))
           .find((pv) => pv.variant.id === line.merchandiseId);
 
         if (match) {
-          const price = getVariantPrice(match.variant.id) ?? {
+          const pricingData = await this.pricing.getPricing(match.product.id);
+          const price = pricingData?.variantPrices.get(match.variant.id) ?? {
             amount: "0.00",
             currencyCode: "USD",
           };

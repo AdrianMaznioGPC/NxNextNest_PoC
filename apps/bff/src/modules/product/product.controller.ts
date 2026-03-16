@@ -1,11 +1,9 @@
-import { Controller, Get, Inject, Param, Query } from "@nestjs/common";
-import { PRODUCT_PORT, ProductPort } from "../../ports/product.port";
+import { Controller, Get, Param, Query } from "@nestjs/common";
+import { ProductDomainService } from "./product-domain.service";
 
 @Controller("products")
 export class ProductController {
-  constructor(
-    @Inject(PRODUCT_PORT) private readonly products: ProductPort,
-  ) {}
+  constructor(private readonly productDomain: ProductDomainService) {}
 
   @Get()
   getProducts(
@@ -13,7 +11,7 @@ export class ProductController {
     @Query("sortKey") sortKey?: string,
     @Query("reverse") reverse?: string,
   ) {
-    return this.products.getProducts({
+    return this.productDomain.getProducts({
       query,
       sortKey,
       reverse: reverse === "true",
@@ -22,11 +20,11 @@ export class ProductController {
 
   @Get(":handle")
   getProduct(@Param("handle") handle: string) {
-    return this.products.getProduct(handle);
+    return this.productDomain.getProduct(handle);
   }
 
   @Get(":id/recommendations")
   getRecommendations(@Param("id") id: string) {
-    return this.products.getProductRecommendations(id);
+    return this.productDomain.getRecommendations(id);
   }
 }

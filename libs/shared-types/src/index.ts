@@ -76,24 +76,42 @@ export type Page = {
   updatedAt: string;
 };
 
-export type Product = {
+export type BaseProductVariant = {
+  id: string;
+  title: string;
+  selectedOptions: {
+    name: string;
+    value: string;
+  }[];
+};
+
+export type BaseProduct = {
   id: string;
   handle: string;
-  availableForSale: boolean;
   title: string;
   description: string;
   descriptionHtml: string;
   options: ProductOption[];
-  priceRange: {
-    maxVariantPrice: Money;
-    minVariantPrice: Money;
-  };
-  variants: ProductVariant[];
+  variants: BaseProductVariant[];
   featuredImage: Image;
   images: Image[];
   seo: SEO;
   tags: string[];
   updatedAt: string;
+};
+
+export type ProductVariant = BaseProductVariant & {
+  availableForSale: boolean;
+  price: Money;
+};
+
+export type Product = Omit<BaseProduct, "variants"> & {
+  availableForSale: boolean;
+  priceRange: {
+    maxVariantPrice: Money;
+    minVariantPrice: Money;
+  };
+  variants: ProductVariant[];
   breadcrumbs?: Breadcrumb[];
 };
 
@@ -101,17 +119,6 @@ export type ProductOption = {
   id: string;
   name: string;
   values: string[];
-};
-
-export type ProductVariant = {
-  id: string;
-  title: string;
-  availableForSale: boolean;
-  selectedOptions: {
-    name: string;
-    value: string;
-  }[];
-  price: Money;
 };
 
 export type SEO = {

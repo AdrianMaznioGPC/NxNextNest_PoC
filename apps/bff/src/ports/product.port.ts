@@ -1,15 +1,11 @@
-import type { Product } from "@commerce/shared-types";
+import type { BaseProduct } from "@commerce/shared-types";
 
 export interface ProductPort {
-  getProducts(params: {
-    query?: string;
-    reverse?: boolean;
-    sortKey?: string;
-  }): Promise<Product[]>;
+  getProducts(params: { query?: string }): Promise<BaseProduct[]>;
 
-  getProduct(handle: string): Promise<Product | undefined>;
+  getProduct(handle: string): Promise<BaseProduct | undefined>;
 
-  getProductRecommendations(productId: string): Promise<Product[]>;
+  getProductRecommendations(productId: string): Promise<BaseProduct[]>;
 }
 
 export const PRODUCT_PORT = Symbol("PRODUCT_PORT");

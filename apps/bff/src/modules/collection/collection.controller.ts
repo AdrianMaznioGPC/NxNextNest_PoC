@@ -1,15 +1,17 @@
-import { Controller, Get, Inject, Param, Query } from "@nestjs/common";
-import { COLLECTION_PORT, CollectionPort } from "../../ports/collection.port";
+import { Controller, Get, Param, Query } from "@nestjs/common";
+import { ProductDomainService } from "../product/product-domain.service";
+import { CatalogDomainService } from "./catalog-domain.service";
 
 @Controller("collections")
 export class CollectionController {
   constructor(
-    @Inject(COLLECTION_PORT) private readonly collections: CollectionPort,
+    private readonly catalogDomain: CatalogDomainService,
+    private readonly productDomain: ProductDomainService,
   ) {}
 
   @Get()
   getCollections() {
-    return this.collections.getCollections();
+    return this.catalogDomain.getCollections();
   }
 
   @Get("by-path/*")
@@ -20,17 +22,16 @@ export class CollectionController {
   ) {
     const segments = path.split("/").filter(Boolean);
 
-    // If path ends with /products, return products for that collection
     if (segments.at(-1) === "products") {
       const collection = segments.slice(0, -1).join("/");
-      return this.collections.getCollectionProducts({
+      return this.productDomain.getCollectionProducts({
         collection,
         sortKey,
         reverse: reverse === "true",
       });
     }
 
-    return this.collections.getCollectionByPath(segments);
+    return this.catalogDomain.getCollectionByPath(segments);
   }
 
   @Get(":handle/products")
@@ -39,7 +40,7 @@ export class CollectionController {
     @Query("sortKey") sortKey?: string,
     @Query("reverse") reverse?: string,
   ) {
-    return this.collections.getCollectionProducts({
+    return this.productDomain.getCollectionProducts({
       collection: handle,
       sortKey,
       reverse: reverse === "true",
@@ -48,6 +49,6 @@ export class CollectionController {
 
   @Get(":handle")
   getCollection(@Param("handle") handle: string) {
-    return this.collections.getCollection(handle);
+    return this.catalogDomain.getCollection(handle);
   }
 }

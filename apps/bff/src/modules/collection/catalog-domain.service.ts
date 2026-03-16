@@ -4,13 +4,19 @@ import type {
   CategoryPageData,
   Collection,
 } from "@commerce/shared-types";
-import { Inject, Injectable } from "@nestjs/common";
-import { COLLECTION_PORT, type CollectionPort } from "../../ports/collection.port";
+import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import {
+  COLLECTION_PORT,
+  type CollectionPort,
+} from "../../ports/collection.port";
+import { ProductDomainService } from "../product/product-domain.service";
 
 @Injectable()
 export class CatalogDomainService {
   constructor(
     @Inject(COLLECTION_PORT) private readonly collections: CollectionPort,
+    @Inject(forwardRef(() => ProductDomainService))
+    private readonly productDomain: ProductDomainService,
   ) {}
 
   getCollections(): Promise<Collection[]> {
@@ -23,14 +29,6 @@ export class CatalogDomainService {
 
   getCollectionByPath(slugs: string[]): Promise<Collection | undefined> {
     return this.collections.getCollectionByPath(slugs);
-  }
-
-  getCollectionProducts(params: {
-    collection: string;
-    reverse?: boolean;
-    sortKey?: string;
-  }) {
-    return this.collections.getCollectionProducts(params);
   }
 
   async getCategoryListPage(): Promise<CategoryListPageData> {
@@ -60,7 +58,7 @@ export class CatalogDomainService {
     }
 
     const collectionKey = slugs.join("/");
-    const products = await this.collections.getCollectionProducts({
+    const products = await this.productDomain.getCollectionProducts({
       collection: collectionKey,
       sortKey,
       reverse,

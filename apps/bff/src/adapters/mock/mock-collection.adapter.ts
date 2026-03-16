@@ -1,7 +1,6 @@
-import type { Collection, Product } from "@commerce/shared-types";
-import { Inject, Injectable } from "@nestjs/common";
+import type { Collection } from "@commerce/shared-types";
+import { Injectable } from "@nestjs/common";
 import { CollectionPort } from "../../ports/collection.port";
-import { PRODUCT_PORT, type ProductPort } from "../../ports/product.port";
 import {
   collectionProductMap,
   collections,
@@ -10,8 +9,6 @@ import {
 
 @Injectable()
 export class MockCollectionAdapter implements CollectionPort {
-  constructor(@Inject(PRODUCT_PORT) private readonly products: ProductPort) {}
-
   async getCollections(): Promise<Collection[]> {
     return collections;
   }
@@ -36,39 +33,7 @@ export class MockCollectionAdapter implements CollectionPort {
     return current;
   }
 
-  async getCollectionProducts(params: {
-    collection: string;
-    reverse?: boolean;
-    sortKey?: string;
-  }): Promise<Product[]> {
-    const ids = collectionProductMap[params.collection];
-    if (!ids) return [];
-
-    const allProducts = await this.products.getProducts({});
-    let result = ids
-      .map((id) => allProducts.find((p) => p.id === id))
-      .filter((p): p is Product => p !== undefined);
-
-    if (params.sortKey === "PRICE") {
-      result.sort(
-        (a, b) =>
-          parseFloat(a.priceRange.minVariantPrice.amount) -
-          parseFloat(b.priceRange.minVariantPrice.amount),
-      );
-    } else if (
-      params.sortKey === "CREATED_AT" ||
-      params.sortKey === "CREATED"
-    ) {
-      result.sort(
-        (a, b) =>
-          new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime(),
-      );
-    }
-
-    if (params.reverse) {
-      result.reverse();
-    }
-
-    return result;
+  async getCollectionProductIds(collection: string): Promise<string[]> {
+    return collectionProductMap[collection] ?? [];
   }
 }
