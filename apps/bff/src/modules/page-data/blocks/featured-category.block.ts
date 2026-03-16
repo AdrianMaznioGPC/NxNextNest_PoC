@@ -1,12 +1,6 @@
 import type { Collection } from "@commerce/shared-types";
+import type { CmsRawFeaturedCategory } from "../../../ports/cms.types";
 import { registerBlockResolver } from "../block-resolver-registry";
-
-export type CmsRawFeaturedCategory = {
-  type: "featured-category";
-  id: string;
-  heading: string;
-  collectionHandles: string[];
-};
 
 registerBlockResolver(
   "featured-category",

@@ -1,7 +1,9 @@
-import { Injectable } from "@nestjs/common";
 import type { Cart, CartItem } from "@commerce/shared-types";
+import { Injectable } from "@nestjs/common";
 import { CartPort } from "../../ports/cart.port";
-import { createEmptyCart, products } from "./mock-data";
+import { createEmptyCart } from "./data/cart-data";
+import { getVariantPrice } from "./data/pricing-data";
+import { productRecords } from "./data/product-data";
 
 @Injectable()
 export class MockCartAdapter implements CartPort {
@@ -36,20 +38,22 @@ export class MockCartAdapter implements CartPort {
           unitPrice * existing.quantity
         ).toFixed(2);
       } else {
-        const match = products
+        const match = productRecords
           .flatMap((p) => p.variants.map((v) => ({ variant: v, product: p })))
           .find((pv) => pv.variant.id === line.merchandiseId);
 
         if (match) {
+          const price = getVariantPrice(match.variant.id) ?? {
+            amount: "0.00",
+            currencyCode: "USD",
+          };
           const newItem: CartItem = {
             id: `line-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
             quantity: line.quantity,
             cost: {
               totalAmount: {
-                amount: (
-                  parseFloat(match.variant.price.amount) * line.quantity
-                ).toFixed(2),
-                currencyCode: match.variant.price.currencyCode,
+                amount: (parseFloat(price.amount) * line.quantity).toFixed(2),
+                currencyCode: price.currencyCode,
               },
             },
             merchandise: {
@@ -94,9 +98,9 @@ export class MockCartAdapter implements CartPort {
         const unitPrice =
           parseFloat(existing.cost.totalAmount.amount) / existing.quantity;
         existing.quantity = line.quantity;
-        existing.cost.totalAmount.amount = (
-          unitPrice * line.quantity
-        ).toFixed(2);
+        existing.cost.totalAmount.amount = (unitPrice * line.quantity).toFixed(
+          2,
+        );
       }
     }
 
@@ -112,8 +116,7 @@ export class MockCartAdapter implements CartPort {
       (sum, l) => sum + parseFloat(l.cost.totalAmount.amount),
       0,
     );
-    const currencyCode =
-      cart.lines[0]?.cost.totalAmount.currencyCode ?? "USD";
+    const currencyCode = cart.lines[0]?.cost.totalAmount.currencyCode ?? "USD";
     cart.cost = {
       subtotalAmount: { amount: totalAmount.toFixed(2), currencyCode },
       totalAmount: { amount: totalAmount.toFixed(2), currencyCode },

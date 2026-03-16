@@ -1,15 +1,17 @@
 import type { Collection, Product } from "@commerce/shared-types";
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { CollectionPort } from "../../ports/collection.port";
+import { PRODUCT_PORT, type ProductPort } from "../../ports/product.port";
 import {
   collectionProductMap,
   collections,
   getAllCollectionsFlat,
-  products,
-} from "./mock-data";
+} from "./data/catalog-data";
 
 @Injectable()
 export class MockCollectionAdapter implements CollectionPort {
+  constructor(@Inject(PRODUCT_PORT) private readonly products: ProductPort) {}
+
   async getCollections(): Promise<Collection[]> {
     return collections;
   }
@@ -21,12 +23,10 @@ export class MockCollectionAdapter implements CollectionPort {
   async getCollectionByPath(slugs: string[]): Promise<Collection | undefined> {
     if (slugs.length === 0) return undefined;
 
-    // First slug is a top-level collection
     const top = collections.find((c) => c.handle === slugs[0]);
     if (!top) return undefined;
     if (slugs.length === 1) return top;
 
-    // Walk down the tree
     let current: Collection = top;
     for (let i = 1; i < slugs.length; i++) {
       const child = current.subcollections?.find((c) => c.handle === slugs[i]);
@@ -44,9 +44,10 @@ export class MockCollectionAdapter implements CollectionPort {
     const ids = collectionProductMap[params.collection];
     if (!ids) return [];
 
+    const allProducts = await this.products.getProducts({});
     let result = ids
-      .map((id) => products.find((p) => p.id === id))
-      .filter(Boolean) as Product[];
+      .map((id) => allProducts.find((p) => p.id === id))
+      .filter((p): p is Product => p !== undefined);
 
     if (params.sortKey === "PRICE") {
       result.sort(

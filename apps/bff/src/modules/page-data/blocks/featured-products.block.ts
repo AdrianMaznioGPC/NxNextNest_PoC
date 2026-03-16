@@ -1,12 +1,6 @@
 import type { Product } from "@commerce/shared-types";
+import type { CmsRawFeaturedProducts } from "../../../ports/cms.types";
 import { registerBlockResolver } from "../block-resolver-registry";
-
-export type CmsRawFeaturedProducts = {
-  type: "featured-products";
-  id: string;
-  heading: string;
-  productHandles: string[];
-};
 
 registerBlockResolver(
   "featured-products",

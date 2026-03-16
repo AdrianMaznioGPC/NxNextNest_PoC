@@ -1,10 +1,5 @@
-import type { CmsRawBannerItem } from "../../../ports/cms.port";
+import type { CmsRawCmsBanner } from "../../../ports/cms.types";
 import { registerBlockResolver } from "../block-resolver-registry";
-
-export type CmsRawCmsBanner = {
-  type: "cms-banner";
-  id: string;
-} & CmsRawBannerItem;
 
 registerBlockResolver("cms-banner", async (raw: CmsRawCmsBanner) => ({
   type: "cms-banner" as const,

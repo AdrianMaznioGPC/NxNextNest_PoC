@@ -1,11 +1,5 @@
+import type { CmsRawProductCarousel } from "../../../ports/cms.types";
 import { registerBlockResolver } from "../block-resolver-registry";
-
-export type CmsRawProductCarousel = {
-  type: "product-carousel";
-  id: string;
-  heading: string;
-  collectionHandle: string;
-};
 
 registerBlockResolver(
   "product-carousel",

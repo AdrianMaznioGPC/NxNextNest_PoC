@@ -1,7 +1,7 @@
-import { Injectable } from "@nestjs/common";
 import type { Page } from "@commerce/shared-types";
+import { Injectable } from "@nestjs/common";
 import { PagePort } from "../../ports/page.port";
-import { pages } from "./mock-data";
+import { pages } from "./data/content-data";
 
 @Injectable()
 export class MockPageAdapter implements PagePort {

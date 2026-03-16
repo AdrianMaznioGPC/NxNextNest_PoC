@@ -1,7 +1,7 @@
 import type { FeaturedLink, MegaMenuItem } from "@commerce/shared-types";
 import { Injectable } from "@nestjs/common";
 import type { NavigationPort } from "../../ports/navigation.port";
-import { collections } from "./mock-data";
+import { collections } from "./data/catalog-data";
 
 @Injectable()
 export class MockNavigationAdapter implements NavigationPort {
