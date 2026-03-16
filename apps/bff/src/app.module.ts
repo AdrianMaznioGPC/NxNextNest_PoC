@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { APP_INTERCEPTOR } from "@nestjs/core";
 import { MockBackendModule } from "./adapters/mock/mock-backend.module";
 import { AppController } from "./app.controller";
 import { CartController } from "./modules/cart/cart.controller";
@@ -12,6 +13,7 @@ import { PageDataService } from "./modules/page-data/page-data.service";
 import { PageController } from "./modules/page/page.controller";
 import { ProductDomainService } from "./modules/product/product-domain.service";
 import { ProductController } from "./modules/product/product.controller";
+import { StoreContext, StoreInterceptor } from "./store";
 
 @Module({
   imports: [MockBackendModule],
@@ -30,6 +32,11 @@ import { ProductController } from "./modules/product/product.controller";
     ContentDomainService,
     NavigationDomainService,
     PageDataService,
+    StoreContext,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: StoreInterceptor,
+    },
   ],
 })
 export class AppModule {}

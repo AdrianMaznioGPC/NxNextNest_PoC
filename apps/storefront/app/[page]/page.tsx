@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 
 import Prose from "components/prose";
-import { getPage } from "lib/api";
+import { getPage, getStoreCode } from "lib/api";
 import { notFound } from "next/navigation";
 
 export async function generateMetadata(props: {
   params: Promise<{ page: string }>;
 }): Promise<Metadata> {
   const params = await props.params;
-  const page = await getPage(params.page);
+  const storeCode = await getStoreCode();
+  const page = await getPage(storeCode, params.page);
 
   if (!page) return notFound();
 
@@ -27,7 +28,8 @@ export default async function Page(props: {
   params: Promise<{ page: string }>;
 }) {
   const params = await props.params;
-  const page = await getPage(params.page);
+  const storeCode = await getStoreCode();
+  const page = await getPage(storeCode, params.page);
 
   if (!page) return notFound();
 

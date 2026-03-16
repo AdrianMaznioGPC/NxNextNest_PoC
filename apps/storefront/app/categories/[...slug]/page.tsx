@@ -3,7 +3,7 @@ import Breadcrumbs from "components/layout/breadcrumbs";
 import CategoryCard from "components/layout/category-card";
 import ProductGridItems from "components/layout/product-grid-items";
 import FilterList from "components/layout/search/filter";
-import { getCategoryPageData } from "lib/api";
+import { getCategoryPageData, getStoreCode } from "lib/api";
 import { defaultSort, sorting } from "lib/constants";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -15,7 +15,8 @@ export async function generateMetadata(props: {
   const { slug } = await props.params;
 
   try {
-    const { collection } = await getCategoryPageData(slug);
+    const storeCode = await getStoreCode();
+    const { collection } = await getCategoryPageData(storeCode, slug);
     return {
       title: collection.seo?.title || collection.title,
       description:
@@ -40,7 +41,8 @@ export default async function CategorySlugPage(props: {
 
   let data;
   try {
-    data = await getCategoryPageData(slug, sortKey, reverse);
+    const storeCode = await getStoreCode();
+    data = await getCategoryPageData(storeCode, slug, sortKey, reverse);
   } catch {
     return notFound();
   }

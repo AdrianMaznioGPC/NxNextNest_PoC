@@ -3,6 +3,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { CartPort } from "../../ports/cart.port";
 import { PRICING_PORT, type PricingPort } from "../../ports/pricing.port";
 import { PRODUCT_PORT, type ProductPort } from "../../ports/product.port";
+import { StoreContext } from "../../store";
 import { createEmptyCart } from "./data/cart-data";
 
 @Injectable()
@@ -12,10 +13,11 @@ export class MockCartAdapter implements CartPort {
   constructor(
     @Inject(PRODUCT_PORT) private readonly products: ProductPort,
     @Inject(PRICING_PORT) private readonly pricing: PricingPort,
+    private readonly storeCtx: StoreContext,
   ) {}
 
   async createCart(): Promise<Cart> {
-    const cart = createEmptyCart();
+    const cart = createEmptyCart(this.storeCtx.currency);
     this.carts.set(cart.id!, cart);
     return cart;
   }
@@ -52,7 +54,7 @@ export class MockCartAdapter implements CartPort {
           const pricingData = await this.pricing.getPricing(match.product.id);
           const price = pricingData?.variantPrices.get(match.variant.id) ?? {
             amount: "0.00",
-            currencyCode: "USD",
+            currencyCode: this.storeCtx.currency,
           };
           const newItem: CartItem = {
             id: `line-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
@@ -123,7 +125,8 @@ export class MockCartAdapter implements CartPort {
       (sum, l) => sum + parseFloat(l.cost.totalAmount.amount),
       0,
     );
-    const currencyCode = cart.lines[0]?.cost.totalAmount.currencyCode ?? "USD";
+    const currencyCode =
+      cart.lines[0]?.cost.totalAmount.currencyCode ?? this.storeCtx.currency;
     cart.cost = {
       subtotalAmount: { amount: totalAmount.toFixed(2), currencyCode },
       totalAmount: { amount: totalAmount.toFixed(2), currencyCode },

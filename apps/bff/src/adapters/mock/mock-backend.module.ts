@@ -10,6 +10,7 @@ import { ORDER_PORT } from "../../ports/order.port";
 import { PAGE_PORT } from "../../ports/page.port";
 import { PRICING_PORT } from "../../ports/pricing.port";
 import { PRODUCT_PORT } from "../../ports/product.port";
+import { StoreContext } from "../../store";
 import { MockAvailabilityAdapter } from "./mock-availability.adapter";
 import { MockCartAdapter } from "./mock-cart.adapter";
 import { MockCmsAdapter } from "./mock-cms.adapter";
@@ -23,6 +24,7 @@ import { MockPricingAdapter } from "./mock-pricing.adapter";
 import { MockProductAdapter } from "./mock-product.adapter";
 
 const providers = [
+  StoreContext,
   { provide: AVAILABILITY_PORT, useClass: MockAvailabilityAdapter },
   { provide: CART_PORT, useClass: MockCartAdapter },
   { provide: CMS_PORT, useClass: MockCmsAdapter },
@@ -38,6 +40,6 @@ const providers = [
 
 @Module({
   providers,
-  exports: providers,
+  exports: [...providers],
 })
 export class MockBackendModule {}

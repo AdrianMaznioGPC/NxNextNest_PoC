@@ -1,0 +1,7 @@
+winparts.fr.localhost {
+	reverse_proxy localhost:3000
+}
+
+winparts.ie.localhost {
+	reverse_proxy localhost:3000
+}

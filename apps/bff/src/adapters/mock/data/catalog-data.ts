@@ -1,91 +1,185 @@
-import type { Breadcrumb, Collection } from "@commerce/shared-types";
+import type { Collection } from "@commerce/shared-types";
 
-const brakePads: Collection = {
-  handle: "pads",
-  title: "Brake Pads",
-  description: "Ceramic and semi-metallic brake pads",
-  seo: { title: "Brake Pads", description: "Ceramic and semi-metallic brake pads" },
-  path: "/categories/brakes/pads",
-  parentHandle: "brakes",
-  updatedAt: new Date().toISOString(),
+const IMG_BRAKES =
+  "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=600&h=400&fit=crop&q=80";
+const IMG_ENGINE =
+  "https://images.unsplash.com/photo-1489824904134-891ab64532f1?w=600&h=400&fit=crop&q=80";
+const IMG_SUSPENSION =
+  "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=600&h=400&fit=crop&q=80";
+const IMG_LIGHTING =
+  "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=600&h=400&fit=crop&q=80";
+const IMG_EXHAUST =
+  "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=600&h=400&fit=crop&q=80";
+
+const now = new Date().toISOString();
+
+function makeCollections(t: {
+  brakes: string;
+  brakePads: string;
+  brakePadsDesc: string;
+  brakeRotors: string;
+  brakeRotorsDesc: string;
+  brakesDesc: string;
+  engine: string;
+  airFilters: string;
+  airFiltersDesc: string;
+  ignition: string;
+  ignitionDesc: string;
+  engineDesc: string;
+  suspension: string;
+  suspensionDesc: string;
+  lighting: string;
+  lightingDesc: string;
+  exhaust: string;
+  exhaustDesc: string;
+}): Collection[] {
+  return [
+    {
+      handle: "brakes",
+      title: t.brakes,
+      description: t.brakesDesc,
+      seo: { title: t.brakes, description: t.brakesDesc },
+      path: "/categories/brakes",
+      image: { url: IMG_BRAKES, altText: t.brakes, width: 600, height: 400 },
+      subcollections: [
+        {
+          handle: "pads",
+          title: t.brakePads,
+          description: t.brakePadsDesc,
+          seo: { title: t.brakePads, description: t.brakePadsDesc },
+          path: "/categories/brakes/pads",
+          parentHandle: "brakes",
+          updatedAt: now,
+        },
+        {
+          handle: "rotors",
+          title: t.brakeRotors,
+          description: t.brakeRotorsDesc,
+          seo: { title: t.brakeRotors, description: t.brakeRotorsDesc },
+          path: "/categories/brakes/rotors",
+          parentHandle: "brakes",
+          updatedAt: now,
+        },
+      ],
+      updatedAt: now,
+    },
+    {
+      handle: "engine",
+      title: t.engine,
+      description: t.engineDesc,
+      seo: { title: t.engine, description: t.engineDesc },
+      path: "/categories/engine",
+      image: { url: IMG_ENGINE, altText: t.engine, width: 600, height: 400 },
+      subcollections: [
+        {
+          handle: "filters",
+          title: t.airFilters,
+          description: t.airFiltersDesc,
+          seo: { title: t.airFilters, description: t.airFiltersDesc },
+          path: "/categories/engine/filters",
+          parentHandle: "engine",
+          updatedAt: now,
+        },
+        {
+          handle: "ignition",
+          title: t.ignition,
+          description: t.ignitionDesc,
+          seo: { title: t.ignition, description: t.ignitionDesc },
+          path: "/categories/engine/ignition",
+          parentHandle: "engine",
+          updatedAt: now,
+        },
+      ],
+      updatedAt: now,
+    },
+    {
+      handle: "suspension",
+      title: t.suspension,
+      description: t.suspensionDesc,
+      seo: { title: t.suspension, description: t.suspensionDesc },
+      path: "/categories/suspension",
+      image: {
+        url: IMG_SUSPENSION,
+        altText: t.suspension,
+        width: 600,
+        height: 400,
+      },
+      updatedAt: now,
+    },
+    {
+      handle: "lighting",
+      title: t.lighting,
+      description: t.lightingDesc,
+      seo: { title: t.lighting, description: t.lightingDesc },
+      path: "/categories/lighting",
+      image: {
+        url: IMG_LIGHTING,
+        altText: t.lighting,
+        width: 600,
+        height: 400,
+      },
+      updatedAt: now,
+    },
+    {
+      handle: "exhaust",
+      title: t.exhaust,
+      description: t.exhaustDesc,
+      seo: { title: t.exhaust, description: t.exhaustDesc },
+      path: "/categories/exhaust",
+      image: { url: IMG_EXHAUST, altText: t.exhaust, width: 600, height: 400 },
+      updatedAt: now,
+    },
+  ];
+}
+
+const frCollections = makeCollections({
+  brakes: "Freins",
+  brakePads: "Plaquettes de frein",
+  brakePadsDesc: "Plaquettes de frein céramique et semi-métalliques",
+  brakeRotors: "Disques de frein",
+  brakeRotorsDesc: "Disques percés, rainurés et de remplacement OEM",
+  brakesDesc: "Plaquettes, disques et étriers de frein",
+  engine: "Moteur",
+  airFilters: "Filtres à air",
+  airFiltersDesc: "Filtres à air performance et remplacement OEM",
+  ignition: "Allumage",
+  ignitionDesc: "Bougies, bobines et composants d'allumage",
+  engineDesc: "Filtres à air, bougies et systèmes d'admission",
+  suspension: "Suspension",
+  suspensionDesc: "Combinés filetés, barres stabilisatrices et silentblocs",
+  lighting: "Éclairage",
+  lightingDesc: "Phares, feux arrière et améliorations LED",
+  exhaust: "Échappement",
+  exhaustDesc: "Lignes cat-back, silencieux et embouts d'échappement",
+});
+
+const ieCollections = makeCollections({
+  brakes: "Brakes",
+  brakePads: "Brake Pads",
+  brakePadsDesc: "Ceramic and semi-metallic brake pads",
+  brakeRotors: "Brake Rotors",
+  brakeRotorsDesc: "Drilled, slotted, and OEM replacement rotors",
+  brakesDesc: "Brake pads, rotors, and calipers",
+  engine: "Engine",
+  airFilters: "Air Filters",
+  airFiltersDesc: "Performance and OEM replacement air filters",
+  ignition: "Ignition",
+  ignitionDesc: "Spark plugs, coil packs, and ignition components",
+  engineDesc: "Air filters, spark plugs, and intake systems",
+  suspension: "Suspension",
+  suspensionDesc: "Coilovers, sway bars, and bushings",
+  lighting: "Lighting",
+  lightingDesc: "Headlights, tail lights, and LED upgrades",
+  exhaust: "Exhaust",
+  exhaustDesc: "Cat-back systems, mufflers, and exhaust tips",
+});
+
+export const collectionsByStore: Record<string, Collection[]> = {
+  fr: frCollections,
+  ie: ieCollections,
 };
 
-const brakeRotors: Collection = {
-  handle: "rotors",
-  title: "Brake Rotors",
-  description: "Drilled, slotted, and OEM replacement rotors",
-  seo: { title: "Brake Rotors", description: "Drilled, slotted, and OEM replacement rotors" },
-  path: "/categories/brakes/rotors",
-  parentHandle: "brakes",
-  updatedAt: new Date().toISOString(),
-};
-
-const engineFilters: Collection = {
-  handle: "filters",
-  title: "Air Filters",
-  description: "Performance and OEM replacement air filters",
-  seo: { title: "Air Filters", description: "Performance and OEM replacement air filters" },
-  path: "/categories/engine/filters",
-  parentHandle: "engine",
-  updatedAt: new Date().toISOString(),
-};
-
-const engineIgnition: Collection = {
-  handle: "ignition",
-  title: "Ignition",
-  description: "Spark plugs, coil packs, and ignition components",
-  seo: { title: "Ignition", description: "Spark plugs, coil packs, and ignition components" },
-  path: "/categories/engine/ignition",
-  parentHandle: "engine",
-  updatedAt: new Date().toISOString(),
-};
-
-export const collections: Collection[] = [
-  {
-    handle: "brakes", title: "Brakes",
-    description: "Brake pads, rotors, and calipers",
-    seo: { title: "Brakes", description: "Brake pads, rotors, and calipers" },
-    path: "/categories/brakes",
-    image: { url: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=600&h=400&fit=crop&q=80", altText: "Brakes", width: 600, height: 400 },
-    subcollections: [brakePads, brakeRotors],
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    handle: "engine", title: "Engine",
-    description: "Air filters, spark plugs, and intake systems",
-    seo: { title: "Engine", description: "Air filters, spark plugs, and intake systems" },
-    path: "/categories/engine",
-    image: { url: "https://images.unsplash.com/photo-1489824904134-891ab64532f1?w=600&h=400&fit=crop&q=80", altText: "Engine", width: 600, height: 400 },
-    subcollections: [engineFilters, engineIgnition],
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    handle: "suspension", title: "Suspension",
-    description: "Coilovers, sway bars, and bushings",
-    seo: { title: "Suspension", description: "Coilovers, sway bars, and bushings" },
-    path: "/categories/suspension",
-    image: { url: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=600&h=400&fit=crop&q=80", altText: "Suspension", width: 600, height: 400 },
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    handle: "lighting", title: "Lighting",
-    description: "Headlights, tail lights, and LED upgrades",
-    seo: { title: "Lighting", description: "Headlights, tail lights, and LED upgrades" },
-    path: "/categories/lighting",
-    image: { url: "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=600&h=400&fit=crop&q=80", altText: "Lighting", width: 600, height: 400 },
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    handle: "exhaust", title: "Exhaust",
-    description: "Cat-back systems, mufflers, and exhaust tips",
-    seo: { title: "Exhaust", description: "Cat-back systems, mufflers, and exhaust tips" },
-    path: "/categories/exhaust",
-    image: { url: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=600&h=400&fit=crop&q=80", altText: "Exhaust", width: 600, height: 400 },
-    updatedAt: new Date().toISOString(),
-  },
-];
-
-export function getAllCollectionsFlat(): Collection[] {
+export function getAllCollectionsFlat(collections: Collection[]): Collection[] {
   const result: Collection[] = [];
   for (const c of collections) {
     result.push(c);
@@ -107,30 +201,3 @@ export const collectionProductMap: Record<string, string[]> = {
   "hidden-homepage-featured-items": ["p-1", "p-5", "p-9"],
   "hidden-homepage-carousel": ["p-2", "p-3", "p-7", "p-11", "p-12"],
 };
-
-export function buildProductBreadcrumbs(productId: string): Breadcrumb[] {
-  const crumbs: Breadcrumb[] = [{ title: "Home", path: "/" }];
-
-  let bestKey: string | undefined;
-  for (const [key, ids] of Object.entries(collectionProductMap)) {
-    if (key.startsWith("hidden-")) continue;
-    if (!ids.includes(productId)) continue;
-    if (!bestKey || key.includes("/")) bestKey = key;
-  }
-  if (!bestKey) return crumbs;
-
-  const segments = bestKey.split("/");
-  let current: Collection | undefined;
-  for (let i = 0; i < segments.length; i++) {
-    if (i === 0) {
-      current = collections.find((c) => c.handle === segments[i]);
-    } else {
-      current = current?.subcollections?.find((c) => c.handle === segments[i]);
-    }
-    if (current) {
-      crumbs.push({ title: current.title, path: current.path });
-    }
-  }
-
-  return crumbs;
-}

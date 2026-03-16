@@ -1,4 +1,4 @@
-import { getCollections, getPages, getProducts } from "lib/api";
+import { getCollections, getPages, getProducts, getStoreCode } from "lib/api";
 import { baseUrl } from "lib/utils";
 import { MetadataRoute } from "next";
 
@@ -15,21 +15,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date().toISOString(),
   }));
 
-  const collectionsPromise = getCollections().then((collections) =>
+  const storeCode = await getStoreCode();
+
+  const collectionsPromise = getCollections(storeCode).then((collections) =>
     collections.map((collection) => ({
       url: `${baseUrl}${collection.path}`,
       lastModified: collection.updatedAt,
     })),
   );
 
-  const productsPromise = getProducts({}).then((products) =>
+  const productsPromise = getProducts(storeCode, {}).then((products) =>
     products.map((product) => ({
       url: `${baseUrl}/product/${product.handle}`,
       lastModified: product.updatedAt,
     })),
   );
 
-  const pagesPromise = getPages().then((pages) =>
+  const pagesPromise = getPages(storeCode).then((pages) =>
     pages.map((page) => ({
       url: `${baseUrl}/${page.handle}`,
       lastModified: page.updatedAt,

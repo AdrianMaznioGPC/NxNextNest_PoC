@@ -1,11 +1,12 @@
 import clsx from "clsx";
 import { Suspense } from "react";
 
-import { getCollections } from "lib/api";
+import { getCollections, getStoreCode } from "lib/api";
 import FilterList from "./filter";
 
 async function CollectionList() {
-  const collections = await getCollections();
+  const storeCode = await getStoreCode();
+  const collections = await getCollections(storeCode);
   return <FilterList list={collections} title="Collections" />;
 }
 

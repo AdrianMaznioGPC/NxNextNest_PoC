@@ -1,5 +1,5 @@
 import CategoryCard from "components/layout/category-card";
-import { getCategoryListPageData } from "lib/api";
+import { getCategoryListPageData, getStoreCode } from "lib/api";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -8,7 +8,8 @@ export const metadata: Metadata = {
 };
 
 export default async function CategoriesPage() {
-  const { collections } = await getCategoryListPageData();
+  const storeCode = await getStoreCode();
+  const { collections } = await getCategoryListPageData(storeCode);
 
   return (
     <>

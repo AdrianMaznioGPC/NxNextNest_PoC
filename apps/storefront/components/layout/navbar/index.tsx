@@ -1,5 +1,7 @@
 import CartModal from "components/cart/modal";
+import { StoreSwitcher } from "components/layout/store-switcher";
 import LogoSquare from "components/logo-square";
+import { getStoreCode } from "lib/api";
 import type { GlobalLayoutData } from "lib/types";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -15,7 +17,10 @@ export async function Navbar({
 }: {
   layoutDataPromise: Promise<GlobalLayoutData>;
 }) {
-  const { megaMenu, featuredLinks } = await layoutDataPromise;
+  const [{ megaMenu, featuredLinks }, storeCode] = await Promise.all([
+    layoutDataPromise,
+    getStoreCode(),
+  ]);
 
   return (
     <header className="border-b border-neutral-200 dark:border-neutral-700">
@@ -47,6 +52,7 @@ export async function Navbar({
 
         {/* Actions (right) */}
         <div className="flex items-center gap-3">
+          <StoreSwitcher currentCode={storeCode} />
           <CartModal />
         </div>
       </div>

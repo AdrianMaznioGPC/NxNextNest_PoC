@@ -1,6 +1,6 @@
 import Grid from "components/grid";
 import ProductGridItems from "components/layout/product-grid-items";
-import { getSearchPageData } from "lib/api";
+import { getSearchPageData, getStoreCode } from "lib/api";
 import { defaultSort, sorting } from "lib/constants";
 
 export const metadata = {
@@ -16,7 +16,8 @@ export default async function SearchPage(props: {
   const { sortKey, reverse } =
     sorting.find((item) => item.slug === sort) || defaultSort;
 
-  const { products, totalResults } = await getSearchPageData({
+  const storeCode = await getStoreCode();
+  const { products, totalResults } = await getSearchPageData(storeCode, {
     query: searchValue,
     sortKey,
     reverse,

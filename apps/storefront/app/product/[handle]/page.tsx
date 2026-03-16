@@ -3,7 +3,7 @@ import Breadcrumbs from "components/layout/breadcrumbs";
 import Container from "components/layout/container";
 import { Gallery } from "components/product/gallery";
 import { ProductDescription } from "components/product/product-description";
-import { getProductPageData } from "lib/api";
+import { getProductPageData, getStoreCode } from "lib/api";
 import { HIDDEN_PRODUCT_TAG } from "lib/constants";
 import type { Image, Product } from "lib/types";
 import type { Metadata } from "next";
@@ -17,7 +17,8 @@ export async function generateMetadata(props: {
   const params = await props.params;
 
   try {
-    const { product } = await getProductPageData(params.handle);
+    const storeCode = await getStoreCode();
+    const { product } = await getProductPageData(storeCode, params.handle);
     const { url, width, height, altText: alt } = product.featuredImage || {};
     const indexable = !product.tags.includes(HIDDEN_PRODUCT_TAG);
 
@@ -57,7 +58,8 @@ export default async function ProductPage(props: {
 
   let data;
   try {
-    data = await getProductPageData(params.handle);
+    const storeCode = await getStoreCode();
+    data = await getProductPageData(storeCode, params.handle);
   } catch {
     return notFound();
   }

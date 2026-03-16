@@ -3,14 +3,26 @@ import type {
   AvailabilityPort,
   ProductAvailability,
 } from "../../ports/availability.port";
-import { availabilityRecords } from "./data/availability-data";
+import { StoreContext } from "../../store";
+import {
+  type MockAvailabilityRecord,
+  availabilityByStore,
+} from "./data/availability-data";
 
 @Injectable()
 export class MockAvailabilityAdapter implements AvailabilityPort {
+  constructor(private readonly storeCtx: StoreContext) {}
+
+  private get records(): MockAvailabilityRecord[] {
+    return (
+      availabilityByStore[this.storeCtx.storeCode] ?? availabilityByStore["fr"]!
+    );
+  }
+
   async getAvailability(
     productId: string,
   ): Promise<ProductAvailability | undefined> {
-    const record = availabilityRecords.find((r) => r.productId === productId);
+    const record = this.records.find((r) => r.productId === productId);
     if (!record) return undefined;
 
     return {

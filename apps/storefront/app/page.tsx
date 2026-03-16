@@ -1,6 +1,6 @@
 import { BlockRenderer } from "components/cms/block-renderer";
 import Container from "components/layout/container";
-import { getHomePageData } from "lib/api";
+import { getHomePageData, getStoreCode } from "lib/api";
 
 export const metadata = {
   description: "High-performance ecommerce store built with Next.js.",
@@ -10,7 +10,8 @@ export const metadata = {
 };
 
 export default async function HomePage() {
-  const { blocks } = await getHomePageData();
+  const storeCode = await getStoreCode();
+  const { blocks } = await getHomePageData(storeCode);
 
   return (
     <Container>
