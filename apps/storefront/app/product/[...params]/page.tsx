@@ -6,19 +6,32 @@ import { ProductDescription } from "components/product/product-description";
 import { getProductPageData, getStoreCode } from "lib/api";
 import { HIDDEN_PRODUCT_TAG } from "lib/constants";
 import type { Image, Product } from "lib/types";
+import { productUrl } from "lib/utils";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 
-export async function generateMetadata(props: {
-  params: Promise<{ handle: string }>;
-}): Promise<Metadata> {
-  const params = await props.params;
+type Props = { params: Promise<{ params: string[] }> };
+
+function parseProductParams(
+  segments: string[],
+): { slug: string; productId: string } | null {
+  if (segments.length === 3 && segments[1] === "p") {
+    return { slug: segments[0]!, productId: segments[2]! };
+  }
+  return null;
+}
+
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const { params: segments } = await props.params;
+  const parsed = parseProductParams(segments);
+  if (!parsed) return notFound();
 
   try {
     const storeCode = await getStoreCode();
-    const { product } = await getProductPageData(storeCode, params.handle);
+    const { product } = await getProductPageData(storeCode, parsed.productId);
     const { url, width, height, altText: alt } = product.featuredImage || {};
     const indexable = !product.tags.includes(HIDDEN_PRODUCT_TAG);
 
@@ -28,43 +41,36 @@ export async function generateMetadata(props: {
       robots: {
         index: indexable,
         follow: indexable,
-        googleBot: {
-          index: indexable,
-          follow: indexable,
-        },
+        googleBot: { index: indexable, follow: indexable },
       },
-      openGraph: url
-        ? {
-            images: [
-              {
-                url,
-                width,
-                height,
-                alt,
-              },
-            ],
-          }
-        : null,
+      openGraph: url ? { images: [{ url, width, height, alt }] } : null,
     };
   } catch {
     return notFound();
   }
 }
 
-export default async function ProductPage(props: {
-  params: Promise<{ handle: string }>;
-}) {
-  const params = await props.params;
+export default async function ProductPage(props: Props) {
+  const { params: segments } = await props.params;
+  const parsed = parseProductParams(segments);
+  if (!parsed) return notFound();
+
+  const storeCode = await getStoreCode();
 
   let data;
   try {
-    const storeCode = await getStoreCode();
-    data = await getProductPageData(storeCode, params.handle);
+    data = await getProductPageData(storeCode, parsed.productId);
   } catch {
     return notFound();
   }
 
-  const { product, breadcrumbs, recommendations } = data;
+  const { product, canonicalSlug, breadcrumbs, recommendations } = data;
+  const t = await getTranslations("breadcrumbs");
+  const allBreadcrumbs = [{ title: t("home"), path: "/" }, ...breadcrumbs];
+
+  if (parsed.slug !== canonicalSlug) {
+    redirect(productUrl(product));
+  }
 
   const productJsonLd = {
     "@context": "https://schema.org",
@@ -87,12 +93,10 @@ export default async function ProductPage(props: {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(productJsonLd),
-        }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
       />
       <Container>
-        <Breadcrumbs items={breadcrumbs} />
+        <Breadcrumbs items={allBreadcrumbs} />
         <div className="flex flex-col rounded-lg border border-neutral-200 bg-white p-8 md:p-12 lg:flex-row lg:gap-8 dark:border-neutral-800 dark:bg-black">
           <div className="h-full w-full basis-full lg:basis-4/6">
             <Suspense
@@ -108,7 +112,6 @@ export default async function ProductPage(props: {
               />
             </Suspense>
           </div>
-
           <div className="basis-full lg:basis-2/6">
             <Suspense fallback={null}>
               <ProductDescription product={product} />
@@ -135,7 +138,7 @@ function RelatedProducts({ products }: { products: Product[] }) {
           >
             <Link
               className="relative h-full w-full"
-              href={`/product/${product.handle}`}
+              href={productUrl(product)}
               prefetch={true}
             >
               <GridTileImage

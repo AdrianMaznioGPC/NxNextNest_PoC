@@ -148,11 +148,10 @@ export async function getCollectionProducts(
   cacheTag(TAGS.collections, TAGS.products);
   cacheLife("days");
 
-  const path = collection.includes("/")
-    ? `/collections/by-path/${collection}/products`
-    : `/collections/${collection}/products`;
-
-  return bffFetch(storeCode, `${path}${qs({ sortKey, reverse })}`);
+  return bffFetch(
+    storeCode,
+    `/collections/${collection}/products${qs({ sortKey, reverse })}`,
+  );
 }
 
 // -- Menu --------------------------------------------------------------------
@@ -217,7 +216,7 @@ export async function getCategoryListPageData(
 
 export async function getCategoryPageData(
   storeCode: string,
-  slugs: string[],
+  categoryId: string,
   sortKey?: string,
   reverse?: boolean,
 ): Promise<CategoryPageData> {
@@ -227,19 +226,19 @@ export async function getCategoryPageData(
 
   return bffFetch(
     storeCode,
-    `/page-data/categories/${slugs.join("/")}${qs({ sortKey, reverse })}`,
+    `/page-data/categories/${categoryId}${qs({ sortKey, reverse })}`,
   );
 }
 
 export async function getProductPageData(
   storeCode: string,
-  handle: string,
+  productId: string,
 ): Promise<ProductPageData> {
   "use cache";
   cacheTag(TAGS.products);
   cacheLife("days");
 
-  return bffFetch(storeCode, `/page-data/product/${handle}`);
+  return bffFetch(storeCode, `/page-data/product/${productId}`);
 }
 
 export async function getSearchPageData(

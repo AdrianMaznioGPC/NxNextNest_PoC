@@ -1,5 +1,5 @@
 import { getCollections, getPages, getProducts, getStoreCode } from "lib/api";
-import { baseUrl } from "lib/utils";
+import { baseUrl, productUrl } from "lib/utils";
 import { MetadataRoute } from "next";
 
 type Route = {
@@ -26,7 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const productsPromise = getProducts(storeCode, {}).then((products) =>
     products.map((product) => ({
-      url: `${baseUrl}/product/${product.handle}`,
+      url: `${baseUrl}${productUrl(product)}`,
       lastModified: product.updatedAt,
     })),
   );

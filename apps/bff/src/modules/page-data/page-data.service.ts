@@ -34,15 +34,15 @@ export class PageDataService {
   }
 
   getCategoryPage(
-    slugs: string[],
+    categoryId: string,
     sortKey?: string,
     reverse?: boolean,
   ): Promise<CategoryPageData | undefined> {
-    return this.catalogDomain.getCategoryPage(slugs, sortKey, reverse);
+    return this.catalogDomain.getCategoryPage(categoryId, sortKey, reverse);
   }
 
-  getProductPage(handle: string): Promise<ProductPageData | undefined> {
-    return this.productDomain.getProductPage(handle);
+  getProductPage(productId: string): Promise<ProductPageData | undefined> {
+    return this.productDomain.getProductPage(productId);
   }
 
   getSearchPage(

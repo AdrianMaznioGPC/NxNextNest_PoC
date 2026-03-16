@@ -5,6 +5,8 @@ export interface CollectionPort {
 
   getCollection(handle: string): Promise<Collection | undefined>;
 
+  getCollectionById(id: string): Promise<Collection | undefined>;
+
   getCollectionByPath(slugs: string[]): Promise<Collection | undefined>;
 
   getCollectionProductIds(collection: string): Promise<string[]>;

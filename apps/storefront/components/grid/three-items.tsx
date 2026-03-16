@@ -1,5 +1,6 @@
 import { GridTileImage } from "components/grid/tile";
 import type { Product } from "lib/types";
+import { productUrl } from "lib/utils";
 import Link from "next/link";
 
 function ThreeItemGridItem({
@@ -21,7 +22,7 @@ function ThreeItemGridItem({
     >
       <Link
         className="relative block aspect-square h-full w-full"
-        href={`/product/${item.handle}`}
+        href={productUrl(item)}
         prefetch={true}
       >
         <GridTileImage

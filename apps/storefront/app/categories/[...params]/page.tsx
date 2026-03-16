@@ -5,18 +5,37 @@ import ProductGridItems from "components/layout/product-grid-items";
 import FilterList from "components/layout/search/filter";
 import { getCategoryPageData, getStoreCode } from "lib/api";
 import { defaultSort, sorting } from "lib/constants";
+import { categoryUrl } from "lib/utils";
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
+import { notFound, redirect } from "next/navigation";
 
-export async function generateMetadata(props: {
-  params: Promise<{ slug: string[] }>;
+type Props = {
+  params: Promise<{ params: string[] }>;
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
-}): Promise<Metadata> {
-  const { slug } = await props.params;
+};
+
+function parseCategoryParams(
+  segments: string[],
+): { slug: string; categoryId: string } | null {
+  const cIndex = segments.indexOf("c");
+  if (cIndex >= 1 && cIndex === segments.length - 2) {
+    return { slug: segments[cIndex - 1]!, categoryId: segments[cIndex + 1]! };
+  }
+  return null;
+}
+
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const { params: segments } = await props.params;
+  const parsed = parseCategoryParams(segments);
+  if (!parsed) return {};
 
   try {
     const storeCode = await getStoreCode();
-    const { collection } = await getCategoryPageData(storeCode, slug);
+    const { collection } = await getCategoryPageData(
+      storeCode,
+      parsed.categoryId,
+    );
     return {
       title: collection.seo?.title || collection.title,
       description:
@@ -29,31 +48,48 @@ export async function generateMetadata(props: {
   }
 }
 
-export default async function CategorySlugPage(props: {
-  params: Promise<{ slug: string[] }>;
-  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
-}) {
-  const { slug } = await props.params;
+export default async function CategoryPage(props: Props) {
+  const { params: segments } = await props.params;
+  const parsed = parseCategoryParams(segments);
+  if (!parsed) return notFound();
+
   const searchParams = await props.searchParams;
   const { sort } = (searchParams ?? {}) as { [key: string]: string };
   const { sortKey, reverse } =
     sorting.find((item) => item.slug === sort) || defaultSort;
 
+  const storeCode = await getStoreCode();
+
   let data;
   try {
-    const storeCode = await getStoreCode();
-    data = await getCategoryPageData(storeCode, slug, sortKey, reverse);
+    data = await getCategoryPageData(
+      storeCode,
+      parsed.categoryId,
+      sortKey,
+      reverse,
+    );
   } catch {
     return notFound();
   }
 
-  const { collection, breadcrumbs, subcollections, products } = data;
+  const { collection, canonicalSlug, breadcrumbs, subcollections, products } =
+    data;
 
-  // CLP — category has subcategories
+  const t = await getTranslations("breadcrumbs");
+  const allBreadcrumbs = [
+    { title: t("home"), path: "/" },
+    { title: t("categories"), path: "/categories" },
+    ...breadcrumbs,
+  ];
+
+  if (parsed.slug !== canonicalSlug) {
+    redirect(categoryUrl(collection));
+  }
+
   if (subcollections && subcollections.length > 0) {
     return (
       <>
-        <Breadcrumbs items={breadcrumbs} />
+        <Breadcrumbs items={allBreadcrumbs} />
         <h1 className="mb-8 text-3xl font-bold text-black dark:text-white">
           {collection.title}
         </h1>
@@ -69,10 +105,9 @@ export default async function CategorySlugPage(props: {
     );
   }
 
-  // PLP — leaf category, show products
   return (
     <>
-      <Breadcrumbs items={breadcrumbs} />
+      <Breadcrumbs items={allBreadcrumbs} />
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-black dark:text-white">
           {collection.title}

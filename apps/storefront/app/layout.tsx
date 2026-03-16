@@ -6,6 +6,8 @@ import { GeistSans } from "geist/font/sans";
 import { getCart, getLayoutData, getStoreCode } from "lib/api";
 import { baseUrl } from "lib/utils";
 import type { Metadata } from "next";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 import { headers } from "next/headers";
 import { ReactNode } from "react";
 import { Toaster } from "sonner";
@@ -34,25 +36,26 @@ export default async function RootLayout({
 }: {
   children: ReactNode;
 }) {
-  const h = await headers();
-  const store = resolveStoreFromHostname(h.get("host") ?? "");
-  const lang = store?.language ?? "en";
+  const locale = await getLocale();
+  const messages = await getMessages();
 
   const storeCode = await getStoreCode();
   const cart = getCart();
   const layoutData = getLayoutData(storeCode);
 
   return (
-    <html lang={lang} className={GeistSans.variable}>
+    <html lang={locale} className={GeistSans.variable}>
       <body className="bg-neutral-50 text-black selection:bg-teal-300 dark:bg-neutral-900 dark:text-white dark:selection:bg-pink-500 dark:selection:text-white">
-        <CartProvider cartPromise={cart}>
-          <Navbar layoutDataPromise={layoutData} />
-          <main className="min-h-screen py-8">
-            {children}
-            <Toaster closeButton />
-          </main>
-          <Footer />
-        </CartProvider>
+        <NextIntlClientProvider messages={messages}>
+          <CartProvider cartPromise={cart}>
+            <Navbar layoutDataPromise={layoutData} />
+            <main className="min-h-screen py-8">
+              {children}
+              <Toaster closeButton />
+            </main>
+            <Footer />
+          </CartProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

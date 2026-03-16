@@ -7,7 +7,7 @@ registerBlockResolver(
   async (raw: CmsRawFeaturedCategory, ctx) => {
     const all = await ctx.catalogDomain.getCollections();
     const collections = raw.collectionHandles
-      .map((h) => all.find((c) => c.handle === h))
+      .map((h) => all.find((c) => c.id === h))
       .filter((c): c is Collection => c !== undefined);
 
     return {

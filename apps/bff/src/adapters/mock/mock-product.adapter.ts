@@ -31,6 +31,10 @@ export class MockProductAdapter implements ProductPort {
     return this.products.find((p) => p.handle === handle);
   }
 
+  async getProductById(id: string): Promise<BaseProduct | undefined> {
+    return this.products.find((p) => p.id === id);
+  }
+
   async getProductRecommendations(productId: string): Promise<BaseProduct[]> {
     return this.products.filter((p) => p.id !== productId).slice(0, 4);
   }

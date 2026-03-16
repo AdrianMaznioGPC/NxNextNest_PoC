@@ -26,15 +26,14 @@ export class PageDataController {
     return this.pageData.getCategoryListPage();
   }
 
-  @Get("categories/*")
+  @Get("categories/:id")
   async getCategoryPage(
-    @Param("*") path: string,
+    @Param("id") id: string,
     @Query("sortKey") sortKey?: string,
     @Query("reverse") reverse?: string,
   ) {
-    const slugs = path.split("/").filter(Boolean);
     const data = await this.pageData.getCategoryPage(
-      slugs,
+      id,
       sortKey,
       reverse === "true",
     );
@@ -42,9 +41,9 @@ export class PageDataController {
     return data;
   }
 
-  @Get("product/:handle")
-  async getProductPage(@Param("handle") handle: string) {
-    const data = await this.pageData.getProductPage(handle);
+  @Get("product/:id")
+  async getProductPage(@Param("id") id: string) {
+    const data = await this.pageData.getProductPage(id);
     if (!data) throw new NotFoundException();
     return data;
   }

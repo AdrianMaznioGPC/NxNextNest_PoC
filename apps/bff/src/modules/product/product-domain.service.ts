@@ -1,6 +1,7 @@
 import type {
   BaseProduct,
   Breadcrumb,
+  Collection,
   Money,
   Product,
   ProductPageData,
@@ -31,6 +32,12 @@ export class ProductDomainService {
 
   async getProduct(handle: string): Promise<Product | undefined> {
     const base = await this.products.getProduct(handle);
+    if (!base) return undefined;
+    return this.enrich(base);
+  }
+
+  async getProductById(id: string): Promise<Product | undefined> {
+    const base = await this.products.getProductById(id);
     if (!base) return undefined;
     return this.enrich(base);
   }
@@ -118,18 +125,28 @@ export class ProductDomainService {
     return this.enrichBatch(bases);
   }
 
-  async getProductPage(handle: string): Promise<ProductPageData | undefined> {
-    const product = await this.getProduct(handle);
+  async getProductPage(
+    productId: string,
+  ): Promise<ProductPageData | undefined> {
+    const product = await this.getProductById(productId);
     if (!product) return undefined;
 
     const recommendations = await this.getRecommendations(product.id);
 
     const breadcrumbs: Breadcrumb[] = [
       ...(product.breadcrumbs ?? []),
-      { title: product.title, path: `/product/${product.handle}` },
+      {
+        title: product.title,
+        path: `/product/${product.handle}/p/${product.id}`,
+      },
     ];
 
-    return { product, breadcrumbs, recommendations };
+    return {
+      product,
+      canonicalSlug: product.handle,
+      breadcrumbs,
+      recommendations,
+    };
   }
 
   async getSearchResults(
@@ -259,47 +276,59 @@ export class ProductDomainService {
 
   private async buildBreadcrumbs(productId: string): Promise<Breadcrumb[]> {
     const allCollections = await this.collections.getCollections();
+    const allIds = this.getAllCollectionIds(allCollections);
 
     const allMappings = await Promise.all(
-      this.getAllCollectionKeys(allCollections).map(async (key) => ({
-        key,
-        ids: await this.collections.getCollectionProductIds(key),
+      allIds.map(async (id) => ({
+        id,
+        productIds: await this.collections.getCollectionProductIds(id),
       })),
     );
 
-    let bestKey: string | undefined;
-    for (const { key, ids } of allMappings) {
-      if (key.startsWith("hidden-")) continue;
-      if (!ids.includes(productId)) continue;
-      if (!bestKey || key.includes("/")) bestKey = key;
+    let bestId: string | undefined;
+    for (const { id, productIds } of allMappings) {
+      if (id.startsWith("hidden-")) continue;
+      if (!productIds.includes(productId)) continue;
+      const col = this.findCollectionById(allCollections, id);
+      if (!bestId || col?.parentId) bestId = id;
     }
-    if (!bestKey) return [{ title: "Home", path: "/" }];
+    if (!bestId) return [];
 
-    const crumbs: Breadcrumb[] = [{ title: "Home", path: "/" }];
-    const segments = bestKey.split("/");
-    let current = allCollections.find((c) => c.handle === segments[0]);
-    if (current) crumbs.push({ title: current.title, path: current.path });
-
-    for (let i = 1; i < segments.length; i++) {
-      current = current?.subcollections?.find((c) => c.handle === segments[i]);
-      if (current) crumbs.push({ title: current.title, path: current.path });
+    const crumbs: Breadcrumb[] = [];
+    const target = this.findCollectionById(allCollections, bestId);
+    if (target?.parentId) {
+      const parent = allCollections.find((c) => c.id === target.parentId);
+      if (parent) crumbs.push({ title: parent.title, path: parent.path });
     }
+    if (target) crumbs.push({ title: target.title, path: target.path });
 
     return crumbs;
   }
 
-  private getAllCollectionKeys(
-    cols: { handle: string; subcollections?: { handle: string }[] }[],
+  private getAllCollectionIds(
+    cols: { id: string; subcollections?: { id: string }[] }[],
   ): string[] {
-    const keys: string[] = [];
+    const ids: string[] = [];
     for (const c of cols) {
-      keys.push(c.handle);
+      ids.push(c.id);
       if (c.subcollections) {
         for (const sub of c.subcollections) {
-          keys.push(`${c.handle}/${sub.handle}`);
+          ids.push(sub.id);
         }
       }
     }
-    return keys;
+    return ids;
+  }
+
+  private findCollectionById(
+    cols: Collection[],
+    id: string,
+  ): Collection | undefined {
+    for (const c of cols) {
+      if (c.id === id) return c;
+      const sub = c.subcollections?.find((s) => s.id === id);
+      if (sub) return sub;
+    }
+    return undefined;
   }
 }

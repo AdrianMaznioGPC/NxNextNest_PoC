@@ -5,6 +5,8 @@ export interface ProductPort {
 
   getProduct(handle: string): Promise<BaseProduct | undefined>;
 
+  getProductById(id: string): Promise<BaseProduct | undefined>;
+
   getProductRecommendations(productId: string): Promise<BaseProduct[]>;
 }
 

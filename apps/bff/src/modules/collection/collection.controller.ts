@@ -15,33 +15,19 @@ export class CollectionController {
   }
 
   @Get("by-path/*")
-  getCollectionByPath(
-    @Param("*") path: string,
-    @Query("sortKey") sortKey?: string,
-    @Query("reverse") reverse?: string,
-  ) {
+  getCollectionByPath(@Param("*") path: string) {
     const segments = path.split("/").filter(Boolean);
-
-    if (segments.at(-1) === "products") {
-      const collection = segments.slice(0, -1).join("/");
-      return this.productDomain.getCollectionProducts({
-        collection,
-        sortKey,
-        reverse: reverse === "true",
-      });
-    }
-
     return this.catalogDomain.getCollectionByPath(segments);
   }
 
-  @Get(":handle/products")
+  @Get(":id/products")
   getCollectionProducts(
-    @Param("handle") handle: string,
+    @Param("id") id: string,
     @Query("sortKey") sortKey?: string,
     @Query("reverse") reverse?: string,
   ) {
     return this.productDomain.getCollectionProducts({
-      collection: handle,
+      collection: id,
       sortKey,
       reverse: reverse === "true",
     });

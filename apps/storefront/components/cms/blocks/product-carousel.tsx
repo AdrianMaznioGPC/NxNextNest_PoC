@@ -1,6 +1,7 @@
-import type { ProductCarouselBlock } from "lib/types";
-import Link from "next/link";
 import { GridTileImage } from "components/grid/tile";
+import type { ProductCarouselBlock } from "lib/types";
+import { productUrl } from "lib/utils";
+import Link from "next/link";
 import { registerBlockRenderer } from "../block-registry";
 
 function ProductCarousel({ block }: { block: ProductCarouselBlock }) {
@@ -24,7 +25,7 @@ function ProductCarousel({ block }: { block: ProductCarouselBlock }) {
               className="relative aspect-square h-[30vh] max-h-[275px] w-2/3 max-w-[475px] flex-none md:w-1/3"
             >
               <Link
-                href={`/product/${product.handle}`}
+                href={productUrl(product)}
                 className="relative h-full w-full"
               >
                 <GridTileImage

@@ -1,6 +1,7 @@
 import Grid from "components/grid";
 import { GridTileImage } from "components/grid/tile";
 import { Product } from "lib/types";
+import { productUrl } from "lib/utils";
 import Link from "next/link";
 
 export default function ProductGridItems({
@@ -14,7 +15,7 @@ export default function ProductGridItems({
         <Grid.Item key={product.handle} className="animate-fadeIn">
           <Link
             className="relative inline-block h-full w-full"
-            href={`/product/${product.handle}`}
+            href={productUrl(product)}
             prefetch={true}
           >
             <GridTileImage

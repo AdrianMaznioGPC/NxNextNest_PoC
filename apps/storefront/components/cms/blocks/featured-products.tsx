@@ -1,6 +1,7 @@
-import type { FeaturedProductsBlock } from "lib/types";
-import Link from "next/link";
 import { GridTileImage } from "components/grid/tile";
+import type { FeaturedProductsBlock } from "lib/types";
+import { productUrl } from "lib/utils";
+import Link from "next/link";
 import { registerBlockRenderer } from "../block-registry";
 
 function FeaturedProducts({ block }: { block: FeaturedProductsBlock }) {
@@ -13,7 +14,7 @@ function FeaturedProducts({ block }: { block: FeaturedProductsBlock }) {
         {block.products.map((product) => (
           <Link
             key={product.handle}
-            href={`/product/${product.handle}`}
+            href={productUrl(product)}
             className="relative aspect-square"
           >
             <GridTileImage

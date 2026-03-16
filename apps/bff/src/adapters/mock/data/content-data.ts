@@ -6,11 +6,11 @@ export const menusByStore: Record<string, Record<string, Menu[]>> = {
   fr: {
     "next-js-frontend-header-menu": [
       { title: "Tout", path: "/categories" },
-      { title: "Freins", path: "/categories/brakes" },
-      { title: "Moteur", path: "/categories/engine" },
-      { title: "Suspension", path: "/categories/suspension" },
-      { title: "Éclairage", path: "/categories/lighting" },
-      { title: "Échappement", path: "/categories/exhaust" },
+      { title: "Freins", path: "/categories/freins/c/cat-brakes" },
+      { title: "Moteur", path: "/categories/moteur/c/cat-engine" },
+      { title: "Suspension", path: "/categories/suspension/c/cat-suspension" },
+      { title: "Éclairage", path: "/categories/eclairage/c/cat-lighting" },
+      { title: "Échappement", path: "/categories/echappement/c/cat-exhaust" },
     ],
     "next-js-frontend-footer-menu": [
       { title: "Accueil", path: "/" },
@@ -23,11 +23,11 @@ export const menusByStore: Record<string, Record<string, Menu[]>> = {
   ie: {
     "next-js-frontend-header-menu": [
       { title: "All", path: "/categories" },
-      { title: "Brakes", path: "/categories/brakes" },
-      { title: "Engine", path: "/categories/engine" },
-      { title: "Suspension", path: "/categories/suspension" },
-      { title: "Lighting", path: "/categories/lighting" },
-      { title: "Exhaust", path: "/categories/exhaust" },
+      { title: "Brakes", path: "/categories/brakes/c/cat-brakes" },
+      { title: "Engine", path: "/categories/engine/c/cat-engine" },
+      { title: "Suspension", path: "/categories/suspension/c/cat-suspension" },
+      { title: "Lighting", path: "/categories/lighting/c/cat-lighting" },
+      { title: "Exhaust", path: "/categories/exhaust/c/cat-exhaust" },
     ],
     "next-js-frontend-footer-menu": [
       { title: "Home", path: "/" },

@@ -37,14 +37,14 @@ export class CatalogDomainService {
   }
 
   async getCategoryPage(
-    slugs: string[],
+    categoryId: string,
     sortKey?: string,
     reverse?: boolean,
   ): Promise<CategoryPageData | undefined> {
-    const collection = await this.collections.getCollectionByPath(slugs);
+    const collection = await this.collections.getCollectionById(categoryId);
     if (!collection) return undefined;
 
-    const breadcrumbs = await this.buildCategoryBreadcrumbs(slugs);
+    const breadcrumbs = await this.buildCategoryBreadcrumbs(collection);
 
     const hasSubs =
       collection.subcollections && collection.subcollections.length > 0;
@@ -52,46 +52,39 @@ export class CatalogDomainService {
     if (hasSubs) {
       return {
         collection,
+        canonicalSlug: collection.handle,
         breadcrumbs,
         subcollections: collection.subcollections,
       };
     }
 
-    const collectionKey = slugs.join("/");
     const products = await this.productDomain.getCollectionProducts({
-      collection: collectionKey,
+      collection: collection.id,
       sortKey,
       reverse,
     });
 
-    return { collection, breadcrumbs, products };
+    return {
+      collection,
+      canonicalSlug: collection.handle,
+      breadcrumbs,
+      products,
+    };
   }
 
   private async buildCategoryBreadcrumbs(
-    slugs: string[],
+    target: Collection,
   ): Promise<Breadcrumb[]> {
-    const crumbs: Breadcrumb[] = [
-      { title: "Home", path: "/" },
-      { title: "Categories", path: "/categories" },
-    ];
+    const crumbs: Breadcrumb[] = [];
 
-    let parent: Collection | undefined;
-    for (let i = 0; i < slugs.length; i++) {
-      let current: Collection | undefined;
-
-      if (i === 0) {
-        const all = await this.collections.getCollections();
-        current = all.find((c) => c.handle === slugs[0]);
-      } else if (parent?.subcollections) {
-        current = parent.subcollections.find((c) => c.handle === slugs[i]);
-      }
-
-      if (current) {
-        crumbs.push({ title: current.title, path: current.path });
-        parent = current;
+    if (target.parentId) {
+      const parent = await this.collections.getCollectionById(target.parentId);
+      if (parent) {
+        crumbs.push({ title: parent.title, path: parent.path });
       }
     }
 
+    crumbs.push({ title: target.title, path: target.path });
     return crumbs;
   }
 }

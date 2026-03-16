@@ -28,6 +28,10 @@ export class MockCollectionAdapter implements CollectionPort {
     );
   }
 
+  async getCollectionById(id: string): Promise<Collection | undefined> {
+    return getAllCollectionsFlat(this.collections).find((c) => c.id === id);
+  }
+
   async getCollectionByPath(slugs: string[]): Promise<Collection | undefined> {
     if (slugs.length === 0) return undefined;
 

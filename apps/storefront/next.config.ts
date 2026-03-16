@@ -1,4 +1,8 @@
-export default {
+import createNextIntlPlugin from "next-intl/plugin";
+
+const withNextIntl = createNextIntlPlugin();
+
+export default withNextIntl({
   experimental: {
     ppr: true,
     inlineCss: true,
@@ -13,4 +17,4 @@ export default {
       },
     ],
   },
-};
+});

@@ -1,4 +1,5 @@
 import type { Product } from "lib/types";
+import { productUrl } from "lib/utils";
 import Link from "next/link";
 import { GridTileImage } from "./grid/tile";
 
@@ -16,10 +17,7 @@ export function Carousel({ products }: { products: Product[] }) {
             key={`${product.handle}${i}`}
             className="relative aspect-square h-[30vh] max-h-[275px] w-2/3 max-w-[475px] flex-none md:w-1/3"
           >
-            <Link
-              href={`/product/${product.handle}`}
-              className="relative h-full w-full"
-            >
+            <Link href={productUrl(product)} className="relative h-full w-full">
               <GridTileImage
                 alt={product.title}
                 label={{

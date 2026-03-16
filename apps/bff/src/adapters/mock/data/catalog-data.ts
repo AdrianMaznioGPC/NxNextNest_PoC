@@ -13,166 +13,113 @@ const IMG_EXHAUST =
 
 const now = new Date().toISOString();
 
-function makeCollections(t: {
-  brakes: string;
-  brakePads: string;
-  brakePadsDesc: string;
-  brakeRotors: string;
-  brakeRotorsDesc: string;
-  brakesDesc: string;
-  engine: string;
-  airFilters: string;
-  airFiltersDesc: string;
-  ignition: string;
-  ignitionDesc: string;
-  engineDesc: string;
-  suspension: string;
-  suspensionDesc: string;
-  lighting: string;
-  lightingDesc: string;
-  exhaust: string;
-  exhaustDesc: string;
-}): Collection[] {
-  return [
-    {
-      handle: "brakes",
-      title: t.brakes,
-      description: t.brakesDesc,
-      seo: { title: t.brakes, description: t.brakesDesc },
-      path: "/categories/brakes",
-      image: { url: IMG_BRAKES, altText: t.brakes, width: 600, height: 400 },
-      subcollections: [
-        {
-          handle: "pads",
-          title: t.brakePads,
-          description: t.brakePadsDesc,
-          seo: { title: t.brakePads, description: t.brakePadsDesc },
-          path: "/categories/brakes/pads",
-          parentHandle: "brakes",
-          updatedAt: now,
-        },
-        {
-          handle: "rotors",
-          title: t.brakeRotors,
-          description: t.brakeRotorsDesc,
-          seo: { title: t.brakeRotors, description: t.brakeRotorsDesc },
-          path: "/categories/brakes/rotors",
-          parentHandle: "brakes",
-          updatedAt: now,
-        },
-      ],
-      updatedAt: now,
-    },
-    {
-      handle: "engine",
-      title: t.engine,
-      description: t.engineDesc,
-      seo: { title: t.engine, description: t.engineDesc },
-      path: "/categories/engine",
-      image: { url: IMG_ENGINE, altText: t.engine, width: 600, height: 400 },
-      subcollections: [
-        {
-          handle: "filters",
-          title: t.airFilters,
-          description: t.airFiltersDesc,
-          seo: { title: t.airFilters, description: t.airFiltersDesc },
-          path: "/categories/engine/filters",
-          parentHandle: "engine",
-          updatedAt: now,
-        },
-        {
-          handle: "ignition",
-          title: t.ignition,
-          description: t.ignitionDesc,
-          seo: { title: t.ignition, description: t.ignitionDesc },
-          path: "/categories/engine/ignition",
-          parentHandle: "engine",
-          updatedAt: now,
-        },
-      ],
-      updatedAt: now,
-    },
-    {
-      handle: "suspension",
-      title: t.suspension,
-      description: t.suspensionDesc,
-      seo: { title: t.suspension, description: t.suspensionDesc },
-      path: "/categories/suspension",
-      image: {
-        url: IMG_SUSPENSION,
-        altText: t.suspension,
-        width: 600,
-        height: 400,
-      },
-      updatedAt: now,
-    },
-    {
-      handle: "lighting",
-      title: t.lighting,
-      description: t.lightingDesc,
-      seo: { title: t.lighting, description: t.lightingDesc },
-      path: "/categories/lighting",
-      image: {
-        url: IMG_LIGHTING,
-        altText: t.lighting,
-        width: 600,
-        height: 400,
-      },
-      updatedAt: now,
-    },
-    {
-      handle: "exhaust",
-      title: t.exhaust,
-      description: t.exhaustDesc,
-      seo: { title: t.exhaust, description: t.exhaustDesc },
-      path: "/categories/exhaust",
-      image: { url: IMG_EXHAUST, altText: t.exhaust, width: 600, height: 400 },
-      updatedAt: now,
-    },
-  ];
+function catPath(handle: string, id: string) {
+  return `/categories/${handle}/c/${id}`;
 }
 
-const frCollections = makeCollections({
-  brakes: "Freins",
-  brakePads: "Plaquettes de frein",
-  brakePadsDesc: "Plaquettes de frein céramique et semi-métalliques",
-  brakeRotors: "Disques de frein",
-  brakeRotorsDesc: "Disques percés, rainurés et de remplacement OEM",
-  brakesDesc: "Plaquettes, disques et étriers de frein",
-  engine: "Moteur",
-  airFilters: "Filtres à air",
-  airFiltersDesc: "Filtres à air performance et remplacement OEM",
-  ignition: "Allumage",
-  ignitionDesc: "Bougies, bobines et composants d'allumage",
-  engineDesc: "Filtres à air, bougies et systèmes d'admission",
-  suspension: "Suspension",
-  suspensionDesc: "Combinés filetés, barres stabilisatrices et silentblocs",
-  lighting: "Éclairage",
-  lightingDesc: "Phares, feux arrière et améliorations LED",
-  exhaust: "Échappement",
-  exhaustDesc: "Lignes cat-back, silencieux et embouts d'échappement",
-});
+type CollectionDef = {
+  id: string;
+  handle: string;
+  title: string;
+  description: string;
+  image?: { url: string; altText: string; width: number; height: number };
+  subs?: { id: string; handle: string; title: string; description: string }[];
+};
 
-const ieCollections = makeCollections({
-  brakes: "Brakes",
-  brakePads: "Brake Pads",
-  brakePadsDesc: "Ceramic and semi-metallic brake pads",
-  brakeRotors: "Brake Rotors",
-  brakeRotorsDesc: "Drilled, slotted, and OEM replacement rotors",
-  brakesDesc: "Brake pads, rotors, and calipers",
-  engine: "Engine",
-  airFilters: "Air Filters",
-  airFiltersDesc: "Performance and OEM replacement air filters",
-  ignition: "Ignition",
-  ignitionDesc: "Spark plugs, coil packs, and ignition components",
-  engineDesc: "Air filters, spark plugs, and intake systems",
-  suspension: "Suspension",
-  suspensionDesc: "Coilovers, sway bars, and bushings",
-  lighting: "Lighting",
-  lightingDesc: "Headlights, tail lights, and LED upgrades",
-  exhaust: "Exhaust",
-  exhaustDesc: "Cat-back systems, mufflers, and exhaust tips",
-});
+function makeCollections(defs: CollectionDef[]): Collection[] {
+  return defs.map((d) => ({
+    id: d.id,
+    handle: d.handle,
+    title: d.title,
+    description: d.description,
+    seo: { title: d.title, description: d.description },
+    path: catPath(d.handle, d.id),
+    image: d.image,
+    subcollections: d.subs?.map((s) => ({
+      id: s.id,
+      handle: s.handle,
+      title: s.title,
+      description: s.description,
+      seo: { title: s.title, description: s.description },
+      path: catPath(s.handle, s.id),
+      parentId: d.id,
+      updatedAt: now,
+    })),
+    updatedAt: now,
+  }));
+}
+
+const frCollections = makeCollections([
+  {
+    id: "cat-brakes", handle: "freins", title: "Freins",
+    description: "Plaquettes, disques et étriers de frein",
+    image: { url: IMG_BRAKES, altText: "Freins", width: 600, height: 400 },
+    subs: [
+      { id: "cat-pads", handle: "plaquettes-de-frein", title: "Plaquettes de frein", description: "Plaquettes de frein céramique et semi-métalliques" },
+      { id: "cat-rotors", handle: "disques-de-frein", title: "Disques de frein", description: "Disques percés, rainurés et de remplacement OEM" },
+    ],
+  },
+  {
+    id: "cat-engine", handle: "moteur", title: "Moteur",
+    description: "Filtres à air, bougies et systèmes d'admission",
+    image: { url: IMG_ENGINE, altText: "Moteur", width: 600, height: 400 },
+    subs: [
+      { id: "cat-filters", handle: "filtres-a-air", title: "Filtres à air", description: "Filtres à air performance et remplacement OEM" },
+      { id: "cat-ignition", handle: "allumage", title: "Allumage", description: "Bougies, bobines et composants d'allumage" },
+    ],
+  },
+  {
+    id: "cat-suspension", handle: "suspension", title: "Suspension",
+    description: "Combinés filetés, barres stabilisatrices et silentblocs",
+    image: { url: IMG_SUSPENSION, altText: "Suspension", width: 600, height: 400 },
+  },
+  {
+    id: "cat-lighting", handle: "eclairage", title: "Éclairage",
+    description: "Phares, feux arrière et améliorations LED",
+    image: { url: IMG_LIGHTING, altText: "Éclairage", width: 600, height: 400 },
+  },
+  {
+    id: "cat-exhaust", handle: "echappement", title: "Échappement",
+    description: "Lignes cat-back, silencieux et embouts d'échappement",
+    image: { url: IMG_EXHAUST, altText: "Échappement", width: 600, height: 400 },
+  },
+]);
+
+const ieCollections = makeCollections([
+  {
+    id: "cat-brakes", handle: "brakes", title: "Brakes",
+    description: "Brake pads, rotors, and calipers",
+    image: { url: IMG_BRAKES, altText: "Brakes", width: 600, height: 400 },
+    subs: [
+      { id: "cat-pads", handle: "brake-pads", title: "Brake Pads", description: "Ceramic and semi-metallic brake pads" },
+      { id: "cat-rotors", handle: "brake-rotors", title: "Brake Rotors", description: "Drilled, slotted, and OEM replacement rotors" },
+    ],
+  },
+  {
+    id: "cat-engine", handle: "engine", title: "Engine",
+    description: "Air filters, spark plugs, and intake systems",
+    image: { url: IMG_ENGINE, altText: "Engine", width: 600, height: 400 },
+    subs: [
+      { id: "cat-filters", handle: "air-filters", title: "Air Filters", description: "Performance and OEM replacement air filters" },
+      { id: "cat-ignition", handle: "ignition", title: "Ignition", description: "Spark plugs, coil packs, and ignition components" },
+    ],
+  },
+  {
+    id: "cat-suspension", handle: "suspension", title: "Suspension",
+    description: "Coilovers, sway bars, and bushings",
+    image: { url: IMG_SUSPENSION, altText: "Suspension", width: 600, height: 400 },
+  },
+  {
+    id: "cat-lighting", handle: "lighting", title: "Lighting",
+    description: "Headlights, tail lights, and LED upgrades",
+    image: { url: IMG_LIGHTING, altText: "Lighting", width: 600, height: 400 },
+  },
+  {
+    id: "cat-exhaust", handle: "exhaust", title: "Exhaust",
+    description: "Cat-back systems, mufflers, and exhaust tips",
+    image: { url: IMG_EXHAUST, altText: "Exhaust", width: 600, height: 400 },
+  },
+]);
 
 export const collectionsByStore: Record<string, Collection[]> = {
   fr: frCollections,
@@ -189,15 +136,15 @@ export function getAllCollectionsFlat(collections: Collection[]): Collection[] {
 }
 
 export const collectionProductMap: Record<string, string[]> = {
-  "brakes/pads": ["p-1"],
-  "brakes/rotors": ["p-2"],
-  "engine/filters": ["p-3"],
-  "engine/ignition": ["p-4"],
-  brakes: ["p-1", "p-2"],
-  engine: ["p-3", "p-4"],
-  suspension: ["p-5", "p-6"],
-  lighting: ["p-7", "p-8"],
-  exhaust: ["p-9", "p-10"],
+  "cat-pads": ["p-1"],
+  "cat-rotors": ["p-2"],
+  "cat-filters": ["p-3"],
+  "cat-ignition": ["p-4"],
+  "cat-brakes": ["p-1", "p-2"],
+  "cat-engine": ["p-3", "p-4"],
+  "cat-suspension": ["p-5", "p-6"],
+  "cat-lighting": ["p-7", "p-8"],
+  "cat-exhaust": ["p-9", "p-10"],
   "hidden-homepage-featured-items": ["p-1", "p-5", "p-9"],
   "hidden-homepage-carousel": ["p-2", "p-3", "p-7", "p-11", "p-12"],
 };

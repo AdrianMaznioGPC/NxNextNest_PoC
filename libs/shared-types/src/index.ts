@@ -37,6 +37,7 @@ export type CartItem = {
 };
 
 export type Collection = {
+  id: string;
   handle: string;
   title: string;
   description: string;
@@ -44,7 +45,7 @@ export type Collection = {
   path: string;
   updatedAt: string;
   image?: Image;
-  parentHandle?: string;
+  parentId?: string;
   subcollections?: Collection[];
 };
 
@@ -241,6 +242,7 @@ export type CategoryListPageData = {
 
 export type CategoryPageData = {
   collection: Collection;
+  canonicalSlug: string;
   breadcrumbs: Breadcrumb[];
   subcollections?: Collection[];
   products?: Product[];
@@ -248,6 +250,7 @@ export type CategoryPageData = {
 
 export type ProductPageData = {
   product: Product;
+  canonicalSlug: string;
   breadcrumbs: Breadcrumb[];
   recommendations: Product[];
 };
