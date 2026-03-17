@@ -2,13 +2,14 @@ import { Injectable } from "@nestjs/common";
 import type { PricingPort, ProductPricing } from "../../ports/pricing.port";
 import { StoreContext } from "../../store";
 import { type MockPricingRecord, pricingByStore } from "./data/pricing-data";
+import { getStoreData } from "./data/store-data";
 
 @Injectable()
 export class MockPricingAdapter implements PricingPort {
   constructor(private readonly storeCtx: StoreContext) {}
 
   private get records(): MockPricingRecord[] {
-    return pricingByStore[this.storeCtx.storeCode] ?? pricingByStore["fr"]!;
+    return getStoreData(pricingByStore, this.storeCtx.storeCode);
   }
 
   async getPricing(productId: string): Promise<ProductPricing | undefined> {

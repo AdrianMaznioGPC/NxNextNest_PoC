@@ -1,7 +1,6 @@
 import type { Collection, FeaturedCategoryBlock } from "lib/types";
 import Image from "next/image";
 import Link from "next/link";
-import { registerBlockRenderer } from "../block-registry";
 
 function FeaturedCategoryCard({ collection }: { collection: Collection }) {
   return (
@@ -79,5 +78,4 @@ function FeaturedCategory({ block }: { block: FeaturedCategoryBlock }) {
   );
 }
 
-registerBlockRenderer("featured-category", FeaturedCategory);
 export default FeaturedCategory;

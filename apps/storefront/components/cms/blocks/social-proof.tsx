@@ -1,5 +1,4 @@
 import type { SocialProofBlock } from "lib/types";
-import { registerBlockRenderer } from "../block-registry";
 
 function StarRating({ rating }: { rating: number }) {
   return (
@@ -46,5 +45,4 @@ function SocialProof({ block }: { block: SocialProofBlock }) {
   );
 }
 
-registerBlockRenderer("social-proof", SocialProof);
 export default SocialProof;

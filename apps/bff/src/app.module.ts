@@ -13,7 +13,7 @@ import { PageDataService } from "./modules/page-data/page-data.service";
 import { PageController } from "./modules/page/page.controller";
 import { ProductDomainService } from "./modules/product/product-domain.service";
 import { ProductController } from "./modules/product/product.controller";
-import { StoreContext, StoreInterceptor } from "./store";
+import { StoreInterceptor } from "./store";
 
 @Module({
   imports: [MockBackendModule],
@@ -32,7 +32,6 @@ import { StoreContext, StoreInterceptor } from "./store";
     ContentDomainService,
     NavigationDomainService,
     PageDataService,
-    StoreContext,
     {
       provide: APP_INTERCEPTOR,
       useClass: StoreInterceptor,

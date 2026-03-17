@@ -1,6 +1,5 @@
 import { MegaMenuSidebar } from "components/layout/navbar/mega-menu-sidebar";
 import type { HomepageHeroBlock } from "lib/types";
-import { registerBlockRenderer } from "../block-registry";
 import { BannerCard } from "./cms-banner";
 
 function HomepageHero({ block }: { block: HomepageHeroBlock }) {
@@ -57,5 +56,4 @@ function HomepageHero({ block }: { block: HomepageHeroBlock }) {
   );
 }
 
-registerBlockRenderer("homepage-hero", HomepageHero);
 export default HomepageHero;

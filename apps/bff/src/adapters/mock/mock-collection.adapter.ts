@@ -7,15 +7,14 @@ import {
   collectionsByStore,
   getAllCollectionsFlat,
 } from "./data/catalog-data";
+import { getStoreData } from "./data/store-data";
 
 @Injectable()
 export class MockCollectionAdapter implements CollectionPort {
   constructor(private readonly storeCtx: StoreContext) {}
 
   private get collections(): Collection[] {
-    return (
-      collectionsByStore[this.storeCtx.storeCode] ?? collectionsByStore["fr"]!
-    );
+    return getStoreData(collectionsByStore, this.storeCtx.storeCode);
   }
 
   async getCollections(): Promise<Collection[]> {

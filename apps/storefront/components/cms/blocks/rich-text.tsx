@@ -1,6 +1,5 @@
-import type { RichTextBlock } from "lib/types";
 import Prose from "components/prose";
-import { registerBlockRenderer } from "../block-registry";
+import type { RichTextBlock } from "lib/types";
 
 function RichText({ block }: { block: RichTextBlock }) {
   return (
@@ -10,5 +9,4 @@ function RichText({ block }: { block: RichTextBlock }) {
   );
 }
 
-registerBlockRenderer("rich-text", RichText);
 export default RichText;

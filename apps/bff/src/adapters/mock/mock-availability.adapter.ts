@@ -8,15 +8,14 @@ import {
   type MockAvailabilityRecord,
   availabilityByStore,
 } from "./data/availability-data";
+import { getStoreData } from "./data/store-data";
 
 @Injectable()
 export class MockAvailabilityAdapter implements AvailabilityPort {
   constructor(private readonly storeCtx: StoreContext) {}
 
   private get records(): MockAvailabilityRecord[] {
-    return (
-      availabilityByStore[this.storeCtx.storeCode] ?? availabilityByStore["fr"]!
-    );
+    return getStoreData(availabilityByStore, this.storeCtx.storeCode);
   }
 
   async getAvailability(

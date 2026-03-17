@@ -8,7 +8,9 @@ import {
 import { CatalogDomainService } from "../collection/catalog-domain.service";
 import { ProductDomainService } from "../product/product-domain.service";
 import { resolveBlocks } from "./block-resolver-registry";
-import "./blocks";
+import { registerAllBlockResolvers } from "./blocks";
+
+registerAllBlockResolvers();
 
 @Injectable()
 export class ContentDomainService {

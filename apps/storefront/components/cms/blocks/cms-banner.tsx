@@ -1,7 +1,6 @@
 import type { CmsBannerBlock, CmsBannerItem } from "lib/types";
 import Image from "next/image";
 import Link from "next/link";
-import { registerBlockRenderer } from "../block-registry";
 
 export function BannerCard({ banner }: { banner: CmsBannerItem }) {
   const overlay = banner.overlayOpacity ?? 0.3;
@@ -44,5 +43,4 @@ function CmsBanner({ block }: { block: CmsBannerBlock }) {
   );
 }
 
-registerBlockRenderer("cms-banner", CmsBanner);
 export default CmsBanner;

@@ -1,18 +1,17 @@
 import type { CmsRawProductCarousel } from "../../../ports/cms.types";
-import { registerBlockResolver } from "../block-resolver-registry";
+import type { BlockResolver } from "../block-resolver-registry";
 
-registerBlockResolver(
-  "product-carousel",
-  async (raw: CmsRawProductCarousel, ctx) => {
-    const products = await ctx.productDomain.getCollectionProducts({
-      collection: raw.collectionHandle,
-    });
+export const productCarouselResolver: BlockResolver<
+  CmsRawProductCarousel
+> = async (raw, ctx) => {
+  const products = await ctx.productDomain.getCollectionProducts({
+    collection: raw.collectionHandle,
+  });
 
-    return {
-      type: "product-carousel" as const,
-      id: raw.id,
-      heading: raw.heading,
-      products,
-    };
-  },
-);
+  return {
+    type: "product-carousel" as const,
+    id: raw.id,
+    heading: raw.heading,
+    products,
+  };
+};

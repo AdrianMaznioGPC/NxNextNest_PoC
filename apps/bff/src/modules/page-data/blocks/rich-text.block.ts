@@ -1,8 +1,8 @@
 import type { CmsRawRichText } from "../../../ports/cms.types";
-import { registerBlockResolver } from "../block-resolver-registry";
+import type { BlockResolver } from "../block-resolver-registry";
 
-registerBlockResolver("rich-text", async (raw: CmsRawRichText) => ({
+export const richTextResolver: BlockResolver<CmsRawRichText> = async (raw) => ({
   type: "rich-text" as const,
   id: raw.id,
   html: raw.html,
-}));
+});

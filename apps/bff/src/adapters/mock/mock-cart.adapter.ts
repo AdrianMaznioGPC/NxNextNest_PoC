@@ -5,32 +5,32 @@ import { PRICING_PORT, type PricingPort } from "../../ports/pricing.port";
 import { PRODUCT_PORT, type ProductPort } from "../../ports/product.port";
 import { StoreContext } from "../../store";
 import { createEmptyCart } from "./data/cart-data";
+import { MockCartStore } from "./mock-cart-store";
 
 @Injectable()
 export class MockCartAdapter implements CartPort {
-  private carts = new Map<string, Cart>();
-
   constructor(
     @Inject(PRODUCT_PORT) private readonly products: ProductPort,
     @Inject(PRICING_PORT) private readonly pricing: PricingPort,
     private readonly storeCtx: StoreContext,
+    private readonly cartStore: MockCartStore,
   ) {}
 
   async createCart(): Promise<Cart> {
     const cart = createEmptyCart(this.storeCtx.currency);
-    this.carts.set(cart.id!, cart);
+    this.cartStore.set(cart.id!, cart);
     return cart;
   }
 
   async getCart(cartId: string): Promise<Cart | undefined> {
-    return this.carts.get(cartId);
+    return this.cartStore.get(cartId);
   }
 
   async addToCart(
     cartId: string,
     lines: { merchandiseId: string; quantity: number }[],
   ): Promise<Cart> {
-    const cart = this.carts.get(cartId) ?? createEmptyCart();
+    const cart = this.cartStore.get(cartId) ?? createEmptyCart();
 
     for (const line of lines) {
       const existing = cart.lines.find(
@@ -83,15 +83,15 @@ export class MockCartAdapter implements CartPort {
     }
 
     this.recalculate(cart);
-    this.carts.set(cartId, cart);
+    this.cartStore.set(cartId, cart);
     return cart;
   }
 
   async removeFromCart(cartId: string, lineIds: string[]): Promise<Cart> {
-    const cart = this.carts.get(cartId) ?? createEmptyCart();
+    const cart = this.cartStore.get(cartId) ?? createEmptyCart();
     cart.lines = cart.lines.filter((l) => !lineIds.includes(l.id!));
     this.recalculate(cart);
-    this.carts.set(cartId, cart);
+    this.cartStore.set(cartId, cart);
     return cart;
   }
 
@@ -99,7 +99,7 @@ export class MockCartAdapter implements CartPort {
     cartId: string,
     lines: { id: string; merchandiseId: string; quantity: number }[],
   ): Promise<Cart> {
-    const cart = this.carts.get(cartId) ?? createEmptyCart();
+    const cart = this.cartStore.get(cartId) ?? createEmptyCart();
 
     for (const line of lines) {
       const existing = cart.lines.find((l) => l.id === line.id);
@@ -115,7 +115,7 @@ export class MockCartAdapter implements CartPort {
 
     cart.lines = cart.lines.filter((l) => l.quantity > 0);
     this.recalculate(cart);
-    this.carts.set(cartId, cart);
+    this.cartStore.set(cartId, cart);
     return cart;
   }
 

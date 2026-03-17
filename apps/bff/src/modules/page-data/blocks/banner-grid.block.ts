@@ -1,9 +1,11 @@
 import type { CmsRawBannerGrid } from "../../../ports/cms.types";
-import { registerBlockResolver } from "../block-resolver-registry";
+import type { BlockResolver } from "../block-resolver-registry";
 
-registerBlockResolver("banner-grid", async (raw: CmsRawBannerGrid) => ({
+export const bannerGridResolver: BlockResolver<CmsRawBannerGrid> = async (
+  raw,
+) => ({
   type: "banner-grid" as const,
   id: raw.id,
   columns: raw.columns,
   banners: raw.banners,
-}));
+});

@@ -3,6 +3,7 @@ import { Injectable } from "@nestjs/common";
 import type { NavigationPort } from "../../ports/navigation.port";
 import { StoreContext } from "../../store";
 import { collectionsByStore } from "./data/catalog-data";
+import { getStoreData } from "./data/store-data";
 
 const featuredLinksByStore: Record<string, FeaturedLink[]> = {
   fr: [
@@ -27,8 +28,10 @@ export class MockNavigationAdapter implements NavigationPort {
   constructor(private readonly storeCtx: StoreContext) {}
 
   async getMegaMenu(): Promise<MegaMenuItem[]> {
-    const collections =
-      collectionsByStore[this.storeCtx.storeCode] ?? collectionsByStore["fr"]!;
+    const collections = getStoreData(
+      collectionsByStore,
+      this.storeCtx.storeCode,
+    );
     return collections.map((c) => ({
       title: c.title,
       path: c.path,
@@ -42,9 +45,6 @@ export class MockNavigationAdapter implements NavigationPort {
   }
 
   async getFeaturedLinks(): Promise<FeaturedLink[]> {
-    return (
-      featuredLinksByStore[this.storeCtx.storeCode] ??
-      featuredLinksByStore["fr"]!
-    );
+    return getStoreData(featuredLinksByStore, this.storeCtx.storeCode);
   }
 }

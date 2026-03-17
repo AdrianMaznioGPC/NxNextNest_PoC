@@ -11,7 +11,7 @@ export function DeleteItemButton({
   optimisticUpdate,
 }: {
   item: CartItem;
-  optimisticUpdate: any;
+  optimisticUpdate: (merchandiseId: string, action: "delete") => void;
 }) {
   const [message, formAction] = useActionState(removeItem, null);
   const t = useTranslations("cart");

@@ -1,3 +1,4 @@
+import type { Product } from "@commerce/shared-types";
 import { Controller, Get, Param, Query } from "@nestjs/common";
 import { ProductDomainService } from "./product-domain.service";
 
@@ -10,7 +11,7 @@ export class ProductController {
     @Query("q") query?: string,
     @Query("sortKey") sortKey?: string,
     @Query("reverse") reverse?: string,
-  ) {
+  ): Promise<Product[]> {
     return this.productDomain.getProducts({
       query,
       sortKey,
@@ -18,13 +19,13 @@ export class ProductController {
     });
   }
 
-  @Get(":handle")
-  getProduct(@Param("handle") handle: string) {
-    return this.productDomain.getProduct(handle);
+  @Get(":id/recommendations")
+  getRecommendations(@Param("id") id: string): Promise<Product[]> {
+    return this.productDomain.getRecommendations(id);
   }
 
-  @Get(":id/recommendations")
-  getRecommendations(@Param("id") id: string) {
-    return this.productDomain.getRecommendations(id);
+  @Get(":handle")
+  getProduct(@Param("handle") handle: string): Promise<Product | undefined> {
+    return this.productDomain.getProduct(handle);
   }
 }

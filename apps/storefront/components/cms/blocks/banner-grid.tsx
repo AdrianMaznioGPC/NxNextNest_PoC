@@ -1,5 +1,4 @@
 import type { BannerGridBlock } from "lib/types";
-import { registerBlockRenderer } from "../block-registry";
 import { BannerCard } from "./cms-banner";
 
 const columnClasses: Record<number, string> = {
@@ -22,5 +21,4 @@ function BannerGrid({ block }: { block: BannerGridBlock }) {
   );
 }
 
-registerBlockRenderer("banner-grid", BannerGrid);
 export default BannerGrid;

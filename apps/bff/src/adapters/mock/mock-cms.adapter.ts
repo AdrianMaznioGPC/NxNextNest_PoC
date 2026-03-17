@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import type { CmsPort, CmsRawPage } from "../../ports/cms.port";
 import { StoreContext } from "../../store";
+import { getStoreData } from "./data/store-data";
 
 const sharedUsps = [
   {
@@ -358,7 +359,7 @@ export class MockCmsAdapter implements CmsPort {
   constructor(private readonly storeCtx: StoreContext) {}
 
   async getPage(slug: string): Promise<CmsRawPage | undefined> {
-    const pages = pagesByStore[this.storeCtx.storeCode] ?? pagesByStore["fr"]!;
+    const pages = getStoreData(pagesByStore, this.storeCtx.storeCode);
     return pages.find((p) => p.slug === slug);
   }
 }

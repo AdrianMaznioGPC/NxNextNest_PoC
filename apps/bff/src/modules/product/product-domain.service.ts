@@ -1,7 +1,6 @@
 import type {
   BaseProduct,
   Breadcrumb,
-  Collection,
   Money,
   Product,
   ProductPageData,
@@ -11,12 +10,17 @@ import { Inject, Injectable } from "@nestjs/common";
 import {
   AVAILABILITY_PORT,
   type AvailabilityPort,
+  type ProductAvailability,
 } from "../../ports/availability.port";
 import {
   COLLECTION_PORT,
   type CollectionPort,
 } from "../../ports/collection.port";
-import { PRICING_PORT, type PricingPort } from "../../ports/pricing.port";
+import {
+  PRICING_PORT,
+  type PricingPort,
+  type ProductPricing,
+} from "../../ports/pricing.port";
 import { PRODUCT_PORT, type ProductPort } from "../../ports/product.port";
 
 const ZERO: Money = { amount: "0.00", currencyCode: "USD" };
@@ -43,10 +47,10 @@ export class ProductDomainService {
   }
 
   async getProductsByIds(ids: string[]): Promise<Product[]> {
-    const allBase = await this.products.getProducts({});
-    const bases = ids
-      .map((id) => allBase.find((p) => p.id === id))
-      .filter((p): p is BaseProduct => p !== undefined);
+    const results = await Promise.all(
+      ids.map((id) => this.products.getProductById(id)),
+    );
+    const bases = results.filter((p): p is BaseProduct => p !== undefined);
     return this.enrichBatch(bases);
   }
 
@@ -64,27 +68,8 @@ export class ProductDomainService {
     reverse?: boolean;
   }): Promise<Product[]> {
     const bases = await this.products.getProducts({ query: params.query });
-    let enriched = await this.enrichBatch(bases);
-
-    if (params.sortKey === "PRICE") {
-      enriched.sort(
-        (a, b) =>
-          parseFloat(a.priceRange.minVariantPrice.amount) -
-          parseFloat(b.priceRange.minVariantPrice.amount),
-      );
-    } else if (
-      params.sortKey === "CREATED_AT" ||
-      params.sortKey === "CREATED"
-    ) {
-      enriched.sort(
-        (a, b) =>
-          new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime(),
-      );
-    }
-
-    if (params.reverse) enriched.reverse();
-
-    return enriched;
+    const enriched = await this.enrichBatch(bases);
+    return sortProducts(enriched, params.sortKey, params.reverse);
   }
 
   async getCollectionProducts(params: {
@@ -97,27 +82,8 @@ export class ProductDomainService {
     );
     if (!ids.length) return [];
 
-    let products = await this.getProductsByIds(ids);
-
-    if (params.sortKey === "PRICE") {
-      products.sort(
-        (a, b) =>
-          parseFloat(a.priceRange.minVariantPrice.amount) -
-          parseFloat(b.priceRange.minVariantPrice.amount),
-      );
-    } else if (
-      params.sortKey === "CREATED_AT" ||
-      params.sortKey === "CREATED"
-    ) {
-      products.sort(
-        (a, b) =>
-          new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime(),
-      );
-    }
-
-    if (params.reverse) products.reverse();
-
-    return products;
+    const products = await this.getProductsByIds(ids);
+    return sortProducts(products, params.sortKey, params.reverse);
   }
 
   async getRecommendations(productId: string): Promise<Product[]> {
@@ -164,171 +130,111 @@ export class ProductDomainService {
   }
 
   private async enrich(base: BaseProduct): Promise<Product> {
-    const [pricing, avail] = await Promise.all([
+    const [pricing, avail, breadcrumbs] = await Promise.all([
       this.pricing.getPricing(base.id),
       this.availability.getAvailability(base.id),
+      this.products.getProductBreadcrumbs(base.id),
     ]);
 
-    const variantPrices = pricing?.variantPrices ?? new Map();
-    const variantAvail = avail?.variantAvailability ?? new Map();
-    const allAmounts = [...variantPrices.values()].map((p) =>
-      parseFloat(p.amount),
-    );
-
-    const breadcrumbs = await this.buildBreadcrumbs(base.id);
-
-    return {
-      id: base.id,
-      handle: base.handle,
-      title: base.title,
-      description: base.description,
-      descriptionHtml: base.descriptionHtml,
-      options: base.options,
-      featuredImage: base.featuredImage,
-      images: base.images,
-      seo: base.seo,
-      tags: base.tags,
-      updatedAt: base.updatedAt,
-      availableForSale: avail?.availableForSale ?? true,
-      priceRange: {
-        minVariantPrice: allAmounts.length
-          ? {
-              amount: Math.min(...allAmounts).toFixed(2),
-              currencyCode:
-                pricing?.minVariantPrice.currencyCode ?? ZERO.currencyCode,
-            }
-          : ZERO,
-        maxVariantPrice: allAmounts.length
-          ? {
-              amount: Math.max(...allAmounts).toFixed(2),
-              currencyCode:
-                pricing?.maxVariantPrice.currencyCode ?? ZERO.currencyCode,
-            }
-          : ZERO,
-      },
-      variants: base.variants.map((v) => ({
-        ...v,
-        availableForSale: variantAvail.get(v.id) ?? true,
-        price: variantPrices.get(v.id) ?? ZERO,
-      })),
-      breadcrumbs,
-    };
+    return mapToProduct(base, pricing, avail, breadcrumbs);
   }
 
   private async enrichBatch(bases: BaseProduct[]): Promise<Product[]> {
     const ids = bases.map((b) => b.id);
-    const [pricingMap, availMap] = await Promise.all([
+    const [pricingMap, availMap, breadcrumbs] = await Promise.all([
       this.pricing.getPricingBatch(ids),
       this.availability.getAvailabilityBatch(ids),
+      Promise.all(ids.map((id) => this.products.getProductBreadcrumbs(id))),
     ]);
 
-    const results: Product[] = [];
-    for (const base of bases) {
-      const pricing = pricingMap.get(base.id);
-      const avail = availMap.get(base.id);
-      const variantPrices = pricing?.variantPrices ?? new Map();
-      const variantAvail = avail?.variantAvailability ?? new Map();
-      const allAmounts = [...variantPrices.values()].map((p) =>
-        parseFloat(p.amount),
-      );
-
-      const breadcrumbs = await this.buildBreadcrumbs(base.id);
-
-      results.push({
-        id: base.id,
-        handle: base.handle,
-        title: base.title,
-        description: base.description,
-        descriptionHtml: base.descriptionHtml,
-        options: base.options,
-        featuredImage: base.featuredImage,
-        images: base.images,
-        seo: base.seo,
-        tags: base.tags,
-        updatedAt: base.updatedAt,
-        availableForSale: avail?.availableForSale ?? true,
-        priceRange: {
-          minVariantPrice: allAmounts.length
-            ? {
-                amount: Math.min(...allAmounts).toFixed(2),
-                currencyCode:
-                  pricing?.minVariantPrice.currencyCode ?? ZERO.currencyCode,
-              }
-            : ZERO,
-          maxVariantPrice: allAmounts.length
-            ? {
-                amount: Math.max(...allAmounts).toFixed(2),
-                currencyCode:
-                  pricing?.maxVariantPrice.currencyCode ?? ZERO.currencyCode,
-              }
-            : ZERO,
-        },
-        variants: base.variants.map((v) => ({
-          ...v,
-          availableForSale: variantAvail.get(v.id) ?? true,
-          price: variantPrices.get(v.id) ?? ZERO,
-        })),
-        breadcrumbs,
-      });
-    }
-    return results;
-  }
-
-  private async buildBreadcrumbs(productId: string): Promise<Breadcrumb[]> {
-    const allCollections = await this.collections.getCollections();
-    const allIds = this.getAllCollectionIds(allCollections);
-
-    const allMappings = await Promise.all(
-      allIds.map(async (id) => ({
-        id,
-        productIds: await this.collections.getCollectionProductIds(id),
-      })),
+    return bases.map((base, i) =>
+      mapToProduct(
+        base,
+        pricingMap.get(base.id),
+        availMap.get(base.id),
+        breadcrumbs[i] ?? [],
+      ),
     );
+  }
+}
 
-    let bestId: string | undefined;
-    for (const { id, productIds } of allMappings) {
-      if (id.startsWith("hidden-")) continue;
-      if (!productIds.includes(productId)) continue;
-      const col = this.findCollectionById(allCollections, id);
-      if (!bestId || col?.parentId) bestId = id;
-    }
-    if (!bestId) return [];
+// -- Pure helper functions ---------------------------------------------------
 
-    const crumbs: Breadcrumb[] = [];
-    const target = this.findCollectionById(allCollections, bestId);
-    if (target?.parentId) {
-      const parent = allCollections.find((c) => c.id === target.parentId);
-      if (parent) crumbs.push({ title: parent.title, path: parent.path });
-    }
-    if (target) crumbs.push({ title: target.title, path: target.path });
+function mapToProduct(
+  base: BaseProduct,
+  pricing: ProductPricing | undefined,
+  avail: ProductAvailability | undefined,
+  breadcrumbs: Breadcrumb[],
+): Product {
+  const variantPrices = pricing?.variantPrices ?? new Map();
+  const variantAvail = avail?.variantAvailability ?? new Map();
+  const allAmounts = [...variantPrices.values()].map((p) =>
+    parseFloat(p.amount),
+  );
 
-    return crumbs;
+  return {
+    id: base.id,
+    handle: base.handle,
+    title: base.title,
+    description: base.description,
+    descriptionHtml: base.descriptionHtml,
+    options: base.options,
+    featuredImage: base.featuredImage,
+    images: base.images,
+    seo: base.seo,
+    tags: base.tags,
+    updatedAt: base.updatedAt,
+    availableForSale: avail?.availableForSale ?? true,
+    priceRange: {
+      minVariantPrice: allAmounts.length
+        ? {
+            amount: Math.min(...allAmounts).toFixed(2),
+            currencyCode:
+              pricing?.minVariantPrice.currencyCode ?? ZERO.currencyCode,
+          }
+        : ZERO,
+      maxVariantPrice: allAmounts.length
+        ? {
+            amount: Math.max(...allAmounts).toFixed(2),
+            currencyCode:
+              pricing?.maxVariantPrice.currencyCode ?? ZERO.currencyCode,
+          }
+        : ZERO,
+    },
+    variants: base.variants.map((v) => ({
+      ...v,
+      availableForSale: variantAvail.get(v.id) ?? true,
+      price: variantPrices.get(v.id) ?? ZERO,
+    })),
+    breadcrumbs,
+  };
+}
+
+function sortProducts(
+  products: Product[],
+  sortKey?: string,
+  reverse?: boolean,
+): Product[] {
+  const sorted = [...products];
+
+  if (sortKey === "PRICE") {
+    sorted.sort(
+      (a, b) =>
+        parseFloat(a.priceRange.minVariantPrice.amount) -
+        parseFloat(b.priceRange.minVariantPrice.amount),
+    );
+  } else if (sortKey === "CREATED_AT" || sortKey === "CREATED") {
+    sorted.sort(
+      (a, b) =>
+        new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime(),
+    );
+  } else if (sortKey === "BEST_SELLING") {
+    // No sales data available in mock — preserve original order
+    // which acts as the default "best selling" ranking.
+    // Real adapters should sort by actual sales volume.
   }
 
-  private getAllCollectionIds(
-    cols: { id: string; subcollections?: { id: string }[] }[],
-  ): string[] {
-    const ids: string[] = [];
-    for (const c of cols) {
-      ids.push(c.id);
-      if (c.subcollections) {
-        for (const sub of c.subcollections) {
-          ids.push(sub.id);
-        }
-      }
-    }
-    return ids;
-  }
+  if (reverse) sorted.reverse();
 
-  private findCollectionById(
-    cols: Collection[],
-    id: string,
-  ): Collection | undefined {
-    for (const c of cols) {
-      if (c.id === id) return c;
-      const sub = c.subcollections?.find((s) => s.id === id);
-      if (sub) return sub;
-    }
-    return undefined;
-  }
+  return sorted;
 }

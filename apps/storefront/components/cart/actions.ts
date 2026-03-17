@@ -12,15 +12,23 @@ import { updateTag } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+async function ensureCart(): Promise<void> {
+  const cartId = (await cookies()).get("cartId")?.value;
+  if (!cartId) {
+    await createCartAndSetCookie();
+  }
+}
+
 export async function addItem(
-  prevState: any,
+  prevState: string | null | undefined,
   selectedVariantId: string | undefined,
-) {
+): Promise<string | null | undefined> {
   if (!selectedVariantId) {
     return "Error adding item to cart";
   }
 
   try {
+    await ensureCart();
     await addToCart([{ merchandiseId: selectedVariantId, quantity: 1 }]);
     updateTag(TAGS.cart);
   } catch (e) {
@@ -28,7 +36,10 @@ export async function addItem(
   }
 }
 
-export async function removeItem(prevState: any, merchandiseId: string) {
+export async function removeItem(
+  prevState: string | null | undefined,
+  merchandiseId: string,
+): Promise<string | null | undefined> {
   try {
     const cart = await getCart();
 
@@ -52,12 +63,12 @@ export async function removeItem(prevState: any, merchandiseId: string) {
 }
 
 export async function updateItemQuantity(
-  prevState: any,
+  prevState: string | null | undefined,
   payload: {
     merchandiseId: string;
     quantity: number;
   },
-) {
+): Promise<string | null | undefined> {
   const { merchandiseId, quantity } = payload;
 
   try {
@@ -95,12 +106,12 @@ export async function updateItemQuantity(
   }
 }
 
-export async function redirectToCheckout() {
-  let cart = await getCart();
+export async function redirectToCheckout(): Promise<never> {
+  const cart = await getCart();
   redirect(cart!.checkoutUrl);
 }
 
-export async function createCartAndSetCookie() {
-  let cart = await createCart();
+export async function createCartAndSetCookie(): Promise<void> {
+  const cart = await createCart();
   (await cookies()).set("cartId", cart.id!);
 }

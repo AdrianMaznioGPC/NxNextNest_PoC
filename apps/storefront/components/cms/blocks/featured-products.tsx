@@ -2,7 +2,6 @@ import { GridTileImage } from "components/grid/tile";
 import type { FeaturedProductsBlock } from "lib/types";
 import { productUrl } from "lib/utils";
 import Link from "next/link";
-import { registerBlockRenderer } from "../block-registry";
 
 function FeaturedProducts({ block }: { block: FeaturedProductsBlock }) {
   if (!block.products.length) return null;
@@ -36,5 +35,4 @@ function FeaturedProducts({ block }: { block: FeaturedProductsBlock }) {
   );
 }
 
-registerBlockRenderer("featured-products", FeaturedProducts);
 export default FeaturedProducts;

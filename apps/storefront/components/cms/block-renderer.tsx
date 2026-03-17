@@ -1,6 +1,8 @@
 import type { CmsBlock } from "lib/types";
 import { getBlockRenderer } from "./block-registry";
-import "./blocks"; // ensures all blocks are registered
+import { registerAllBlockRenderers } from "./blocks";
+
+registerAllBlockRenderers();
 
 export function BlockRenderer({ blocks }: { blocks: CmsBlock[] }) {
   return (

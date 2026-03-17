@@ -1,7 +1,9 @@
 import type { CmsRawHeroBanner } from "../../../ports/cms.types";
-import { registerBlockResolver } from "../block-resolver-registry";
+import type { BlockResolver } from "../block-resolver-registry";
 
-registerBlockResolver("hero-banner", async (raw: CmsRawHeroBanner) => ({
+export const heroBannerResolver: BlockResolver<CmsRawHeroBanner> = async (
+  raw,
+) => ({
   type: "hero-banner" as const,
   id: raw.id,
   heading: raw.heading,
@@ -9,4 +11,4 @@ registerBlockResolver("hero-banner", async (raw: CmsRawHeroBanner) => ({
   ctaLabel: raw.ctaLabel,
   ctaUrl: raw.ctaUrl,
   image: raw.image,
-}));
+});

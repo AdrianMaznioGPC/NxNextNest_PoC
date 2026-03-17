@@ -1,4 +1,4 @@
-import type { BaseProduct } from "@commerce/shared-types";
+import type { BaseProduct, Breadcrumb } from "@commerce/shared-types";
 
 export interface ProductPort {
   getProducts(params: { query?: string }): Promise<BaseProduct[]>;
@@ -8,6 +8,9 @@ export interface ProductPort {
   getProductById(id: string): Promise<BaseProduct | undefined>;
 
   getProductRecommendations(productId: string): Promise<BaseProduct[]>;
+
+  /** Returns navigation breadcrumbs for a product's PDP. */
+  getProductBreadcrumbs(productId: string): Promise<Breadcrumb[]>;
 }
 
 export const PRODUCT_PORT = Symbol("PRODUCT_PORT");

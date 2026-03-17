@@ -1,3 +1,11 @@
+import type {
+  CategoryListPageData,
+  CategoryPageData,
+  GlobalLayoutData,
+  HomePageData,
+  ProductPageData,
+  SearchPageData,
+} from "@commerce/shared-types";
 import {
   Controller,
   Get,
@@ -12,17 +20,17 @@ export class PageDataController {
   constructor(private readonly pageData: PageDataService) {}
 
   @Get("layout")
-  getLayoutData() {
+  getLayoutData(): Promise<GlobalLayoutData> {
     return this.pageData.getLayoutData();
   }
 
   @Get("home")
-  getHomePage() {
+  getHomePage(): Promise<HomePageData> {
     return this.pageData.getHomePage();
   }
 
   @Get("categories")
-  getCategoryListPage() {
+  getCategoryListPage(): Promise<CategoryListPageData> {
     return this.pageData.getCategoryListPage();
   }
 
@@ -31,7 +39,7 @@ export class PageDataController {
     @Param("id") id: string,
     @Query("sortKey") sortKey?: string,
     @Query("reverse") reverse?: string,
-  ) {
+  ): Promise<CategoryPageData> {
     const data = await this.pageData.getCategoryPage(
       id,
       sortKey,
@@ -42,7 +50,7 @@ export class PageDataController {
   }
 
   @Get("product/:id")
-  async getProductPage(@Param("id") id: string) {
+  async getProductPage(@Param("id") id: string): Promise<ProductPageData> {
     const data = await this.pageData.getProductPage(id);
     if (!data) throw new NotFoundException();
     return data;
@@ -53,7 +61,7 @@ export class PageDataController {
     @Query("q") query?: string,
     @Query("sortKey") sortKey?: string,
     @Query("reverse") reverse?: string,
-  ) {
+  ): Promise<SearchPageData> {
     return this.pageData.getSearchPage(query, sortKey, reverse === "true");
   }
 }

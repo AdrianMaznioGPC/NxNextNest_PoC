@@ -10,12 +10,6 @@ import { useCallback, useRef, useState } from "react";
 export function MegaMenu({ items }: { items: MegaMenuItem[] }) {
   const pathname = usePathname();
   const t = useTranslations("nav");
-
-  // On homepage the sidebar in the hero block serves as the mega menu
-  if (pathname === "/") {
-    return null;
-  }
-
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -30,6 +24,11 @@ export function MegaMenu({ items }: { items: MegaMenuItem[] }) {
   }, []);
 
   const activeItem = activeIndex !== null ? items[activeIndex] : null;
+
+  // On homepage the sidebar in the hero block serves as the mega menu
+  if (pathname === "/") {
+    return null;
+  }
 
   return (
     <div

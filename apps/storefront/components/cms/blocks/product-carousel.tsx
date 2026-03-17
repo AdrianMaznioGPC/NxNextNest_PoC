@@ -2,7 +2,6 @@ import { GridTileImage } from "components/grid/tile";
 import type { ProductCarouselBlock } from "lib/types";
 import { productUrl } from "lib/utils";
 import Link from "next/link";
-import { registerBlockRenderer } from "../block-registry";
 
 function ProductCarousel({ block }: { block: ProductCarouselBlock }) {
   if (!block.products.length) return null;
@@ -49,5 +48,4 @@ function ProductCarousel({ block }: { block: ProductCarouselBlock }) {
   );
 }
 
-registerBlockRenderer("product-carousel", ProductCarousel);
 export default ProductCarousel;

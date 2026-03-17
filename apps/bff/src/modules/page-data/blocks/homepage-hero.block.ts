@@ -1,7 +1,10 @@
 import type { CmsRawHomepageHero } from "../../../ports/cms.types";
-import { registerBlockResolver } from "../block-resolver-registry";
+import type { BlockResolver } from "../block-resolver-registry";
 
-registerBlockResolver("homepage-hero", async (raw: CmsRawHomepageHero, ctx) => {
+export const homepageHeroResolver: BlockResolver<CmsRawHomepageHero> = async (
+  raw,
+  ctx,
+) => {
   const megaMenu = await ctx.navigation.getMegaMenu();
 
   return {
@@ -12,4 +15,4 @@ registerBlockResolver("homepage-hero", async (raw: CmsRawHomepageHero, ctx) => {
     usps: raw.usps,
     smallBanners: raw.smallBanners,
   };
-});
+};
