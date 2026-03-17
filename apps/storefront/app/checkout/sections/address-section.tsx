@@ -4,17 +4,21 @@ import type { AddressFieldConfig, AddressFormSchema } from "lib/types";
 import { useTranslations } from "next-intl";
 
 interface AddressSectionProps {
+  title: string;
+  idPrefix: string;
   schema: AddressFormSchema;
   values: Record<string, string>;
   onChange: (fieldName: string, value: string) => void;
 }
 
 function TextField({
+  fieldId,
   field,
   value,
   onChange,
   label,
 }: {
+  fieldId: string;
   field: AddressFieldConfig;
   value: string;
   onChange: (value: string) => void;
@@ -23,7 +27,7 @@ function TextField({
   return (
     <div>
       <label
-        htmlFor={field.name}
+        htmlFor={fieldId}
         className="mb-1 block text-sm font-medium text-neutral-700 dark:text-neutral-300"
       >
         {label}
@@ -34,8 +38,8 @@ function TextField({
         )}
       </label>
       <input
-        id={field.name}
-        name={field.name}
+        id={fieldId}
+        name={fieldId}
         type={field.type}
         autoComplete={field.autoComplete}
         required={field.required}
@@ -51,11 +55,13 @@ function TextField({
 }
 
 function SelectField({
+  fieldId,
   field,
   value,
   onChange,
   label,
 }: {
+  fieldId: string;
   field: AddressFieldConfig;
   value: string;
   onChange: (value: string) => void;
@@ -66,14 +72,14 @@ function SelectField({
   return (
     <div>
       <label
-        htmlFor={field.name}
+        htmlFor={fieldId}
         className="mb-1 block text-sm font-medium text-neutral-700 dark:text-neutral-300"
       >
         {label}
       </label>
       <select
-        id={field.name}
-        name={field.name}
+        id={fieldId}
+        name={fieldId}
         autoComplete={field.autoComplete}
         required={field.required}
         value={value}
@@ -94,10 +100,12 @@ function SelectField({
 }
 
 function AddressField({
+  fieldId,
   field,
   value,
   onChange,
 }: {
+  fieldId: string;
   field: AddressFieldConfig;
   value: string;
   onChange: (value: string) => void;
@@ -108,6 +116,7 @@ function AddressField({
   if (field.type === "select") {
     return (
       <SelectField
+        fieldId={fieldId}
         field={field}
         value={value}
         onChange={onChange}
@@ -117,7 +126,13 @@ function AddressField({
   }
 
   return (
-    <TextField field={field} value={value} onChange={onChange} label={label} />
+    <TextField
+      fieldId={fieldId}
+      field={field}
+      value={value}
+      onChange={onChange}
+      label={label}
+    />
   );
 }
 
@@ -129,32 +144,35 @@ function colSpanClass(colSpan: number | undefined, rowLength: number): string {
 }
 
 export function AddressSection({
+  title,
+  idPrefix,
   schema,
   values,
   onChange,
 }: AddressSectionProps) {
-  const t = useTranslations("checkout");
-
   return (
     <fieldset>
-      <legend className="mb-4 text-lg font-semibold">
-        {t("shippingAddress")}
-      </legend>
+      <legend className="mb-4 text-lg font-semibold">{title}</legend>
       <div className="space-y-4 rounded-lg border border-neutral-200 bg-white p-6 dark:border-neutral-800 dark:bg-black">
         {schema.rows.map((row, rowIndex) => (
           <div key={rowIndex} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {row.map((field) => (
-              <div
-                key={field.name}
-                className={colSpanClass(field.colSpan, row.length)}
-              >
-                <AddressField
-                  field={field}
-                  value={values[field.name] ?? ""}
-                  onChange={(v) => onChange(field.name, v)}
-                />
-              </div>
-            ))}
+            {row.map((field) => {
+              const fieldId = `${idPrefix}-${field.name}`;
+
+              return (
+                <div
+                  key={field.name}
+                  className={colSpanClass(field.colSpan, row.length)}
+                >
+                  <AddressField
+                    fieldId={fieldId}
+                    field={field}
+                    value={values[field.name] ?? ""}
+                    onChange={(v) => onChange(field.name, v)}
+                  />
+                </div>
+              );
+            })}
           </div>
         ))}
       </div>

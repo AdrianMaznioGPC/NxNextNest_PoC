@@ -1,6 +1,6 @@
 "use client";
 
-import type { Cart, CheckoutConfig, Money } from "lib/types";
+import type { AddressFormSchema, Cart, CheckoutConfig, Money } from "lib/types";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { OrderSummary } from "./order-summary";
@@ -13,11 +13,9 @@ interface CheckoutFormProps {
   config: CheckoutConfig;
 }
 
-function buildInitialAddressValues(
-  config: CheckoutConfig,
-): Record<string, string> {
+function buildInitialValues(schema: AddressFormSchema): Record<string, string> {
   const values: Record<string, string> = {};
-  for (const row of config.addressSchema.rows) {
+  for (const row of schema.rows) {
     for (const field of row) {
       values[field.name] = "";
     }
@@ -29,7 +27,12 @@ export default function CheckoutForm({ cart, config }: CheckoutFormProps) {
   const t = useTranslations("checkout");
 
   const [addressValues, setAddressValues] = useState<Record<string, string>>(
-    () => buildInitialAddressValues(config),
+    () => buildInitialValues(config.addressSchema),
+  );
+
+  const [useDifferentBilling, setUseDifferentBilling] = useState(false);
+  const [billingValues, setBillingValues] = useState<Record<string, string>>(
+    () => buildInitialValues(config.billingAddressSchema),
   );
 
   const [selectedDelivery, setSelectedDelivery] = useState(
@@ -50,6 +53,10 @@ export default function CheckoutForm({ cart, config }: CheckoutFormProps) {
     setAddressValues((prev) => ({ ...prev, [fieldName]: value }));
   }
 
+  function handleBillingChange(fieldName: string, value: string) {
+    setBillingValues((prev) => ({ ...prev, [fieldName]: value }));
+  }
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     // TODO: integrate with order placement API
@@ -59,10 +66,32 @@ export default function CheckoutForm({ cart, config }: CheckoutFormProps) {
     <div className="lg:grid lg:grid-cols-12 lg:gap-x-8">
       <form onSubmit={handleSubmit} className="space-y-8 lg:col-span-7">
         <AddressSection
+          title={t("shippingAddress")}
+          idPrefix="shipping"
           schema={config.addressSchema}
           values={addressValues}
           onChange={handleAddressChange}
         />
+
+        <label className="flex cursor-pointer items-center gap-3 text-sm font-medium text-neutral-700 dark:text-neutral-300">
+          <input
+            type="checkbox"
+            checked={useDifferentBilling}
+            onChange={(e) => setUseDifferentBilling(e.target.checked)}
+            className="h-4 w-4 rounded border-neutral-300 text-blue-600"
+          />
+          {t("useDifferentBillingAddress")}
+        </label>
+
+        {useDifferentBilling && (
+          <AddressSection
+            title={t("billingAddress")}
+            idPrefix="billing"
+            schema={config.billingAddressSchema}
+            values={billingValues}
+            onChange={handleBillingChange}
+          />
+        )}
 
         <DeliverySection
           options={config.deliveryOptions}

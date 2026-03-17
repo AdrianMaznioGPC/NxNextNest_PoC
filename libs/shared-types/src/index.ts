@@ -310,6 +310,7 @@ export type PaymentOption = {
 
 export type CheckoutConfig = {
   addressSchema: AddressFormSchema;
+  billingAddressSchema: AddressFormSchema;
   deliveryOptions: DeliveryOption[];
   paymentOptions: PaymentOption[];
 };

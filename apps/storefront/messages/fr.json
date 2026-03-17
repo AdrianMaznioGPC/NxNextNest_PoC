@@ -75,6 +75,8 @@
   "checkout": {
     "title": "Paiement",
     "shippingAddress": "Adresse de livraison",
+    "billingAddress": "Adresse de facturation",
+    "useDifferentBillingAddress": "Utiliser une adresse de facturation différente",
     "firstName": "Prénom",
     "lastName": "Nom",
     "email": "E-mail",

@@ -75,6 +75,8 @@
   "checkout": {
     "title": "Checkout",
     "shippingAddress": "Shipping Address",
+    "billingAddress": "Billing Address",
+    "useDifferentBillingAddress": "Use a different address for billing",
     "firstName": "First Name",
     "lastName": "Last Name",
     "email": "Email",
