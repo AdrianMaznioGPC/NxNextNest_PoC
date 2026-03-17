@@ -1,5 +1,6 @@
-import { Module } from "@nestjs/common";
+import { Logger, Module } from "@nestjs/common";
 import { APP_INTERCEPTOR } from "@nestjs/core";
+import { ChaosBackendModule } from "./adapters/chaos/chaos-backend.module";
 import { MockBackendModule } from "./adapters/mock/mock-backend.module";
 import { CartController } from "./modules/cart/cart.controller";
 import { CheckoutController } from "./modules/checkout/checkout.controller";
@@ -13,8 +14,15 @@ import { ProductDomainService } from "./modules/product/product-domain.service";
 import { SystemModule } from "./modules/system/system.module";
 import { StoreInterceptor } from "./store";
 
+const isChaos = process.env.BFF_BACKEND === "chaos";
+const backendModule = isChaos ? ChaosBackendModule : MockBackendModule;
+
+if (isChaos) {
+  new Logger("AppModule").warn("CHAOS BACKEND ACTIVE — not for production use");
+}
+
 @Module({
-  imports: [SystemModule.forRoot(MockBackendModule)],
+  imports: [SystemModule.forRoot(backendModule)],
   controllers: [
     CartController,
     CheckoutController,

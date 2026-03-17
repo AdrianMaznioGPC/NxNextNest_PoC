@@ -60,6 +60,7 @@ const frProducts: BaseProduct[] = [
   record("p-10", "embout-d-echappement-a-collier",          "Embout d'échappement à collier",          "Embout d'échappement universel en acier inoxydable à collier. Compatible avec les tubes de 63 à 76 mm.",                                           "1549399542-7e3f8b79c341", "Finition",          [{ id: "var-chrome-0", label: "Chrome" }, { id: "var-black-1", label: "Noir" }]),
   record("p-11", "kit-d-admission-courte",                  "Kit d'admission courte",                  "Admission courte en aluminium poli avec filtre conique haute performance. Installation facile par boulonnage.",                                     "1606577924006-27d39b132ae2", "Diamètre du tube", [{ id: "var-2.5-in-0", label: "63 mm" }, { id: "var-3-in-1", label: "76 mm" }]),
   record("p-12", "elargisseurs-de-voie",                    "Élargisseurs de voie (paire)",            "Élargisseurs de voie hubcentriques pour un look agressif. Construction en aluminium T6 billet.",                                                    "1562911791-c7a97b729ec5", "Épaisseur",         [{ id: "var-15mm-0", label: "15mm" }, { id: "var-20mm-1", label: "20mm" }, { id: "var-25mm-2", label: "25mm" }]),
+  record("p-13", "capteur-de-pression-pneu",                 "Capteur de pression pneu (TPMS)",         "Capteur de pression de pneu de remplacement compatible OEM. Programmation facile et longue durée de vie de la batterie.",                              "1558618666-fcd25c85f68e", "Type de valve",     [{ id: "var-snap-in-0", label: "Snap-In" }, { id: "var-clamp-in-1", label: "Clamp-In" }]),
 ];
 
 /* prettier-ignore */
@@ -76,6 +77,7 @@ const ieProducts: BaseProduct[] = [
   record("p-10", "exhaust-tip-clamp-on",   "Clamp-On Exhaust Tip",         'Universal stainless steel clamp-on exhaust tip. Fits 2.5" to 3" pipes.',                              "1549399542-7e3f8b79c341", "Finish",        [{ id: "var-chrome-0", label: "Chrome" }, { id: "var-black-1", label: "Black" }]),
   record("p-11", "short-ram-intake",       "Short Ram Intake Kit",         "Polished aluminum short ram intake with high-flow cone filter. Easy bolt-on installation.",             "1606577924006-27d39b132ae2", "Pipe Diameter", [{ id: "var-2.5-in-0", label: "2.5 in" }, { id: "var-3-in-1", label: "3 in" }]),
   record("p-12", "wheel-spacers",          "Wheel Spacers (Pair)",         "Hubcentric wheel spacers for an aggressive stance. T6 billet aluminum construction.",                  "1562911791-c7a97b729ec5", "Thickness",     [{ id: "var-15mm-0", label: "15mm" }, { id: "var-20mm-1", label: "20mm" }, { id: "var-25mm-2", label: "25mm" }]),
+  record("p-13", "tyre-pressure-sensor",    "Tyre Pressure Sensor (TPMS)",  "OEM-compatible replacement tyre pressure sensor. Easy programming and long battery life.",            "1558618666-fcd25c85f68e", "Valve Type",    [{ id: "var-snap-in-0", label: "Snap-In" }, { id: "var-clamp-in-1", label: "Clamp-In" }]),
 ];
 
 export const productsByStore: Record<string, BaseProduct[]> = {

@@ -41,3 +41,6 @@ next-env.d.ts
 
 # nx
 .nx/
+
+# k6 test results
+results/

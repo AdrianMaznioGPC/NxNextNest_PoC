@@ -40,8 +40,12 @@ export class ResilienceService {
   }
 
   /**
-   * Execute a task, returning a fallback value if resilience errors occur.
-   * Business exceptions (non-resilience) are still thrown.
+   * Execute a task, returning a fallback value on any failure.
+   *
+   * When a fallback is explicitly configured for a method, the caller has
+   * declared "I'd rather have degraded data than an error." This catches
+   * all errors — resilience errors (timeout, circuit open, concurrency)
+   * as well as upstream backend errors (connection refused, HTTP 500, etc.).
    */
   async executeOrDefault<T>(
     key: string,
@@ -52,13 +56,10 @@ export class ResilienceService {
     try {
       return await this.execute(key, task, policy);
     } catch (error) {
-      if (isResilienceError(error)) {
-        this.logger.warn(
-          `Degrading gracefully for "${key}": ${(error as Error).message}`,
-        );
-        return fallback;
-      }
-      throw error;
+      this.logger.warn(
+        `Degrading gracefully for "${key}": ${(error as Error).message}`,
+      );
+      return fallback;
     }
   }
 
