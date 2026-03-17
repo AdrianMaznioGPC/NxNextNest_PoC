@@ -1,4 +1,4 @@
-import Container from "components/layout/container";
+import { Container } from "@commerce/ui";
 
 export default function CheckoutLoading() {
   return (

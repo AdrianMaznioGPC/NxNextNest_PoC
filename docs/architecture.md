@@ -2,7 +2,7 @@
 
 ## What This Project Is
 
-A multi-store e-commerce platform built as an Nx monorepo with two applications and two shared libraries. The system follows a **Backend-for-Frontend (BFF)** pattern where a NestJS server aggregates, enriches, and shapes data for a Next.js storefront.
+A multi-store e-commerce platform built as an Nx monorepo with two applications and three shared libraries. The system follows a **Backend-for-Frontend (BFF)** pattern where a NestJS server aggregates, enriches, and shapes data for a Next.js storefront.
 
 ## Monorepo Structure
 
@@ -13,7 +13,8 @@ commerce-monorepo/
 │   └── storefront/       # Next.js 15 frontend
 ├── libs/
 │   ├── shared-types/     # TypeScript types shared across apps
-│   └── store-config/     # Multi-store configuration (locales, currencies, domains)
+│   ├── store-config/     # Multi-store configuration (locales, currencies, domains)
+│   └── ui/               # Shared UI component library (design tokens, primitives)
 ├── k6/                   # Load testing scenarios
 ├── docs/                 # Documentation
 ├── Caddyfile             # Local reverse proxy for multi-domain dev
@@ -84,6 +85,10 @@ Pure TypeScript type definitions. No runtime code. Defines the contract between 
 ### `@commerce/store-config`
 
 Store configuration with locale, currency, domain, and language per store. Exports a `resolveStoreFromHostname()` function used by both the Next.js middleware and the BFF's store interceptor.
+
+### `@commerce/ui`
+
+Shared UI component library providing framework-agnostic, accessible primitives styled with Tailwind CSS v4 and design tokens. Components use CVA for variant-driven APIs and Base UI for accessible behavior. The entire visual identity can be swapped by overriding CSS custom properties — no component code changes required. See [docs/ui-library.md](ui-library.md) for full documentation.
 
 ## Running Locally
 

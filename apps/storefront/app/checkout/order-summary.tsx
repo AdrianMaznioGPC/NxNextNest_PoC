@@ -1,6 +1,6 @@
 "use client";
 
-import Price from "components/price";
+import { Price } from "@commerce/ui";
 import type { Cart, Money } from "lib/types";
 import { useTranslations } from "next-intl";
 import Image from "next/image";

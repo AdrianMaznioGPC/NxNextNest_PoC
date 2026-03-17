@@ -1,10 +1,8 @@
 "use client";
 
+import { cn, LoadingDots, Price } from "@commerce/ui";
 import { Dialog, Transition } from "@headlessui/react";
 import { ShoppingCartIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import clsx from "clsx";
-import LoadingDots from "components/loading-dots";
-import Price from "components/price";
 import { DEFAULT_OPTION } from "lib/constants";
 import { createUrl, productUrl } from "lib/utils";
 import { useTranslations } from "next-intl";
@@ -228,7 +226,7 @@ function CloseCart({ className }: { className?: string }) {
   return (
     <div className="relative flex h-11 w-11 items-center justify-center rounded-md border border-neutral-200 text-black transition-colors dark:border-neutral-700 dark:text-white">
       <XMarkIcon
-        className={clsx(
+        className={cn(
           "h-6 transition-all ease-in-out hover:scale-110",
           className,
         )}

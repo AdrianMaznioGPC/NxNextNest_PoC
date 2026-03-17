@@ -14,7 +14,8 @@
     "noUncheckedIndexedAccess": true,
     "paths": {
       "@commerce/shared-types": ["libs/shared-types/src/index.ts"],
-      "@commerce/store-config": ["libs/store-config/src/index.ts"]
+      "@commerce/store-config": ["libs/store-config/src/index.ts"],
+      "@commerce/ui": ["libs/ui/src/index.ts"]
     }
   }
 }

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import Prose from "components/prose";
+import { Prose } from "@commerce/ui";
 import { getPage, getStoreCode } from "lib/api";
 import { getLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";

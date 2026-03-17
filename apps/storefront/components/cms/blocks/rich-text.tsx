@@ -1,4 +1,4 @@
-import Prose from "components/prose";
+import { Prose } from "@commerce/ui";
 import type { RichTextBlock } from "lib/types";
 
 function RichText({ block }: { block: RichTextBlock }) {

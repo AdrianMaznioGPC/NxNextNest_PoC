@@ -1,0 +1,45 @@
+/*
+ * Design Tokens — Commerce UI
+ *
+ * All visual properties are expressed as CSS custom properties.
+ * To re-theme the entire component library, override these variables
+ * (e.g. via a second CSS file, a `.theme-dark` class, or a brand layer).
+ *
+ * Tailwind v4 consumes these through @theme inline or by referencing
+ * var(--color-*) / var(--radius-*) directly in utility classes.
+ */
+
+@theme {
+  /* ── Brand palette ────────────────────────────────────────────────── */
+  --color-primary: oklch(0.546 0.245 262.88);
+  --color-primary-foreground: oklch(0.985 0.002 247.84);
+  --color-secondary: oklch(0.968 0.007 247.84);
+  --color-secondary-foreground: oklch(0.208 0.042 265.75);
+  --color-accent: oklch(0.968 0.007 247.84);
+  --color-accent-foreground: oklch(0.208 0.042 265.75);
+
+  /* ── Semantic palette ─────────────────────────────────────────────── */
+  --color-destructive: oklch(0.577 0.245 27.33);
+  --color-destructive-foreground: oklch(0.985 0.002 247.84);
+
+  /* ── Surface & text ───────────────────────────────────────────────── */
+  --color-background: oklch(1 0 0);
+  --color-foreground: oklch(0.145 0.028 264.44);
+  --color-muted: oklch(0.968 0.007 247.84);
+  --color-muted-foreground: oklch(0.556 0.022 257.42);
+  --color-card: oklch(1 0 0);
+  --color-card-foreground: oklch(0.145 0.028 264.44);
+  --color-popover: oklch(1 0 0);
+  --color-popover-foreground: oklch(0.145 0.028 264.44);
+
+  /* ── Border & ring ────────────────────────────────────────────────── */
+  --color-border: oklch(0.929 0.013 255.51);
+  --color-input: oklch(0.929 0.013 255.51);
+  --color-ring: oklch(0.546 0.245 262.88);
+
+  /* ── Radii ────────────────────────────────────────────────────────── */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+}

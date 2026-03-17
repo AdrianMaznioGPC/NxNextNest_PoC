@@ -31,6 +31,7 @@ apps/
 libs/
   shared-types/     TypeScript types shared between apps
   store-config/     Multi-store configuration (locales, currencies, domains)
+  ui/               Shared UI component library (design tokens, primitives)
 k6/                 Load testing scenarios
 docs/               Documentation
 ```
@@ -86,25 +87,27 @@ See [docs/chaos-testing.md](docs/chaos-testing.md) and [docs/load-testing.md](do
 
 ## Documentation
 
-| Document                                     | Description                                                       |
-| -------------------------------------------- | ----------------------------------------------------------------- |
-| [Architecture](docs/architecture.md)         | Project structure, integration pattern, key decisions             |
-| [BFF](docs/bff.md)                           | Ports, adapters, domain services, controllers, product enrichment |
-| [Storefront](docs/storefront.md)             | Pages, caching, server actions, CMS rendering, components         |
-| [Resilience](docs/resilience.md)             | Timeout, retry, circuit breaker, load shedding, health endpoints  |
-| [Multi-Store](docs/multi-store.md)           | Store config, request flow, adding new stores                     |
-| [CMS Blocks](docs/cms-blocks.md)             | Block resolution pipeline, adding new block types                 |
-| [Cart & Checkout](docs/cart-and-checkout.md) | Cart mutations, checkout forms, address book                      |
-| [Error Handling](docs/error-handling.md)     | Error contracts, mapping, graceful degradation                    |
-| [Mock Data](docs/mock-data.md)               | Data files, pre-enriched index, stateful stores                   |
-| [Chaos Testing](docs/chaos-testing.md)       | Chaos injection, control plane, safety                            |
-| [Load Testing](docs/load-testing.md)         | k6 scenarios, running tests, interpreting results                 |
+| Document                                     | Description                                                         |
+| -------------------------------------------- | ------------------------------------------------------------------- |
+| [Architecture](docs/architecture.md)         | Project structure, integration pattern, key decisions               |
+| [BFF](docs/bff.md)                           | Ports, adapters, domain services, controllers, product enrichment   |
+| [Storefront](docs/storefront.md)             | Pages, caching, server actions, CMS rendering, components           |
+| [Resilience](docs/resilience.md)             | Timeout, retry, circuit breaker, load shedding, health endpoints    |
+| [Multi-Store](docs/multi-store.md)           | Store config, request flow, adding new stores                       |
+| [CMS Blocks](docs/cms-blocks.md)             | Block resolution pipeline, adding new block types                   |
+| [Cart & Checkout](docs/cart-and-checkout.md) | Cart mutations, checkout forms, address book                        |
+| [Error Handling](docs/error-handling.md)     | Error contracts, mapping, graceful degradation                      |
+| [Mock Data](docs/mock-data.md)               | Data files, pre-enriched index, stateful stores                     |
+| [Chaos Testing](docs/chaos-testing.md)       | Chaos injection, control plane, safety                              |
+| [Load Testing](docs/load-testing.md)         | k6 scenarios, running tests, interpreting results                   |
+| [UI Library](docs/ui-library.md)             | Shared component library, design tokens, theming, adding components |
 
 ## Tech Stack
 
 | Layer        | Technology                                       |
 | ------------ | ------------------------------------------------ |
 | Frontend     | Next.js 15, React 19, Tailwind CSS v4, next-intl |
+| UI Library   | CVA, tailwind-merge, Base UI, design tokens      |
 | BFF          | NestJS 11, Fastify, class-validator              |
 | Monorepo     | Nx, npm workspaces                               |
 | Load testing | k6                                               |

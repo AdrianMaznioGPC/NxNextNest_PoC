@@ -1,6 +1,5 @@
+import { Price, Prose } from "@commerce/ui";
 import { AddToCart } from "components/cart/add-to-cart";
-import Price from "components/price";
-import Prose from "components/prose";
 import { Product } from "lib/types";
 import { VariantSelector } from "./variant-selector";
 

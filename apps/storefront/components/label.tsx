@@ -1,5 +1,4 @@
-import clsx from "clsx";
-import Price from "./price";
+import { cn, Price } from "@commerce/ui";
 
 const Label = ({
   title,
@@ -14,7 +13,7 @@ const Label = ({
 }) => {
   return (
     <div
-      className={clsx(
+      className={cn(
         "absolute bottom-0 left-0 flex w-full px-4 pb-4 @container/label",
         {
           "lg:px-20 lg:pb-[35%]": position === "center",

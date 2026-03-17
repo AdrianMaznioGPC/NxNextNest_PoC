@@ -1,4 +1,4 @@
-import Container from "components/layout/container";
+import { Container } from "@commerce/ui";
 import { getCart, getCheckoutConfig, getStoreCode } from "lib/api";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";

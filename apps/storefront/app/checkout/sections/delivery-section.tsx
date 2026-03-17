@@ -1,7 +1,6 @@
 "use client";
 
-import clsx from "clsx";
-import Price from "components/price";
+import { cn, Price } from "@commerce/ui";
 import type { DeliveryOption } from "lib/types";
 
 interface DeliverySectionProps {
@@ -27,7 +26,7 @@ export function DeliverySection({
           return (
             <label
               key={option.id}
-              className={clsx(
+              className={cn(
                 "flex cursor-pointer items-center justify-between rounded-lg border p-4 transition-colors",
                 isSelected
                   ? "border-blue-600 bg-blue-50 dark:bg-blue-950"

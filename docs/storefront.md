@@ -41,15 +41,15 @@ The storefront is a Next.js 15 application using the App Router, React Server Co
 
 ## Pages
 
-| Route | BFF Endpoint | Description |
-|-------|-------------|-------------|
-| `/` | `/page-data/home` | Homepage with CMS blocks |
-| `/categories` | `/page-data/categories` | Category list page |
-| `/categories/:slug/c/:id` | `/page-data/categories/:id` | Category detail (products or subcategories) |
-| `/product/:slug/p/:id` | `/page-data/product/:id` | Product detail page |
-| `/search` | `/page-data/search` | Search results with sorting/pagination |
-| `/checkout` | `/checkout/config` + `/cart/:id` | Checkout form |
-| `/:page` | `/page-data/pages/:handle` | Static CMS pages (About, FAQ, etc.) |
+| Route                     | BFF Endpoint                     | Description                                 |
+| ------------------------- | -------------------------------- | ------------------------------------------- |
+| `/`                       | `/page-data/home`                | Homepage with CMS blocks                    |
+| `/categories`             | `/page-data/categories`          | Category list page                          |
+| `/categories/:slug/c/:id` | `/page-data/categories/:id`      | Category detail (products or subcategories) |
+| `/product/:slug/p/:id`    | `/page-data/product/:id`         | Product detail page                         |
+| `/search`                 | `/page-data/search`              | Search results with sorting/pagination      |
+| `/checkout`               | `/checkout/config` + `/cart/:id` | Checkout form                               |
+| `/:page`                  | `/page-data/pages/:handle`       | Static CMS pages (About, FAQ, etc.)         |
 
 ### URL Structure
 
@@ -119,19 +119,20 @@ Helper functions wrap specific endpoints and handle caching/auth headers.
 
 ## Component Organization
 
+UI primitives (Button, Container, Price, Prose, LoadingDots) live in the shared `@commerce/ui` library (`libs/ui/`). The storefront imports them via `import { Button, Container } from "@commerce/ui"`. See [docs/ui-library.md](ui-library.md) for the full component API and theming guide.
+
+Domain-coupled components that depend on Next.js (`next/link`, `next/image`), `next-intl`, or app-specific types remain in the storefront:
+
 ```
 components/
 ├── address/         # Address picker for checkout
 ├── cart/            # Cart modal, add-to-cart, quantity controls, server actions
 ├── cms/             # CMS block renderer and block components
-├── grid/            # Product grid layout
+├── grid/            # Product grid layout and tile images
 ├── icons/           # SVG logo
 ├── layout/          # Navbar, footer, breadcrumbs, pagination, search, store switcher
 ├── product/         # Product gallery, description, variant selector
-├── label.tsx        # Price label overlay
-├── loading-dots.tsx # Loading indicator
+├── label.tsx        # Price label overlay (uses @commerce/ui Price)
 ├── logo-square.tsx  # Logo component
-├── price.tsx        # Currency-formatted price display
-├── prose.tsx        # HTML content renderer
 └── opengraph-image.tsx
 ```

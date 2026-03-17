@@ -1,7 +1,11 @@
 @import "tailwindcss";
+@import "../../../libs/ui/src/styles/tokens.css";
 
 @plugin "@tailwindcss/container-queries";
 @plugin "@tailwindcss/typography";
+
+/* Ensure Tailwind scans the shared UI library for class usage */
+@source "../../../libs/ui/src/**/*.{ts,tsx}";
 
 @layer base {
   *,

@@ -1,6 +1,6 @@
+import { Container } from "@commerce/ui";
 import { GridTileImage } from "components/grid/tile";
 import Breadcrumbs from "components/layout/breadcrumbs";
-import Container from "components/layout/container";
 import { Gallery } from "components/product/gallery";
 import { ProductDescription } from "components/product/product-description";
 import { getProductPageData, getStoreCode } from "lib/api";

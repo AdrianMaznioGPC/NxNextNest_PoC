@@ -1,5 +1,5 @@
+import { Container } from "@commerce/ui";
 import { BlockRenderer } from "components/cms/block-renderer";
-import Container from "components/layout/container";
 import { getHomePageData, getStoreCode } from "lib/api";
 
 export const metadata = {
