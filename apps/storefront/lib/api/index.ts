@@ -1,19 +1,19 @@
 import { defaultStoreCode } from "@commerce/store-config";
 import { TAGS } from "lib/constants";
 import type {
+  BffErrorResponse,
   Cart,
   CategoryListPageData,
   CategoryPageData,
   CheckoutConfig,
-  Collection,
   GlobalLayoutData,
   HomePageData,
   Menu,
   Page,
-  Product,
   ProductPageData,
   SavedAddress,
   SearchPageData,
+  SitemapPageData,
 } from "lib/types";
 import {
   unstable_cacheLife as cacheLife,
@@ -22,6 +22,21 @@ import {
 import { cookies, headers } from "next/headers";
 
 const BFF_URL = process.env.BFF_URL || "http://localhost:4000";
+
+// -- BFF error ---------------------------------------------------------------
+
+/**
+ * Typed error wrapping the structured `BffErrorResponse` from the BFF.
+ * Callers can inspect `.response` for the error code and message.
+ */
+export class BffError extends Error {
+  constructor(public readonly response: BffErrorResponse) {
+    super(response.message);
+    this.name = "BffError";
+  }
+}
+
+// -- Helpers -----------------------------------------------------------------
 
 export async function getStoreCode(): Promise<string> {
   const h = await headers();
@@ -53,7 +68,17 @@ async function bffFetch<T>(
     },
   });
   if (!res.ok) {
-    throw new Error(`BFF error: ${res.status} ${res.statusText}`);
+    let errorBody: BffErrorResponse;
+    try {
+      errorBody = await res.json();
+    } catch {
+      errorBody = {
+        statusCode: res.status,
+        errorCode: "UNKNOWN",
+        message: res.statusText,
+      };
+    }
+    throw new BffError(errorBody);
   }
   const text = await res.text();
   if (!text) return undefined as T;
@@ -67,129 +92,6 @@ function qs(params: Record<string, string | boolean | undefined>): string {
   }
   const str = sp.toString();
   return str ? `?${str}` : "";
-}
-
-// -- Products ----------------------------------------------------------------
-
-export async function getProducts(
-  storeCode: string,
-  {
-    query,
-    reverse,
-    sortKey,
-  }: {
-    query?: string;
-    reverse?: boolean;
-    sortKey?: string;
-  },
-): Promise<Product[]> {
-  "use cache";
-  cacheTag(TAGS.products);
-  cacheLife("days");
-
-  return bffFetch(storeCode, `/products${qs({ q: query, sortKey, reverse })}`);
-}
-
-export async function getProduct(
-  storeCode: string,
-  handle: string,
-): Promise<Product | undefined> {
-  "use cache";
-  cacheTag(TAGS.products);
-  cacheLife("days");
-
-  return bffFetch(storeCode, `/products/${handle}`);
-}
-
-export async function getProductRecommendations(
-  storeCode: string,
-  productId: string,
-): Promise<Product[]> {
-  "use cache";
-  cacheTag(TAGS.products);
-  cacheLife("days");
-
-  return bffFetch(storeCode, `/products/${productId}/recommendations`);
-}
-
-// -- Collections -------------------------------------------------------------
-
-export async function getCollections(storeCode: string): Promise<Collection[]> {
-  "use cache";
-  cacheTag(TAGS.collections);
-  cacheLife("days");
-
-  return bffFetch(storeCode, "/collections");
-}
-
-export async function getCollection(
-  storeCode: string,
-  handle: string,
-): Promise<Collection | undefined> {
-  "use cache";
-  cacheTag(TAGS.collections);
-  cacheLife("days");
-
-  return bffFetch(storeCode, `/collections/${handle}`);
-}
-
-export async function getCollectionByPath(
-  storeCode: string,
-  slugs: string[],
-): Promise<Collection | undefined> {
-  "use cache";
-  cacheTag(TAGS.collections);
-  cacheLife("days");
-
-  return bffFetch(storeCode, `/collections/by-path/${slugs.join("/")}`);
-}
-
-export async function getCollectionProducts(
-  storeCode: string,
-  {
-    collection,
-    reverse,
-    sortKey,
-  }: {
-    collection: string;
-    reverse?: boolean;
-    sortKey?: string;
-  },
-): Promise<Product[]> {
-  "use cache";
-  cacheTag(TAGS.collections, TAGS.products);
-  cacheLife("days");
-
-  return bffFetch(
-    storeCode,
-    `/collections/${collection}/products${qs({ sortKey, reverse })}`,
-  );
-}
-
-// -- Menu --------------------------------------------------------------------
-
-export async function getMenu(
-  storeCode: string,
-  handle: string,
-): Promise<Menu[]> {
-  "use cache";
-  cacheTag(TAGS.collections);
-  cacheLife("days");
-
-  return bffFetch(storeCode, `/menus/${handle}`);
-}
-
-// -- Pages -------------------------------------------------------------------
-
-export async function getPage(
-  storeCode: string,
-  handle: string,
-): Promise<Page> {
-  return bffFetch(storeCode, `/pages/${handle}`);
-}
-
-export async function getPages(storeCode: string): Promise<Page[]> {
-  return bffFetch(storeCode, "/pages");
 }
 
 // -- Layout data -------------------------------------------------------------
@@ -275,6 +177,41 @@ export async function getSearchPageData(
   );
 }
 
+// -- Pages -------------------------------------------------------------------
+
+export async function getPage(
+  storeCode: string,
+  handle: string,
+): Promise<Page> {
+  return bffFetch(storeCode, `/page-data/pages/${handle}`);
+}
+
+// -- Menus -------------------------------------------------------------------
+
+export async function getMenu(
+  storeCode: string,
+  handle: string,
+): Promise<Menu[]> {
+  "use cache";
+  cacheTag(TAGS.collections);
+  cacheLife("days");
+
+  return bffFetch(storeCode, `/page-data/menus/${handle}`);
+}
+
+// -- Sitemap -----------------------------------------------------------------
+
+export async function getSitemapData(
+  storeCode: string,
+  baseUrl: string,
+): Promise<SitemapPageData> {
+  "use cache";
+  cacheTag(TAGS.products, TAGS.collections);
+  cacheLife("days");
+
+  return bffFetch(storeCode, `/page-data/sitemap${qs({ baseUrl })}`);
+}
+
 // -- Checkout ----------------------------------------------------------------
 
 export async function getCheckoutConfig(
@@ -283,6 +220,27 @@ export async function getCheckoutConfig(
   return bffFetch(storeCode, "/checkout/config", {
     headers: await customerHeaders(),
   });
+}
+
+/**
+ * Asks the BFF for the checkout redirect URL.
+ * The BFF owns the redirect target so the FE never sees external URLs directly.
+ */
+export async function getCheckoutRedirectUrl(): Promise<string> {
+  const storeCode = await getStoreCode();
+  const cartId = (await cookies()).get("cartId")?.value;
+  if (!cartId)
+    throw new BffError({
+      statusCode: 400,
+      errorCode: "NO_CART",
+      message: "No cart found",
+    });
+  const { redirectUrl } = await bffFetch<{ redirectUrl: string }>(
+    storeCode,
+    `/cart/${cartId}/checkout-redirect`,
+    { method: "POST" },
+  );
+  return redirectUrl;
 }
 
 // -- Addresses ---------------------------------------------------------------

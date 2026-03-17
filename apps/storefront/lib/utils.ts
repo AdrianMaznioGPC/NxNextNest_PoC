@@ -1,3 +1,4 @@
+import type { SortOption } from "lib/types";
 import { ReadonlyURLSearchParams } from "next/navigation";
 
 export const baseUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
@@ -24,3 +25,20 @@ export const createUrl = (
 
   return `${pathname}${queryString}`;
 };
+
+/**
+ * Resolves a sort slug to sortKey + reverse using BFF-provided sort options.
+ * Falls back to the default sort option if no match is found.
+ */
+export function resolveSortFromSlug(
+  slug: string | undefined,
+  sortOptions: SortOption[],
+): { sortKey: string; reverse: boolean } {
+  if (slug) {
+    const match = sortOptions.find((o) => o.slug === slug);
+    if (match) return { sortKey: match.sortKey, reverse: match.reverse };
+  }
+  const def = sortOptions.find((o) => o.isDefault) ?? sortOptions[0];
+  if (def) return { sortKey: def.sortKey, reverse: def.reverse };
+  return { sortKey: "RELEVANCE", reverse: false };
+}

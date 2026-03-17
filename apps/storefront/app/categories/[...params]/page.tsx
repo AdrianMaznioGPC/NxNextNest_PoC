@@ -4,8 +4,7 @@ import CategoryCard from "components/layout/category-card";
 import ProductGridItems from "components/layout/product-grid-items";
 import FilterList from "components/layout/search/filter";
 import { getCategoryPageData, getStoreCode } from "lib/api";
-import { defaultSort, sorting } from "lib/constants";
-import { categoryUrl } from "lib/utils";
+import { categoryUrl, resolveSortFromSlug } from "lib/utils";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
@@ -55,25 +54,40 @@ export default async function CategoryPage(props: Props) {
 
   const searchParams = await props.searchParams;
   const { sort } = (searchParams ?? {}) as { [key: string]: string };
-  const { sortKey, reverse } =
-    sorting.find((item) => item.slug === sort) || defaultSort;
 
   const storeCode = await getStoreCode();
 
+  // First fetch to get the page structure and BFF-provided sort options
   let data;
   try {
-    data = await getCategoryPageData(
-      storeCode,
-      parsed.categoryId,
-      sortKey,
-      reverse,
-    );
+    data = await getCategoryPageData(storeCode, parsed.categoryId);
   } catch {
     return notFound();
   }
 
-  const { collection, canonicalSlug, breadcrumbs, subcollections, products } =
-    data;
+  // If sort options exist and a sort slug was provided, resolve and re-fetch with sort
+  if (sort && data.sortOptions) {
+    const { sortKey, reverse } = resolveSortFromSlug(sort, data.sortOptions);
+    try {
+      data = await getCategoryPageData(
+        storeCode,
+        parsed.categoryId,
+        sortKey,
+        reverse,
+      );
+    } catch {
+      return notFound();
+    }
+  }
+
+  const {
+    collection,
+    canonicalSlug,
+    breadcrumbs,
+    subcollections,
+    products,
+    sortOptions,
+  } = data;
 
   const tBreadcrumbs = await getTranslations("breadcrumbs");
   const tCategories = await getTranslations("categories");
@@ -115,7 +129,9 @@ export default async function CategoryPage(props: Props) {
           {collection.title}
         </h1>
         <div className="w-[200px]">
-          <FilterList list={sorting} title={tSearch("sortBy")} />
+          {sortOptions && (
+            <FilterList list={sortOptions} title={tSearch("sortBy")} />
+          )}
         </div>
       </div>
       <p className="mt-2 mb-8 text-neutral-500 dark:text-neutral-400">

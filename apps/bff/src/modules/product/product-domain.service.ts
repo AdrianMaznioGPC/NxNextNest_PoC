@@ -5,6 +5,7 @@ import type {
   Product,
   ProductPageData,
   SearchPageData,
+  SitemapEntry,
 } from "@commerce/shared-types";
 import { Inject, Injectable } from "@nestjs/common";
 import {
@@ -120,13 +121,24 @@ export class ProductDomainService {
     sortKey?: string,
     reverse?: boolean,
   ): Promise<SearchPageData> {
+    const { SORT_OPTIONS } = await import("../page-data/sort-options");
     const products = await this.getProducts({ query, sortKey, reverse });
 
     return {
       query: query ?? "",
       products,
       totalResults: products.length,
+      sortOptions: SORT_OPTIONS,
     };
+  }
+
+  /** Returns sitemap entries for all products. */
+  async getProductSitemapEntries(baseUrl: string): Promise<SitemapEntry[]> {
+    const bases = await this.products.getProducts({});
+    return bases.map((p) => ({
+      url: `${baseUrl}/product/${p.handle}/p/${p.id}`,
+      lastModified: p.updatedAt,
+    }));
   }
 
   private async enrich(base: BaseProduct): Promise<Product> {

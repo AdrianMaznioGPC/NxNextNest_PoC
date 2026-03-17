@@ -114,7 +114,6 @@ function updateCartTotals(
 function createEmptyCart(): Cart {
   return {
     id: undefined,
-    checkoutUrl: "",
     totalQuantity: 0,
     lines: [],
     cost: {

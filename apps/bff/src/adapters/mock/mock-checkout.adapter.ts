@@ -34,4 +34,9 @@ export class MockCheckoutAdapter implements CheckoutPort {
       savedAddresses,
     };
   }
+
+  async getCheckoutRedirectUrl(cartId: string): Promise<string> {
+    // Mock implementation — in production this would return a payment provider URL
+    return `/checkout?cartId=${cartId}`;
+  }
 }

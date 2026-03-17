@@ -1,8 +1,9 @@
 "use client";
 
 import clsx from "clsx";
-import type { SortFilterItem } from "lib/constants";
+import type { SortOption } from "lib/types";
 import { createUrl } from "lib/utils";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import type { ListItem, PathFilterItem } from ".";
@@ -33,16 +34,20 @@ function PathFilterItem({ item }: { item: PathFilterItem }) {
   );
 }
 
-function SortFilterItem({ item }: { item: SortFilterItem }) {
+function SortFilterItem({ item }: { item: SortOption }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const active = searchParams.get("sort") === item.slug;
+  const t = useTranslations();
+  const isDefault = item.isDefault === true;
+  const active = isDefault
+    ? !searchParams.get("sort")
+    : searchParams.get("sort") === item.slug;
   const q = searchParams.get("q");
   const href = createUrl(
     pathname,
     new URLSearchParams({
       ...(q && { q }),
-      ...(item.slug && item.slug.length && { sort: item.slug }),
+      ...(!isDefault && { sort: item.slug }),
     }),
   );
   const DynamicTag = active ? "p" : Link;
@@ -50,7 +55,7 @@ function SortFilterItem({ item }: { item: SortFilterItem }) {
   return (
     <li
       className="mt-2 flex text-sm text-black dark:text-white"
-      key={item.title}
+      key={item.slug}
     >
       <DynamicTag
         prefetch={!active ? false : undefined}
@@ -59,7 +64,7 @@ function SortFilterItem({ item }: { item: SortFilterItem }) {
           "underline underline-offset-4": active,
         })}
       >
-        {item.title}
+        {t(item.labelKey)}
       </DynamicTag>
     </li>
   );

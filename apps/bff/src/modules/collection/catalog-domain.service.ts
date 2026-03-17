@@ -3,6 +3,7 @@ import type {
   CategoryListPageData,
   CategoryPageData,
   Collection,
+  SitemapEntry,
 } from "@commerce/shared-types";
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import {
@@ -58,6 +59,8 @@ export class CatalogDomainService {
       };
     }
 
+    const { SORT_OPTIONS } = await import("../page-data/sort-options");
+
     const products = await this.productDomain.getCollectionProducts({
       collection: collection.id,
       sortKey,
@@ -69,7 +72,17 @@ export class CatalogDomainService {
       canonicalSlug: collection.handle,
       breadcrumbs,
       products,
+      sortOptions: SORT_OPTIONS,
     };
+  }
+
+  /** Returns sitemap entries for all collections. */
+  async getCollectionSitemapEntries(baseUrl: string): Promise<SitemapEntry[]> {
+    const collections = await this.collections.getCollections();
+    return collections.map((c) => ({
+      url: `${baseUrl}${c.path}`,
+      lastModified: c.updatedAt,
+    }));
   }
 
   private async buildCategoryBreadcrumbs(

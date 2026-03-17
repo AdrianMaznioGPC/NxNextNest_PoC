@@ -1,7 +1,7 @@
 import Grid from "components/grid";
 import ProductGridItems from "components/layout/product-grid-items";
 import { getSearchPageData, getStoreCode } from "lib/api";
-import { defaultSort, sorting } from "lib/constants";
+import { resolveSortFromSlug } from "lib/utils";
 import { getTranslations } from "next-intl/server";
 
 export default async function SearchPage(props: {
@@ -9,16 +9,31 @@ export default async function SearchPage(props: {
 }) {
   const searchParams = await props.searchParams;
   const { sort, q: searchValue } = searchParams as { [key: string]: string };
-  const { sortKey, reverse } =
-    sorting.find((item) => item.slug === sort) || defaultSort;
 
   const storeCode = await getStoreCode();
-  const { products, totalResults } = await getSearchPageData(storeCode, {
+
+  // First fetch without sort to get available sort options from BFF
+  const initialData = await getSearchPageData(storeCode, {
     query: searchValue,
-    sortKey,
-    reverse,
   });
 
+  // Resolve the selected sort option using BFF-provided options
+  const { sortKey, reverse } = resolveSortFromSlug(
+    sort,
+    initialData.sortOptions,
+  );
+
+  // Re-fetch with sort only if a non-default sort was selected
+  const data =
+    sortKey && sort
+      ? await getSearchPageData(storeCode, {
+          query: searchValue,
+          sortKey,
+          reverse,
+        })
+      : initialData;
+
+  const { products, totalResults } = data;
   const t = await getTranslations("search");
 
   return (

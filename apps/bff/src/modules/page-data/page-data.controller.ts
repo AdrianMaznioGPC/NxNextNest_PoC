@@ -3,8 +3,11 @@ import type {
   CategoryPageData,
   GlobalLayoutData,
   HomePageData,
+  Menu,
+  Page,
   ProductPageData,
   SearchPageData,
+  SitemapPageData,
 } from "@commerce/shared-types";
 import {
   Controller,
@@ -63,5 +66,27 @@ export class PageDataController {
     @Query("reverse") reverse?: string,
   ): Promise<SearchPageData> {
     return this.pageData.getSearchPage(query, sortKey, reverse === "true");
+  }
+
+  @Get("pages")
+  getPages(): Promise<Page[]> {
+    return this.pageData.getPages();
+  }
+
+  @Get("pages/:handle")
+  async getPage(@Param("handle") handle: string): Promise<Page> {
+    const page = await this.pageData.getPage(handle);
+    if (!page) throw new NotFoundException();
+    return page;
+  }
+
+  @Get("menus/:handle")
+  getMenu(@Param("handle") handle: string): Promise<Menu[]> {
+    return this.pageData.getMenu(handle);
+  }
+
+  @Get("sitemap")
+  getSitemapData(@Query("baseUrl") baseUrl?: string): Promise<SitemapPageData> {
+    return this.pageData.getSitemapData(baseUrl ?? "https://localhost:3000");
   }
 }

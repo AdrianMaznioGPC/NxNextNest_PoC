@@ -5,6 +5,7 @@ import {
   NestFastifyApplication,
 } from "@nestjs/platform-fastify";
 import { AppModule } from "./app.module";
+import { BffErrorFilter } from "./filters/bff-error.filter";
 
 const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(",")
@@ -17,6 +18,8 @@ async function bootstrap() {
   );
 
   app.enableCors({ origin: ALLOWED_ORIGINS });
+
+  app.useGlobalFilters(new BffErrorFilter());
 
   app.useGlobalPipes(
     new ValidationPipe({

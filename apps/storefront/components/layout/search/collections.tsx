@@ -1,13 +1,13 @@
 import clsx from "clsx";
 import { Suspense } from "react";
 
-import { getCollections, getStoreCode } from "lib/api";
+import { getCategoryListPageData, getStoreCode } from "lib/api";
 import { getTranslations } from "next-intl/server";
 import FilterList from "./filter";
 
 async function CollectionList() {
   const storeCode = await getStoreCode();
-  const collections = await getCollections(storeCode);
+  const { collections } = await getCategoryListPageData(storeCode);
   const t = await getTranslations("search");
   return <FilterList list={collections} title={t("collections")} />;
 }

@@ -1,6 +1,6 @@
 import Container from "components/layout/container";
 import FilterList from "components/layout/search/filter";
-import { sorting } from "lib/constants";
+import { getSearchPageData, getStoreCode } from "lib/api";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import ChildrenWrapper from "./children-wrapper";
@@ -11,6 +11,8 @@ export default async function SearchLayout({
   children: React.ReactNode;
 }) {
   const t = await getTranslations("search");
+  const storeCode = await getStoreCode();
+  const { sortOptions } = await getSearchPageData(storeCode, {});
 
   return (
     <Container>
@@ -21,7 +23,7 @@ export default async function SearchLayout({
           </Suspense>
         </div>
         <div className="flex-none md:w-[125px]">
-          <FilterList list={sorting} title={t("sortBy")} />
+          <FilterList list={sortOptions} title={t("sortBy")} />
         </div>
       </div>
     </Container>

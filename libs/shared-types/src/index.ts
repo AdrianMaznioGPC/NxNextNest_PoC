@@ -2,7 +2,6 @@ export type Maybe<T> = T | null;
 
 export type Cart = {
   id: string | undefined;
-  checkoutUrl: string;
   cost: {
     subtotalAmount: Money;
     totalAmount: Money;
@@ -246,6 +245,7 @@ export type CategoryPageData = {
   breadcrumbs: Breadcrumb[];
   subcollections?: Collection[];
   products?: Product[];
+  sortOptions?: SortOption[];
 };
 
 export type ProductPageData = {
@@ -255,10 +255,19 @@ export type ProductPageData = {
   recommendations: Product[];
 };
 
+export type SortOption = {
+  slug: string;
+  labelKey: string;
+  sortKey: string;
+  reverse: boolean;
+  isDefault?: boolean;
+};
+
 export type SearchPageData = {
   query: string;
   products: Product[];
   totalResults: number;
+  sortOptions: SortOption[];
 };
 
 export type GlobalLayoutData = {
@@ -322,4 +331,24 @@ export type CheckoutConfig = {
   deliveryOptions: DeliveryOption[];
   paymentOptions: PaymentOption[];
   savedAddresses: SavedAddress[];
+};
+
+// -- Sitemap types -----------------------------------------------------------
+
+export type SitemapEntry = {
+  url: string;
+  lastModified: string;
+};
+
+export type SitemapPageData = {
+  entries: SitemapEntry[];
+};
+
+// -- Error types -------------------------------------------------------------
+
+export type BffErrorResponse = {
+  statusCode: number;
+  errorCode: string;
+  message: string;
+  details?: Record<string, unknown>;
 };

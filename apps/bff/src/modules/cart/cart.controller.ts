@@ -10,11 +10,15 @@ import {
   Post,
 } from "@nestjs/common";
 import { CART_PORT, CartPort } from "../../ports/cart.port";
+import { CHECKOUT_PORT, type CheckoutPort } from "../../ports/checkout.port";
 import { AddToCartDto, RemoveFromCartDto, UpdateCartDto } from "./cart.dto";
 
 @Controller("cart")
 export class CartController {
-  constructor(@Inject(CART_PORT) private readonly cart: CartPort) {}
+  constructor(
+    @Inject(CART_PORT) private readonly cart: CartPort,
+    @Inject(CHECKOUT_PORT) private readonly checkout: CheckoutPort,
+  ) {}
 
   @Get(":id")
   getCart(@Param("id") id: string): Promise<Cart | undefined> {
@@ -101,5 +105,20 @@ export class CartController {
       result = await this.cart.addToCart(body.cartId, toAdd);
     }
     return result;
+  }
+
+  /**
+   * Returns the checkout URL for a given cart.
+   * The BFF owns the redirect target so the FE never sees external URLs directly.
+   */
+  @Post(":id/checkout-redirect")
+  async getCheckoutRedirect(
+    @Param("id") id: string,
+  ): Promise<{ redirectUrl: string }> {
+    const cart = await this.cart.getCart(id);
+    if (!cart) throw new NotFoundException("Cart not found");
+
+    const redirectUrl = await this.checkout.getCheckoutRedirectUrl(id);
+    return { redirectUrl };
   }
 }

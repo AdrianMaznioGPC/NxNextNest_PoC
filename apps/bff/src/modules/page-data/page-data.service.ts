@@ -3,10 +3,15 @@ import type {
   CategoryPageData,
   GlobalLayoutData,
   HomePageData,
+  Menu,
+  Page,
   ProductPageData,
   SearchPageData,
+  SitemapPageData,
 } from "@commerce/shared-types";
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
+import { MENU_PORT, type MenuPort } from "../../ports/menu.port";
+import { PAGE_PORT, type PagePort } from "../../ports/page.port";
 import { CatalogDomainService } from "../collection/catalog-domain.service";
 import { NavigationDomainService } from "../menu/navigation-domain.service";
 import { ProductDomainService } from "../product/product-domain.service";
@@ -19,6 +24,8 @@ export class PageDataService {
     private readonly catalogDomain: CatalogDomainService,
     private readonly contentDomain: ContentDomainService,
     private readonly navigationDomain: NavigationDomainService,
+    @Inject(PAGE_PORT) private readonly pages: PagePort,
+    @Inject(MENU_PORT) private readonly menus: MenuPort,
   ) {}
 
   getLayoutData(): Promise<GlobalLayoutData> {
@@ -51,5 +58,39 @@ export class PageDataService {
     reverse?: boolean,
   ): Promise<SearchPageData> {
     return this.productDomain.getSearchResults(query, sortKey, reverse);
+  }
+
+  getPages(): Promise<Page[]> {
+    return this.pages.getPages();
+  }
+
+  getPage(handle: string): Promise<Page | undefined> {
+    return this.pages.getPage(handle);
+  }
+
+  getMenu(handle: string): Promise<Menu[]> {
+    return this.menus.getMenu(handle);
+  }
+
+  async getSitemapData(baseUrl: string): Promise<SitemapPageData> {
+    const [productEntries, collectionEntries, pages] = await Promise.all([
+      this.productDomain.getProductSitemapEntries(baseUrl),
+      this.catalogDomain.getCollectionSitemapEntries(baseUrl),
+      this.pages.getPages(),
+    ]);
+
+    const pageEntries = pages.map((page: Page) => ({
+      url: `${baseUrl}/${page.handle}`,
+      lastModified: page.updatedAt,
+    }));
+
+    return {
+      entries: [
+        { url: baseUrl, lastModified: new Date().toISOString() },
+        ...productEntries,
+        ...collectionEntries,
+        ...pageEntries,
+      ],
+    };
   }
 }
