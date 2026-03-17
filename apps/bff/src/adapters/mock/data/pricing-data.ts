@@ -96,6 +96,14 @@ const frPricing: MockPricingRecord[] = [
       "var-25mm-2": eur("79.99"),
     },
   },
+  {
+    productId: "p-13",
+    basePrice: eur("45.99"),
+    variantPrices: {
+      "var-snap-in-0": eur("45.99"),
+      "var-clamp-in-1": eur("49.99"),
+    },
+  },
 ];
 
 const iePricing: MockPricingRecord[] = [
@@ -184,6 +192,14 @@ const iePricing: MockPricingRecord[] = [
       "var-15mm-0": eur("79.99"),
       "var-20mm-1": eur("84.99"),
       "var-25mm-2": eur("89.99"),
+    },
+  },
+  {
+    productId: "p-13",
+    basePrice: eur("52.99"),
+    variantPrices: {
+      "var-snap-in-0": eur("52.99"),
+      "var-clamp-in-1": eur("57.99"),
     },
   },
 ];

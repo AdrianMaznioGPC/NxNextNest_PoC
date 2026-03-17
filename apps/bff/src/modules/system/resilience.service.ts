@@ -204,11 +204,3 @@ function backoffForAttempt(baseMs: number, attempt: number): number {
   const jitter = Math.floor(Math.random() * 10);
   return baseMs * attempt + jitter;
 }
-
-function isResilienceError(error: unknown): boolean {
-  return (
-    error instanceof TimeoutPolicyError ||
-    error instanceof CircuitOpenError ||
-    error instanceof ConcurrencyLimitError
-  );
-}

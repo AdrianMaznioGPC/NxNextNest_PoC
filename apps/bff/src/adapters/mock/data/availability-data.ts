@@ -115,6 +115,14 @@ const frAvailability: MockAvailabilityRecord[] = [
       "var-25mm-2": inStock,
     },
   },
+  {
+    productId: "p-13",
+    ...inStock,
+    variantAvailability: {
+      "var-snap-in-0": inStock,
+      "var-clamp-in-1": inStock,
+    },
+  },
 ];
 
 const ieAvailability: MockAvailabilityRecord[] = [
@@ -199,6 +207,14 @@ const ieAvailability: MockAvailabilityRecord[] = [
       "var-15mm-0": inStock,
       "var-20mm-1": inStock,
       "var-25mm-2": inStock,
+    },
+  },
+  {
+    productId: "p-13",
+    ...inStock,
+    variantAvailability: {
+      "var-snap-in-0": inStock,
+      "var-clamp-in-1": inStock,
     },
   },
 ];

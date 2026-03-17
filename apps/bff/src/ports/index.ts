@@ -40,3 +40,5 @@ export { PRICING_PORT } from "./pricing.port";
 export type { PricingPort, ProductPricing } from "./pricing.port";
 export { PRODUCT_PORT } from "./product.port";
 export type { ProductPort } from "./product.port";
+export { SEARCH_PORT } from "./search.port";
+export type { PaginationParams, SearchPort, SearchResult } from "./search.port";
