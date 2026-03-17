@@ -14,7 +14,7 @@ import { SystemModule } from "./modules/system/system.module";
 import { StoreInterceptor } from "./store";
 
 @Module({
-  imports: [MockBackendModule, SystemModule],
+  imports: [SystemModule.forRoot(MockBackendModule)],
   controllers: [
     CartController,
     CheckoutController,
