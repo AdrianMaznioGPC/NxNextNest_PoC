@@ -54,7 +54,6 @@
     "total": "Total",
     "checkout": "Passer la commande",
     "addToCart": "Ajouter au panier",
-    "outOfStock": "Rupture de stock",
     "removeItem": "Supprimer l'article",
     "openCart": "Ouvrir le panier",
     "closeCart": "Fermer le panier"
@@ -65,9 +64,7 @@
   "footer": {
     "allRightsReserved": "Tous droits réservés."
   },
-  "variants": {
-    "outOfStock": "(Rupture de stock)"
-  },
+  "variants": {},
   "nav": {
     "browseProducts": "Parcourir les produits",
     "viewAllCategories": "Voir toutes les catégories",

@@ -54,7 +54,6 @@
     "total": "Total",
     "checkout": "Proceed to Checkout",
     "addToCart": "Add To Cart",
-    "outOfStock": "Out Of Stock",
     "removeItem": "Remove cart item",
     "openCart": "Open cart",
     "closeCart": "Close cart"
@@ -65,9 +64,7 @@
   "footer": {
     "allRightsReserved": "All rights reserved."
   },
-  "variants": {
-    "outOfStock": "(Out of Stock)"
-  },
+  "variants": {},
   "nav": {
     "browseProducts": "Browse Products",
     "viewAllCategories": "View all categories",

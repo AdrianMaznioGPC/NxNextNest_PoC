@@ -2,12 +2,12 @@
 
 import clsx from "clsx";
 import { ProductOption, ProductVariant } from "lib/types";
-import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 
 type Combination = {
   id: string;
-  availableForSale: boolean;
+  purchasable: boolean;
+  stockMessage: string;
   [key: string]: string | boolean;
 };
 
@@ -20,7 +20,6 @@ export function VariantSelector({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const t = useTranslations("variants");
   const hasNoOptionsOrJustOneOption =
     !options.length ||
     (options.length === 1 && options[0]?.values.length === 1);
@@ -31,7 +30,8 @@ export function VariantSelector({
 
   const combinations: Combination[] = variants.map((variant) => ({
     id: variant.id,
-    availableForSale: variant.availableForSale,
+    purchasable: variant.purchasable,
+    stockMessage: variant.stockMessage,
     ...variant.selectedOptions.reduce(
       (accumulator, option) => ({
         ...accumulator,
@@ -69,12 +69,11 @@ export function VariantSelector({
                     option.values.includes(value),
                 ),
             );
-            const isAvailableForSale = combinations.find((combination) =>
-              filtered.every(
-                ([key, value]) =>
-                  combination[key] === value && combination.availableForSale,
-              ),
+            const matchingCombination = combinations.find((combination) =>
+              filtered.every(([key, value]) => combination[key] === value),
             );
+            const isPurchasable = matchingCombination?.purchasable ?? false;
+            const variantStockMessage = matchingCombination?.stockMessage ?? "";
 
             // The option is active if it's in the selected options.
             const isActive = searchParams.get(optionNameLowerCase) === value;
@@ -83,17 +82,17 @@ export function VariantSelector({
               <button
                 formAction={() => updateOption(optionNameLowerCase, value)}
                 key={value}
-                aria-disabled={!isAvailableForSale}
-                disabled={!isAvailableForSale}
-                title={`${option.name} ${value}${!isAvailableForSale ? " " + t("outOfStock") : ""}`}
+                aria-disabled={!isPurchasable}
+                disabled={!isPurchasable}
+                title={`${option.name} ${value}${!isPurchasable ? " — " + variantStockMessage : ""}`}
                 className={clsx(
                   "flex min-w-[48px] items-center justify-center rounded-full border bg-neutral-100 px-2 py-1 text-sm dark:border-neutral-800 dark:bg-neutral-900",
                   {
                     "cursor-default ring-2 ring-blue-600": isActive,
                     "ring-1 ring-transparent transition duration-300 ease-in-out hover:ring-blue-600":
-                      !isActive && isAvailableForSale,
+                      !isActive && isPurchasable,
                     "relative z-10 cursor-not-allowed overflow-hidden bg-neutral-100 text-neutral-500 ring-1 ring-neutral-300 before:absolute before:inset-x-0 before:-z-10 before:h-px before:-rotate-45 before:bg-neutral-300 before:transition-transform dark:bg-neutral-900 dark:text-neutral-400 dark:ring-neutral-700 dark:before:bg-neutral-700":
-                      !isAvailableForSale,
+                      !isPurchasable,
                   },
                 )}
               >

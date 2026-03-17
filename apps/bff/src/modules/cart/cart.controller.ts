@@ -1,5 +1,6 @@
 import type { Cart } from "@commerce/shared-types";
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -12,6 +13,7 @@ import {
 } from "@nestjs/common";
 import { CART_PORT, CartPort } from "../../ports/cart.port";
 import { CHECKOUT_PORT, type CheckoutPort } from "../../ports/checkout.port";
+import { ProductDomainService } from "../product/product-domain.service";
 import { CACHE_ROUTE_KIND_KEY } from "../system/cache-policy.service";
 import { LOAD_SHED_SCOPE_KEY } from "../system/load-shedding.config";
 import { AddToCartDto, RemoveFromCartDto, UpdateCartDto } from "./cart.dto";
@@ -23,6 +25,7 @@ export class CartController {
   constructor(
     @Inject(CART_PORT) private readonly cart: CartPort,
     @Inject(CHECKOUT_PORT) private readonly checkout: CheckoutPort,
+    private readonly productDomain: ProductDomainService,
   ) {}
 
   @Get(":id")
@@ -32,10 +35,25 @@ export class CartController {
 
   /**
    * Adds lines to a cart. If `cartId` is omitted, a new cart is created.
-   * Returns the full cart including its ID so the caller can persist it.
+   * Validates that every line item is purchasable (has pricing and
+   * availability data) before mutating the cart.
    */
   @Post("lines")
   async addToCart(@Body() body: AddToCartDto): Promise<Cart> {
+    const variantIds = body.lines.map((l) => l.merchandiseId);
+    const unpurchasable =
+      await this.productDomain.getUnpurchasableVariantIds(variantIds);
+
+    if (unpurchasable.length) {
+      throw new BadRequestException({
+        statusCode: 400,
+        errorCode: "ITEMS_NOT_PURCHASABLE",
+        message:
+          "One or more items cannot be added to cart because pricing or availability data is unavailable.",
+        details: { merchandiseIds: unpurchasable },
+      });
+    }
+
     let cartId = body.cartId;
     if (!cartId) {
       const newCart = await this.cart.createCart();

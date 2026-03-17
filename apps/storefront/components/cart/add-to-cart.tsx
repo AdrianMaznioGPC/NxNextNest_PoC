@@ -10,10 +10,12 @@ import { useActionState } from "react";
 import { useCart } from "./cart-context";
 
 function SubmitButton({
-  availableForSale,
+  purchasable,
+  stockMessage,
   selectedVariantId,
 }: {
-  availableForSale: boolean;
+  purchasable: boolean;
+  stockMessage: string;
   selectedVariantId: string | undefined;
 }) {
   const t = useTranslations("cart");
@@ -21,10 +23,10 @@ function SubmitButton({
     "relative flex w-full items-center justify-center rounded-full bg-blue-600 p-4 tracking-wide text-white";
   const disabledClasses = "cursor-not-allowed opacity-60 hover:opacity-60";
 
-  if (!availableForSale) {
+  if (!purchasable) {
     return (
       <button disabled className={clsx(buttonClasses, disabledClasses)}>
-        {t("outOfStock")}
+        {stockMessage}
       </button>
     );
   }
@@ -60,7 +62,7 @@ function SubmitButton({
 }
 
 export function AddToCart({ product }: { product: Product }) {
-  const { variants, availableForSale } = product;
+  const { variants, purchasable, stockMessage } = product;
   const { addCartItem } = useCart();
   const searchParams = useSearchParams();
   const [message, formAction] = useActionState(addItem, null);
@@ -85,7 +87,8 @@ export function AddToCart({ product }: { product: Product }) {
       }}
     >
       <SubmitButton
-        availableForSale={availableForSale}
+        purchasable={purchasable}
+        stockMessage={stockMessage}
         selectedVariantId={selectedVariantId}
       />
       <p aria-live="polite" className="sr-only" role="status">

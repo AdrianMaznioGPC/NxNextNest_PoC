@@ -76,21 +76,29 @@ export default async function ProductPage(props: Props) {
     redirect(productUrl(product));
   }
 
+  const { minVariantPrice, maxVariantPrice } = product.priceRange;
+
   const productJsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.title,
     description: product.description,
     image: product.featuredImage.url,
-    offers: {
-      "@type": "AggregateOffer",
-      availability: product.availableForSale
-        ? "https://schema.org/InStock"
-        : "https://schema.org/OutOfStock",
-      priceCurrency: product.priceRange.minVariantPrice.currencyCode,
-      highPrice: product.priceRange.maxVariantPrice.amount,
-      lowPrice: product.priceRange.minVariantPrice.amount,
-    },
+    offers:
+      minVariantPrice && maxVariantPrice
+        ? {
+            "@type": "AggregateOffer",
+            availability: product.purchasable
+              ? "https://schema.org/InStock"
+              : "https://schema.org/OutOfStock",
+            priceCurrency: minVariantPrice.currencyCode,
+            highPrice: maxVariantPrice.amount,
+            lowPrice: minVariantPrice.amount,
+          }
+        : {
+            "@type": "Offer",
+            availability: "https://schema.org/OutOfStock",
+          },
   };
 
   return (
@@ -158,8 +166,9 @@ function RelatedProducts({
                 alt={product.title}
                 label={{
                   title: product.title,
-                  amount: product.priceRange.maxVariantPrice.amount,
-                  currencyCode: product.priceRange.maxVariantPrice.currencyCode,
+                  amount: product.priceRange.maxVariantPrice?.amount,
+                  currencyCode:
+                    product.priceRange.maxVariantPrice?.currencyCode,
                 }}
                 src={product.featuredImage?.url}
                 fill

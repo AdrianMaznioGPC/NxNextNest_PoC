@@ -31,9 +31,9 @@ function ProductCarousel({ block }: { block: ProductCarouselBlock }) {
                   alt={product.title}
                   label={{
                     title: product.title,
-                    amount: product.priceRange.maxVariantPrice.amount,
+                    amount: product.priceRange.maxVariantPrice?.amount,
                     currencyCode:
-                      product.priceRange.maxVariantPrice.currencyCode,
+                      product.priceRange.maxVariantPrice?.currencyCode,
                   }}
                   src={product.featuredImage?.url}
                   fill

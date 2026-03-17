@@ -26,7 +26,9 @@ export class MockAvailabilityAdapter implements AvailabilityPort {
 
     return {
       productId: record.productId,
-      availableForSale: record.availableForSale,
+      purchasable: record.purchasable,
+      stockStatus: record.stockStatus,
+      stockMessage: record.stockMessage,
       variantAvailability: new Map(Object.entries(record.variantAvailability)),
     };
   }

@@ -101,15 +101,19 @@ export type BaseProduct = {
 };
 
 export type ProductVariant = BaseProductVariant & {
-  availableForSale: boolean;
-  price: Money;
+  purchasable: boolean;
+  stockStatus: string;
+  stockMessage: string;
+  price?: Money;
 };
 
 export type Product = Omit<BaseProduct, "variants"> & {
-  availableForSale: boolean;
+  purchasable: boolean;
+  stockStatus: string;
+  stockMessage: string;
   priceRange: {
-    maxVariantPrice: Money;
-    minVariantPrice: Money;
+    maxVariantPrice?: Money;
+    minVariantPrice?: Money;
   };
   variants: ProductVariant[];
   breadcrumbs?: Breadcrumb[];

@@ -1,7 +1,6 @@
 import type {
   BaseProduct,
   Breadcrumb,
-  Money,
   Product,
   ProductPageData,
   SearchPageData,
@@ -12,6 +11,7 @@ import {
   AVAILABILITY_PORT,
   type AvailabilityPort,
   type ProductAvailability,
+  type VariantStockInfo,
 } from "../../ports/availability.port";
 import {
   COLLECTION_PORT,
@@ -23,8 +23,6 @@ import {
   type ProductPricing,
 } from "../../ports/pricing.port";
 import { PRODUCT_PORT, type ProductPort } from "../../ports/product.port";
-
-const ZERO: Money = { amount: "0.00", currencyCode: "USD" };
 
 @Injectable()
 export class ProductDomainService {
@@ -132,6 +130,57 @@ export class ProductDomainService {
     };
   }
 
+  /**
+   * Checks whether the given variant IDs are purchasable
+   * (have pricing data and are marked available for sale).
+   * Returns the list of variant IDs that are NOT purchasable.
+   */
+  async getUnpurchasableVariantIds(variantIds: string[]): Promise<string[]> {
+    const allProducts = await this.products.getProducts({});
+    const variantToProduct = new Map<string, string>();
+    for (const product of allProducts) {
+      for (const variant of product.variants) {
+        variantToProduct.set(variant.id, product.id);
+      }
+    }
+
+    const productIds = [
+      ...new Set(
+        variantIds
+          .map((vid) => variantToProduct.get(vid))
+          .filter((pid): pid is string => pid !== undefined),
+      ),
+    ];
+
+    const [pricingMap, availMap] = await Promise.all([
+      this.pricing.getPricingBatch(productIds),
+      this.availability.getAvailabilityBatch(productIds),
+    ]);
+
+    const unpurchasable: string[] = [];
+
+    for (const variantId of variantIds) {
+      const productId = variantToProduct.get(variantId);
+      if (!productId) {
+        unpurchasable.push(variantId);
+        continue;
+      }
+
+      const pricing = pricingMap.get(productId);
+      const avail = availMap.get(productId);
+
+      const hasPrice = pricing?.variantPrices.has(variantId) ?? false;
+      const variantStock = avail?.variantAvailability.get(variantId);
+      const isPurchasable = variantStock?.purchasable ?? false;
+
+      if (!hasPrice || !isPurchasable) {
+        unpurchasable.push(variantId);
+      }
+    }
+
+    return unpurchasable;
+  }
+
   /** Returns sitemap entries for all products. */
   async getProductSitemapEntries(baseUrl: string): Promise<SitemapEntry[]> {
     const bases = await this.products.getProducts({});
@@ -179,10 +228,23 @@ function mapToProduct(
   breadcrumbs: Breadcrumb[],
 ): Product {
   const variantPrices = pricing?.variantPrices ?? new Map();
-  const variantAvail = avail?.variantAvailability ?? new Map();
+  const variantAvail =
+    avail?.variantAvailability ?? new Map<string, VariantStockInfo>();
   const allAmounts = [...variantPrices.values()].map((p) =>
     parseFloat(p.amount),
   );
+
+  // A product is only purchasable when we have BOTH pricing and availability data.
+  // If either upstream is down (resilience fallback returns undefined / empty map),
+  // we mark the product as unavailable rather than silently allowing a $0 purchase.
+  const hasPricing = pricing !== undefined && allAmounts.length > 0;
+  const hasAvailability = avail !== undefined;
+
+  const UNAVAILABLE_STOCK_INFO: VariantStockInfo = {
+    purchasable: false,
+    stockStatus: "unavailable",
+    stockMessage: "Currently Unavailable",
+  };
 
   return {
     id: base.id,
@@ -196,28 +258,49 @@ function mapToProduct(
     seo: base.seo,
     tags: base.tags,
     updatedAt: base.updatedAt,
-    availableForSale: avail?.availableForSale ?? true,
+    purchasable: hasPricing && hasAvailability ? avail.purchasable : false,
+    stockStatus:
+      hasPricing && hasAvailability ? avail.stockStatus : "unavailable",
+    stockMessage:
+      hasPricing && hasAvailability
+        ? avail.stockMessage
+        : "Currently Unavailable",
     priceRange: {
-      minVariantPrice: allAmounts.length
+      minVariantPrice: hasPricing
         ? {
             amount: Math.min(...allAmounts).toFixed(2),
-            currencyCode:
-              pricing?.minVariantPrice.currencyCode ?? ZERO.currencyCode,
+            currencyCode: pricing.minVariantPrice.currencyCode,
           }
-        : ZERO,
-      maxVariantPrice: allAmounts.length
+        : undefined,
+      maxVariantPrice: hasPricing
         ? {
             amount: Math.max(...allAmounts).toFixed(2),
-            currencyCode:
-              pricing?.maxVariantPrice.currencyCode ?? ZERO.currencyCode,
+            currencyCode: pricing.maxVariantPrice.currencyCode,
           }
-        : ZERO,
+        : undefined,
     },
-    variants: base.variants.map((v) => ({
-      ...v,
-      availableForSale: variantAvail.get(v.id) ?? true,
-      price: variantPrices.get(v.id) ?? ZERO,
-    })),
+    variants: base.variants.map((v) => {
+      const stock = variantAvail.get(v.id);
+      const variantHasPrice = variantPrices.has(v.id);
+      const variantInfo: VariantStockInfo =
+        hasPricing && hasAvailability && stock
+          ? {
+              purchasable: stock.purchasable && variantHasPrice,
+              stockStatus: variantHasPrice ? stock.stockStatus : "unavailable",
+              stockMessage: variantHasPrice
+                ? stock.stockMessage
+                : "Currently Unavailable",
+            }
+          : UNAVAILABLE_STOCK_INFO;
+
+      return {
+        ...v,
+        purchasable: variantInfo.purchasable,
+        stockStatus: variantInfo.stockStatus,
+        stockMessage: variantInfo.stockMessage,
+        price: variantPrices.get(v.id),
+      };
+    }),
     breadcrumbs,
   };
 }
@@ -232,8 +315,8 @@ function sortProducts(
   if (sortKey === "PRICE") {
     sorted.sort(
       (a, b) =>
-        parseFloat(a.priceRange.minVariantPrice.amount) -
-        parseFloat(b.priceRange.minVariantPrice.amount),
+        parseFloat(a.priceRange.minVariantPrice?.amount ?? "0") -
+        parseFloat(b.priceRange.minVariantPrice?.amount ?? "0"),
     );
   } else if (sortKey === "CREATED_AT" || sortKey === "CREATED") {
     sorted.sort(

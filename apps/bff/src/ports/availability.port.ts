@@ -1,7 +1,15 @@
+export type VariantStockInfo = {
+  purchasable: boolean;
+  stockStatus: string;
+  stockMessage: string;
+};
+
 export type ProductAvailability = {
   productId: string;
-  availableForSale: boolean;
-  variantAvailability: Map<string, boolean>;
+  purchasable: boolean;
+  stockStatus: string;
+  stockMessage: string;
+  variantAvailability: Map<string, VariantStockInfo>;
 };
 
 export interface AvailabilityPort {

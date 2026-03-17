@@ -23,8 +23,8 @@ function FeaturedProducts({ block }: { block: FeaturedProductsBlock }) {
               sizes="(min-width: 768px) 33vw, 100vw"
               label={{
                 title: product.title,
-                amount: product.priceRange.maxVariantPrice.amount,
-                currencyCode: product.priceRange.maxVariantPrice.currencyCode,
+                amount: product.priceRange.maxVariantPrice?.amount,
+                currencyCode: product.priceRange.maxVariantPrice?.currencyCode,
                 position: "bottom",
               }}
             />

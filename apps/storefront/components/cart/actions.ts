@@ -21,6 +21,8 @@ function extractErrorMessage(error: unknown, fallback: string): string {
         return "Service is temporarily busy. Please try again in a moment.";
       case "UPSTREAM_TIMEOUT":
         return "The request took too long. Please try again.";
+      case "ITEMS_NOT_PURCHASABLE":
+        return "This item is currently unavailable for purchase. Please try again later.";
       default:
         return error.response.message;
     }
