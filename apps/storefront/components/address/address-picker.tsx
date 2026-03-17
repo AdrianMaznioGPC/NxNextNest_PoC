@@ -1,11 +1,11 @@
 "use client";
 
+import { cn } from "@commerce/ui";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   PlusIcon,
 } from "@heroicons/react/24/outline";
-import clsx from "clsx";
 import type { SavedAddress } from "lib/types";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -64,7 +64,7 @@ function ScrollButton({
     <button
       type="button"
       onClick={onClick}
-      className={clsx(
+      className={cn(
         "absolute top-1/2 z-10 -translate-y-1/2 rounded-full border border-neutral-200 bg-white/90 p-1.5 shadow-sm backdrop-blur-sm transition-opacity hover:bg-white dark:border-neutral-700 dark:bg-neutral-900/90 dark:hover:bg-neutral-800",
         direction === "left" ? "left-0" : "right-0",
       )}
@@ -122,7 +122,7 @@ export function AddressPicker({
                 key={address.id}
                 type="button"
                 onClick={() => onSelect(address)}
-                className={clsx(
+                className={cn(
                   "flex min-w-[140px] max-w-[220px] shrink-0 flex-col rounded-lg border p-3 text-left transition-colors sm:min-w-[180px]",
                   isSelected
                     ? "border-blue-600 bg-blue-50 dark:bg-blue-950"
@@ -151,7 +151,7 @@ export function AddressPicker({
           <button
             type="button"
             onClick={() => onSelect(null)}
-            className={clsx(
+            className={cn(
               "flex min-w-[140px] shrink-0 flex-col items-center justify-center rounded-lg border p-3 transition-colors sm:min-w-[180px]",
               selectedId === null
                 ? "border-blue-600 bg-blue-50 dark:bg-blue-950"

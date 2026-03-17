@@ -1,6 +1,6 @@
 "use client";
 
-import clsx from "clsx";
+import { cn } from "@commerce/ui";
 import { Menu } from "lib/types";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -18,11 +18,9 @@ export function FooterMenuItem({ item }: { item: Menu }) {
     <li>
       <Link
         href={item.path}
-        className={clsx(
+        className={cn(
           "block p-2 text-lg underline-offset-4 hover:text-black hover:underline md:inline-block md:text-sm dark:hover:text-neutral-300",
-          {
-            "text-black dark:text-neutral-300": active,
-          },
+          active && "text-black dark:text-neutral-300",
         )}
       >
         {item.title}

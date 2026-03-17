@@ -1,7 +1,7 @@
 "use client";
 
+import { cn } from "@commerce/ui";
 import { PlusIcon } from "@heroicons/react/24/outline";
-import clsx from "clsx";
 import { addItem } from "components/cart/actions";
 import { Product, ProductVariant } from "lib/types";
 import { useTranslations } from "next-intl";
@@ -25,7 +25,7 @@ function SubmitButton({
 
   if (!purchasable) {
     return (
-      <button disabled className={clsx(buttonClasses, disabledClasses)}>
+      <button disabled className={cn(buttonClasses, disabledClasses)}>
         {stockMessage}
       </button>
     );
@@ -36,7 +36,7 @@ function SubmitButton({
       <button
         aria-label={t("addToCart")}
         disabled
-        className={clsx(buttonClasses, disabledClasses)}
+        className={cn(buttonClasses, disabledClasses)}
       >
         <div className="absolute left-0 ml-4">
           <PlusIcon className="h-5" />
@@ -49,9 +49,7 @@ function SubmitButton({
   return (
     <button
       aria-label={t("addToCart")}
-      className={clsx(buttonClasses, {
-        "hover:opacity-90": true,
-      })}
+      className={cn(buttonClasses, "hover:opacity-90")}
     >
       <div className="absolute left-0 ml-4">
         <PlusIcon className="h-5" />

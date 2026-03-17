@@ -1,27 +1,9 @@
-import clsx from "clsx";
+import { Grid as BaseGrid, GridItem } from "@commerce/ui";
 
-function Grid(props: React.ComponentProps<"ul">) {
-  return (
-    <ul
-      {...props}
-      className={clsx("grid grid-flow-row gap-4", props.className)}
-    >
-      {props.children}
-    </ul>
-  );
-}
-
-function GridItem(props: React.ComponentProps<"li">) {
-  return (
-    <li
-      {...props}
-      className={clsx("aspect-square transition-opacity", props.className)}
-    >
-      {props.children}
-    </li>
-  );
-}
-
-Grid.Item = GridItem;
+/**
+ * Re-export with compound component API for backwards compatibility.
+ * New code should import { Grid, GridItem } from "@commerce/ui" directly.
+ */
+const Grid = Object.assign(BaseGrid, { Item: GridItem });
 
 export default Grid;

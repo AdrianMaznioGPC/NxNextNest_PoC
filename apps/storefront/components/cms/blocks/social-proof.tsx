@@ -1,23 +1,5 @@
+import { StarRating } from "@commerce/ui";
 import type { SocialProofBlock } from "lib/types";
-
-function StarRating({ rating }: { rating: number }) {
-  return (
-    <div className="flex gap-0.5" aria-label={`${rating} out of 5 stars`}>
-      {Array.from({ length: 5 }, (_, i) => (
-        <span
-          key={i}
-          className={
-            i < rating
-              ? "text-yellow-400"
-              : "text-neutral-300 dark:text-neutral-600"
-          }
-        >
-          ★
-        </span>
-      ))}
-    </div>
-  );
-}
 
 function SocialProof({ block }: { block: SocialProofBlock }) {
   if (!block.testimonials.length) return null;

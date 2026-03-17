@@ -1,6 +1,6 @@
 "use client";
 
-import clsx from "clsx";
+import { cn } from "@commerce/ui";
 import { ProductOption, ProductVariant } from "lib/types";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -85,7 +85,7 @@ export function VariantSelector({
                 aria-disabled={!isPurchasable}
                 disabled={!isPurchasable}
                 title={`${option.name} ${value}${!isPurchasable ? " — " + variantStockMessage : ""}`}
-                className={clsx(
+                className={cn(
                   "flex min-w-[48px] items-center justify-center rounded-full border bg-neutral-100 px-2 py-1 text-sm dark:border-neutral-800 dark:bg-neutral-900",
                   {
                     "cursor-default ring-2 ring-blue-600": isActive,

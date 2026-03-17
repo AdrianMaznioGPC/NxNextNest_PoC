@@ -20,13 +20,19 @@
 libs/ui/
 ├── src/
 │   ├── components/
-│   │   ├── button/
-│   │   │   ├── button.tsx         Component implementation
-│   │   │   └── index.ts           Barrel re-export
-│   │   ├── container/
-│   │   ├── loading-dots/
-│   │   ├── price/
-│   │   └── prose/
+│   │   ├── badge/                 Status labels, tags, stock indicators
+│   │   ├── button/                6 variants × 4 sizes, loading state
+│   │   ├── card/                  Card, CardHeader, CardTitle, CardContent, CardFooter
+│   │   ├── container/             Responsive max-width wrapper
+│   │   ├── grid/                  Grid + GridItem layout primitives
+│   │   ├── input/                 Styled text input
+│   │   ├── label/                 Floating product label with price badge
+│   │   ├── loading-dots/          Animated loading indicator
+│   │   ├── price/                 Locale-aware currency formatting
+│   │   ├── prose/                 Typography container for CMS HTML
+│   │   ├── radio-card/            RadioCardGroup + RadioCard selection
+│   │   ├── skeleton/              Animated loading placeholder
+│   │   └── star-rating/           Star rating display (reviews)
 │   ├── lib/
 │   │   └── utils.ts               cn() helper
 │   ├── styles/
@@ -41,21 +47,21 @@ libs/ui/
 
 The library is designed for easy design replacement at three independent layers:
 
-| Layer | File(s) | What it controls | How to replace |
-|-------|---------|-----------------|----------------|
-| **Tokens** | `src/styles/tokens.css` | Colors, radii, spacing | Override CSS custom properties or swap the file |
-| **Variants** | CVA maps in each component (e.g. `buttonVariants`) | Visual permutations per component | Import and extend, or replace the variant map |
-| **Primitives** | `@base-ui/react` | Accessible behavior (focus, keyboard, ARIA) | Not replaced — this is the stable foundation |
+| Layer          | File(s)                                            | What it controls                            | How to replace                                  |
+| -------------- | -------------------------------------------------- | ------------------------------------------- | ----------------------------------------------- |
+| **Tokens**     | `src/styles/tokens.css`                            | Colors, radii, spacing                      | Override CSS custom properties or swap the file |
+| **Variants**   | CVA maps in each component (e.g. `buttonVariants`) | Visual permutations per component           | Import and extend, or replace the variant map   |
+| **Primitives** | `@base-ui/react`                                   | Accessible behavior (focus, keyboard, ARIA) | Not replaced — this is the stable foundation    |
 
 ## Dependencies
 
-| Package | Purpose |
-|---------|---------|
-| `clsx` | Conditional class joining |
-| `tailwind-merge` | Deduplicate conflicting Tailwind classes |
-| `class-variance-authority` | Define typed component variants |
-| `@base-ui/react` | Unstyled accessible interactive primitives |
-| `react`, `react-dom` | Peer dependencies (^18 or ^19) |
+| Package                    | Purpose                                    |
+| -------------------------- | ------------------------------------------ |
+| `clsx`                     | Conditional class joining                  |
+| `tailwind-merge`           | Deduplicate conflicting Tailwind classes   |
+| `class-variance-authority` | Define typed component variants            |
+| `@base-ui/react`           | Unstyled accessible interactive primitives |
+| `react`, `react-dom`       | Peer dependencies (^18 or ^19)             |
 
 ## Setup for Consumer Apps
 
@@ -112,7 +118,13 @@ The single class-merging function used across the entire library and recommended
 ```tsx
 import { cn } from "@commerce/ui";
 
-<div className={cn("p-4 text-sm", isActive && "bg-primary text-primary-foreground", className)} />
+<div
+  className={cn(
+    "p-4 text-sm",
+    isActive && "bg-primary text-primary-foreground",
+    className,
+  )}
+/>;
 ```
 
 Use `cn()` instead of raw `clsx()` anywhere Tailwind classes are involved. It prevents conflicts like `p-4 p-2` (keeps only the last) and handles conditional/array/object syntax.
@@ -137,14 +149,14 @@ import { Button } from "@commerce/ui";
 
 **Sizes:** `sm`, `md`, `lg`, `icon`
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `variant` | `"default" \| "destructive" \| "outline" \| "secondary" \| "ghost" \| "link"` | `"default"` | Visual style |
-| `size` | `"sm" \| "md" \| "lg" \| "icon"` | `"md"` | Size preset |
-| `loading` | `boolean` | `false` | Shows spinner and disables the button |
-| `className` | `string` | — | Merged last, overrides any variant class |
-| `ref` | `Ref<HTMLButtonElement>` | — | Forwarded ref |
-| ...rest | `ButtonHTMLAttributes` | — | All native button attributes |
+| Prop        | Type                                                                          | Default     | Description                              |
+| ----------- | ----------------------------------------------------------------------------- | ----------- | ---------------------------------------- |
+| `variant`   | `"default" \| "destructive" \| "outline" \| "secondary" \| "ghost" \| "link"` | `"default"` | Visual style                             |
+| `size`      | `"sm" \| "md" \| "lg" \| "icon"`                                              | `"md"`      | Size preset                              |
+| `loading`   | `boolean`                                                                     | `false`     | Shows spinner and disables the button    |
+| `className` | `string`                                                                      | —           | Merged last, overrides any variant class |
+| `ref`       | `Ref<HTMLButtonElement>`                                                      | —           | Forwarded ref                            |
+| ...rest     | `ButtonHTMLAttributes`                                                        | —           | All native button attributes             |
 
 **Using variants without the component:**
 
@@ -153,9 +165,12 @@ import { buttonVariants } from "@commerce/ui";
 import Link from "next/link";
 
 // Apply button styling to a link
-<Link href="/dashboard" className={buttonVariants({ variant: "outline", size: "sm" })}>
+<Link
+  href="/dashboard"
+  className={buttonVariants({ variant: "outline", size: "sm" })}
+>
   Dashboard
-</Link>
+</Link>;
 ```
 
 ### Container
@@ -172,12 +187,12 @@ import { Container } from "@commerce/ui";
 
 **Max-width options:** `sm` (48rem), `md` (64rem), `lg` (80rem, default), `full`
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `maxWidth` | `"sm" \| "md" \| "lg" \| "full"` | `"lg"` | Maximum content width |
-| `className` | `string` | — | Merged last |
-| `ref` | `Ref<HTMLDivElement>` | — | Forwarded ref |
-| ...rest | `HTMLAttributes<HTMLDivElement>` | — | All native div attributes |
+| Prop        | Type                             | Default | Description               |
+| ----------- | -------------------------------- | ------- | ------------------------- |
+| `maxWidth`  | `"sm" \| "md" \| "lg" \| "full"` | `"lg"`  | Maximum content width     |
+| `className` | `string`                         | —       | Merged last               |
+| `ref`       | `Ref<HTMLDivElement>`            | —       | Forwarded ref             |
+| ...rest     | `HTMLAttributes<HTMLDivElement>` | —       | All native div attributes |
 
 ### Price
 
@@ -191,14 +206,14 @@ import { Price } from "@commerce/ui";
 <Price amount="9.99" currencyCode="EUR" className="text-lg font-bold text-primary" />
 ```
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `amount` | `string` | — | Numeric price as string (e.g. `"29.99"`) |
-| `currencyCode` | `string` | `"USD"` | ISO 4217 code (e.g. `"EUR"`, `"USD"`) |
-| `currencyCodeClassName` | `string` | — | Class applied to the currency code suffix |
-| `className` | `string` | — | Class applied to the `<p>` wrapper |
-| `ref` | `Ref<HTMLParagraphElement>` | — | Forwarded ref |
-| ...rest | `HTMLAttributes<HTMLParagraphElement>` | — | All native p attributes |
+| Prop                    | Type                                   | Default | Description                               |
+| ----------------------- | -------------------------------------- | ------- | ----------------------------------------- |
+| `amount`                | `string`                               | —       | Numeric price as string (e.g. `"29.99"`)  |
+| `currencyCode`          | `string`                               | `"USD"` | ISO 4217 code (e.g. `"EUR"`, `"USD"`)     |
+| `currencyCodeClassName` | `string`                               | —       | Class applied to the currency code suffix |
+| `className`             | `string`                               | —       | Class applied to the `<p>` wrapper        |
+| `ref`                   | `Ref<HTMLParagraphElement>`            | —       | Forwarded ref                             |
+| ...rest                 | `HTMLAttributes<HTMLParagraphElement>` | —       | All native p attributes                   |
 
 The component uses `suppressHydrationWarning` because `Intl.NumberFormat` output can differ between server and client locales.
 
@@ -213,12 +228,12 @@ import { Prose } from "@commerce/ui";
 <Prose html={cmsBlock.html} className="mt-6 text-sm" />
 ```
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `html` | `string` | — | Raw HTML string to render |
-| `className` | `string` | — | Merged last |
-| `ref` | `Ref<HTMLDivElement>` | — | Forwarded ref |
-| ...rest | `HTMLAttributes<HTMLDivElement>` | — | All native div attributes |
+| Prop        | Type                             | Default | Description               |
+| ----------- | -------------------------------- | ------- | ------------------------- |
+| `html`      | `string`                         | —       | Raw HTML string to render |
+| `className` | `string`                         | —       | Merged last               |
+| `ref`       | `Ref<HTMLDivElement>`            | —       | Forwarded ref             |
+| ...rest     | `HTMLAttributes<HTMLDivElement>` | —       | All native div attributes |
 
 Prose uses `dangerouslySetInnerHTML`. Only pass trusted/sanitized HTML.
 
@@ -233,12 +248,199 @@ import { LoadingDots } from "@commerce/ui";
 <LoadingDots className="bg-primary" count={4} />
 ```
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `className` | `string` | — | Class applied to each dot (use for color, e.g. `bg-white`) |
-| `count` | `number` | `3` | Number of dots |
+| Prop        | Type     | Default | Description                                                |
+| ----------- | -------- | ------- | ---------------------------------------------------------- |
+| `className` | `string` | —       | Class applied to each dot (use for color, e.g. `bg-white`) |
+| `count`     | `number` | `3`     | Number of dots                                             |
 
 The component renders with `role="status"` and an `sr-only` "Loading…" label for screen readers.
+
+### Badge
+
+Small status indicator for product tags, stock status, and labels.
+
+```tsx
+import { Badge } from "@commerce/ui";
+
+<Badge>New</Badge>
+<Badge variant="success">In Stock</Badge>
+<Badge variant="destructive">Sold Out</Badge>
+<Badge variant="warning">Low Stock</Badge>
+<Badge variant="outline">Sale</Badge>
+```
+
+**Variants:** `default`, `secondary`, `destructive`, `outline`, `success`, `warning`
+
+| Prop        | Type                                                                               | Default     | Description                |
+| ----------- | ---------------------------------------------------------------------------------- | ----------- | -------------------------- |
+| `variant`   | `"default" \| "secondary" \| "destructive" \| "outline" \| "success" \| "warning"` | `"default"` | Visual style               |
+| `className` | `string`                                                                           | —           | Merged last                |
+| `ref`       | `Ref<HTMLSpanElement>`                                                             | —           | Forwarded ref              |
+| ...rest     | `HTMLAttributes<HTMLSpanElement>`                                                  | —           | All native span attributes |
+
+### Card
+
+Surface container with border, background, and rounded corners. Composed of sub-components.
+
+```tsx
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@commerce/ui";
+
+<Card>
+  <CardHeader>
+    <CardTitle>Order Summary</CardTitle>
+    <CardDescription>3 items in your cart</CardDescription>
+  </CardHeader>
+  <CardContent>…</CardContent>
+  <CardFooter>…</CardFooter>
+</Card>;
+```
+
+| Sub-component     | Element | Default padding      |
+| ----------------- | ------- | -------------------- |
+| `Card`            | `<div>` | — (just border + bg) |
+| `CardHeader`      | `<div>` | `p-6`                |
+| `CardTitle`       | `<h3>`  | —                    |
+| `CardDescription` | `<p>`   | —                    |
+| `CardContent`     | `<div>` | `p-6 pt-0`           |
+| `CardFooter`      | `<div>` | `p-6 pt-0`           |
+
+All sub-components forward refs and accept `className` overrides.
+
+### Grid + GridItem
+
+Responsive grid layout for product listings.
+
+```tsx
+import { Grid, GridItem } from "@commerce/ui";
+
+<Grid columns={3}>
+  <GridItem>…</GridItem>
+  <GridItem>…</GridItem>
+  <GridItem className="col-span-2">…</GridItem>
+</Grid>;
+```
+
+| Prop (Grid) | Type                         | Default | Description  |
+| ----------- | ---------------------------- | ------- | ------------ |
+| `columns`   | `1 \| 2 \| 3 \| 4 \| 5 \| 6` | —       | Column count |
+| `className` | `string`                     | —       | Merged last  |
+
+`GridItem` defaults to `aspect-square` with a fade transition. Override via `className`.
+
+### Input
+
+Styled text input with consistent border, focus ring, and dark mode support.
+
+```tsx
+import { Input } from "@commerce/ui";
+
+<Input placeholder="Search products…" />
+<Input type="email" required className="max-w-sm" />
+```
+
+| Prop        | Type                    | Default  | Description                 |
+| ----------- | ----------------------- | -------- | --------------------------- |
+| `type`      | `string`                | `"text"` | Input type                  |
+| `className` | `string`                | —        | Merged last                 |
+| `ref`       | `Ref<HTMLInputElement>` | —        | Forwarded ref               |
+| ...rest     | `InputHTMLAttributes`   | —        | All native input attributes |
+
+### Label
+
+Floating product label overlay with title and optional price badge. Place inside a `position: relative` container.
+
+```tsx
+import { Label } from "@commerce/ui";
+
+<div className="relative">
+  <img src={product.image} />
+  <Label title="Running Shoes" amount="129.99" currencyCode="EUR" />
+</div>;
+```
+
+| Prop           | Type                   | Default    | Description       |
+| -------------- | ---------------------- | ---------- | ----------------- |
+| `title`        | `string`               | —          | Product title     |
+| `amount`       | `string`               | —          | Price amount      |
+| `currencyCode` | `string`               | —          | ISO 4217 code     |
+| `position`     | `"bottom" \| "center"` | `"bottom"` | Vertical position |
+
+### RadioCardGroup + RadioCard
+
+Selectable card group for checkout options (delivery, payment, etc.).
+
+```tsx
+import {
+  RadioCardGroup,
+  RadioCard,
+  RadioCardLabel,
+  RadioCardDescription,
+} from "@commerce/ui";
+
+<RadioCardGroup name="delivery" value={selected} onValueChange={setSelected}>
+  <RadioCard value="standard">
+    <RadioCardLabel>Standard Shipping</RadioCardLabel>
+    <RadioCardDescription>3-5 business days</RadioCardDescription>
+  </RadioCard>
+  <RadioCard value="express">
+    <RadioCardLabel>Express Shipping</RadioCardLabel>
+    <RadioCardDescription>1-2 business days</RadioCardDescription>
+  </RadioCard>
+</RadioCardGroup>;
+```
+
+| Prop (RadioCardGroup) | Type                      | Default | Description              |
+| --------------------- | ------------------------- | ------- | ------------------------ |
+| `name`                | `string`                  | —       | Form field name          |
+| `value`               | `string`                  | —       | Currently selected value |
+| `onValueChange`       | `(value: string) => void` | —       | Selection callback       |
+
+| Prop (RadioCard) | Type      | Default | Description       |
+| ---------------- | --------- | ------- | ----------------- |
+| `value`          | `string`  | —       | Option value      |
+| `disabled`       | `boolean` | `false` | Disables the card |
+
+Highlights the active card with `border-primary` and a subtle background tint. Uses token colors so it automatically follows the theme.
+
+### Skeleton
+
+Animated placeholder for loading states.
+
+```tsx
+import { Skeleton } from "@commerce/ui";
+
+<Skeleton className="h-4 w-48" />
+<Skeleton className="h-64 w-full rounded-lg" />
+<Skeleton className="h-8 w-8 rounded-full" />
+```
+
+Dimensions are controlled entirely via `className`. The component provides the animation and background color.
+
+### StarRating
+
+Star rating display for product reviews and testimonials.
+
+```tsx
+import { StarRating } from "@commerce/ui";
+
+<StarRating rating={4} />
+<StarRating rating={3} max={5} size="lg" />
+```
+
+| Prop     | Type                   | Default | Description               |
+| -------- | ---------------------- | ------- | ------------------------- |
+| `rating` | `number`               | —       | Rating value (0 to `max`) |
+| `max`    | `number`               | `5`     | Total stars               |
+| `size`   | `"sm" \| "md" \| "lg"` | `"md"`  | Star size                 |
+
+Renders with `role="img"` and an accessible label (`"N out of M stars"`).
 
 ## Design Tokens
 
@@ -246,31 +448,31 @@ All tokens are defined in `src/styles/tokens.css` using Tailwind v4's `@theme` d
 
 ### Token Reference
 
-| Token | Tailwind Class | Purpose |
-|-------|---------------|---------|
-| `--color-primary` | `bg-primary`, `text-primary` | Brand primary color |
-| `--color-primary-foreground` | `text-primary-foreground` | Text on primary backgrounds |
-| `--color-secondary` | `bg-secondary` | Secondary surfaces |
-| `--color-secondary-foreground` | `text-secondary-foreground` | Text on secondary surfaces |
-| `--color-destructive` | `bg-destructive` | Error / danger actions |
+| Token                            | Tailwind Class                | Purpose                         |
+| -------------------------------- | ----------------------------- | ------------------------------- |
+| `--color-primary`                | `bg-primary`, `text-primary`  | Brand primary color             |
+| `--color-primary-foreground`     | `text-primary-foreground`     | Text on primary backgrounds     |
+| `--color-secondary`              | `bg-secondary`                | Secondary surfaces              |
+| `--color-secondary-foreground`   | `text-secondary-foreground`   | Text on secondary surfaces      |
+| `--color-destructive`            | `bg-destructive`              | Error / danger actions          |
 | `--color-destructive-foreground` | `text-destructive-foreground` | Text on destructive backgrounds |
-| `--color-background` | `bg-background` | Page background |
-| `--color-foreground` | `text-foreground` | Default text color |
-| `--color-muted` | `bg-muted` | Muted / disabled surfaces |
-| `--color-muted-foreground` | `text-muted-foreground` | Muted text |
-| `--color-accent` | `bg-accent` | Hover / highlight surfaces |
-| `--color-accent-foreground` | `text-accent-foreground` | Text on accent surfaces |
-| `--color-card` | `bg-card` | Card backgrounds |
-| `--color-card-foreground` | `text-card-foreground` | Card text |
-| `--color-popover` | `bg-popover` | Popover backgrounds |
-| `--color-popover-foreground` | `text-popover-foreground` | Popover text |
-| `--color-border` | `border-border` | Default border color |
-| `--color-input` | `border-input` | Form input borders |
-| `--color-ring` | `ring-ring` | Focus ring color |
-| `--radius-sm` | `rounded-sm` | Small radius (0.25rem) |
-| `--radius-md` | `rounded-md` | Medium radius (0.375rem) |
-| `--radius-lg` | `rounded-lg` | Large radius (0.5rem) |
-| `--radius-xl` | `rounded-xl` | Extra-large radius (0.75rem) |
+| `--color-background`             | `bg-background`               | Page background                 |
+| `--color-foreground`             | `text-foreground`             | Default text color              |
+| `--color-muted`                  | `bg-muted`                    | Muted / disabled surfaces       |
+| `--color-muted-foreground`       | `text-muted-foreground`       | Muted text                      |
+| `--color-accent`                 | `bg-accent`                   | Hover / highlight surfaces      |
+| `--color-accent-foreground`      | `text-accent-foreground`      | Text on accent surfaces         |
+| `--color-card`                   | `bg-card`                     | Card backgrounds                |
+| `--color-card-foreground`        | `text-card-foreground`        | Card text                       |
+| `--color-popover`                | `bg-popover`                  | Popover backgrounds             |
+| `--color-popover-foreground`     | `text-popover-foreground`     | Popover text                    |
+| `--color-border`                 | `border-border`               | Default border color            |
+| `--color-input`                  | `border-input`                | Form input borders              |
+| `--color-ring`                   | `ring-ring`                   | Focus ring color                |
+| `--radius-sm`                    | `rounded-sm`                  | Small radius (0.25rem)          |
+| `--radius-md`                    | `rounded-md`                  | Medium radius (0.375rem)        |
+| `--radius-lg`                    | `rounded-lg`                  | Large radius (0.5rem)           |
+| `--radius-xl`                    | `rounded-xl`                  | Extra-large radius (0.75rem)    |
 
 ### Re-theming
 
@@ -397,12 +599,13 @@ export { Badge, badgeVariants, type BadgeProps } from "./components/badge";
 
 ## What Belongs Here vs. in the App
 
-| In `@commerce/ui` | In `apps/storefront/components/` |
-|---|---|
-| Button, Container, Badge, Input, Select, Dialog | Cart modal, product gallery, navbar |
-| Price, Prose, LoadingDots | CMS block renderers |
-| Generic layout primitives | Store switcher, checkout form |
-| No framework-specific imports | Uses `next/link`, `next/image`, `next-intl` |
-| No domain types | Imports from `lib/types` |
+| In `@commerce/ui`                     | In `apps/storefront/components/`            |
+| ------------------------------------- | ------------------------------------------- |
+| Button, Badge, Card, Input, Skeleton  | Cart modal, product gallery, navbar         |
+| Container, Grid, GridItem, Label      | CMS block renderers                         |
+| Price, Prose, LoadingDots, StarRating | Store switcher, checkout form               |
+| RadioCardGroup, RadioCard             | Breadcrumbs, pagination                     |
+| No framework-specific imports         | Uses `next/link`, `next/image`, `next-intl` |
+| No domain types                       | Imports from `lib/types`                    |
 
 **Rule of thumb:** If a component can render in a Storybook without Next.js, it belongs in the library. If it needs routing, image optimization, or domain data, it stays in the app and _consumes_ library primitives.
