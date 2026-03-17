@@ -1,38 +1,43 @@
 "use client";
 
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { removeItem } from "components/cart/actions";
 import type { CartItem } from "lib/types";
-import { useActionState } from "react";
+import { useState } from "react";
+import { useCartMutations } from "./use-cart-mutations";
 
 export function DeleteItemButton({
   item,
-  optimisticUpdate,
 }: {
   item: CartItem;
-  optimisticUpdate: any;
 }) {
-  const [message, formAction] = useActionState(removeItem, null);
+  const [message, setMessage] = useState<string | null>(null);
+  const { removeItem, isMutating } = useCartMutations();
   const merchandiseId = item.merchandise.id;
-  const removeItemAction = formAction.bind(null, merchandiseId);
+  const handleRemove = () => {
+    void (async () => {
+      try {
+        await removeItem(merchandiseId);
+        setMessage(null);
+      } catch {
+        setMessage("Error removing item from cart");
+      }
+    })();
+  };
 
   return (
-    <form
-      action={async () => {
-        optimisticUpdate(merchandiseId, "delete");
-        removeItemAction();
-      }}
-    >
+    <>
       <button
-        type="submit"
+        type="button"
         aria-label="Remove cart item"
-        className="flex h-[24px] w-[24px] items-center justify-center rounded-full bg-neutral-500"
+        onClick={handleRemove}
+        disabled={isMutating}
+        className="flex h-[24px] w-[24px] items-center justify-center rounded-control bg-primary text-primary-foreground"
       >
-        <XMarkIcon className="mx-[1px] h-4 w-4 text-white dark:text-black" />
+        <XMarkIcon className="mx-[1px] h-4 w-4" />
       </button>
       <p aria-live="polite" className="sr-only" role="status">
-        {message}
+        {message ?? ""}
       </p>
-    </form>
+    </>
   );
 }

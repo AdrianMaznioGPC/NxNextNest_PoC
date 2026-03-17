@@ -59,6 +59,7 @@ export class MockCartAdapter implements CartPort {
               product: {
                 id: match.product.id,
                 handle: match.product.handle,
+                path: match.product.path,
                 title: match.product.title,
                 featuredImage: match.product.featuredImage,
               },

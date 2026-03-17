@@ -1,17 +1,23 @@
-import type { Collection, Product } from "@commerce/shared-types";
+import type { Collection, LocaleContext, Product } from "@commerce/shared-types";
 
 export interface CollectionPort {
-  getCollections(): Promise<Collection[]>;
+  getCollections(localeContext?: LocaleContext): Promise<Collection[]>;
 
-  getCollection(handle: string): Promise<Collection | undefined>;
+  getCollection(
+    handle: string,
+    localeContext?: LocaleContext,
+  ): Promise<Collection | undefined>;
 
-  getCollectionByPath(slugs: string[]): Promise<Collection | undefined>;
+  getCollectionByPath(
+    slugs: string[],
+    localeContext?: LocaleContext,
+  ): Promise<Collection | undefined>;
 
   getCollectionProducts(params: {
     collection: string;
     reverse?: boolean;
     sortKey?: string;
-  }): Promise<Product[]>;
+  }, localeContext?: LocaleContext): Promise<Product[]>;
 }
 
 export const COLLECTION_PORT = Symbol("COLLECTION_PORT");

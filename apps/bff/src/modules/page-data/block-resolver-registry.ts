@@ -1,4 +1,4 @@
-import type { CmsBlock } from "@commerce/shared-types";
+import type { CmsBlock, LocaleContext } from "@commerce/shared-types";
 import type { CmsRawBlock, CmsRawBlockOf } from "../../ports/cms.port";
 import type { CollectionPort } from "../../ports/collection.port";
 import type { ProductPort } from "../../ports/product.port";
@@ -6,6 +6,7 @@ import type { ProductPort } from "../../ports/product.port";
 export type BlockResolverContext = {
   products: ProductPort;
   collections: CollectionPort;
+  localeContext?: LocaleContext;
 };
 
 export type BlockResolver<T = any> = (

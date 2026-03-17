@@ -1,7 +1,7 @@
-import type { Menu } from "@commerce/shared-types";
+import type { LocaleContext, Menu } from "@commerce/shared-types";
 
 export interface MenuPort {
-  getMenu(handle: string): Promise<Menu[]>;
+  getMenu(handle: string, localeContext?: LocaleContext): Promise<Menu[]>;
 }
 
 export const MENU_PORT = Symbol("MENU_PORT");

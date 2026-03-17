@@ -12,6 +12,7 @@
       "options": { "cwd": "apps/storefront" }
     },
     "start": {
+      "dependsOn": ["build"],
       "command": "next start",
       "options": { "cwd": "apps/storefront" }
     }

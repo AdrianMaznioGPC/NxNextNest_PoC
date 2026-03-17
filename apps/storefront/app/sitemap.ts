@@ -1,4 +1,5 @@
 import { getCollections, getPages, getProducts } from "lib/api";
+import { getRequestLocaleContext } from "lib/i18n/request-context";
 import { baseUrl } from "lib/utils";
 import { MetadataRoute } from "next";
 
@@ -10,28 +11,34 @@ type Route = {
 export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const localeContext = await getRequestLocaleContext();
+  const siteBaseUrl =
+    localeContext.domain.startsWith("localhost") ||
+    localeContext.domain.startsWith("127.0.0.1")
+      ? baseUrl
+      : `https://${localeContext.domain}`;
   const routesMap = [""].map((route) => ({
-    url: `${baseUrl}${route}`,
+    url: `${siteBaseUrl}${route}`,
     lastModified: new Date().toISOString(),
   }));
 
-  const collectionsPromise = getCollections().then((collections) =>
+  const collectionsPromise = getCollections(localeContext).then((collections) =>
     collections.map((collection) => ({
-      url: `${baseUrl}${collection.path}`,
+      url: `${siteBaseUrl}${collection.path}`,
       lastModified: collection.updatedAt,
     })),
   );
 
-  const productsPromise = getProducts({}).then((products) =>
+  const productsPromise = getProducts({}, localeContext).then((products) =>
     products.map((product) => ({
-      url: `${baseUrl}/product/${product.handle}`,
+      url: `${siteBaseUrl}${product.path}`,
       lastModified: product.updatedAt,
     })),
   );
 
-  const pagesPromise = getPages().then((pages) =>
+  const pagesPromise = getPages(localeContext).then((pages) =>
     pages.map((page) => ({
-      url: `${baseUrl}/${page.handle}`,
+      url: `${siteBaseUrl}${page.path}`,
       lastModified: page.updatedAt,
     })),
   );

@@ -13,10 +13,22 @@ import {
 import type { MegaMenuItem } from "lib/types";
 import Search, { SearchSkeleton } from "./search";
 
-export default function MobileMenu({ megaMenu }: { megaMenu: MegaMenuItem[] }) {
+export type MobileMenuProps = {
+  megaMenu: MegaMenuItem[];
+  searchPath?: string;
+  initialOpen?: boolean;
+  hideTrigger?: boolean;
+};
+
+export default function MobileMenu({
+  megaMenu,
+  searchPath = "/search",
+  initialOpen = false,
+  hideTrigger = false,
+}: MobileMenuProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(initialOpen);
   const openMobileMenu = () => setIsOpen(true);
   const closeMobileMenu = () => setIsOpen(false);
 
@@ -36,13 +48,15 @@ export default function MobileMenu({ megaMenu }: { megaMenu: MegaMenuItem[] }) {
 
   return (
     <>
-      <button
-        onClick={openMobileMenu}
-        aria-label="Open mobile menu"
-        className="flex h-11 w-11 items-center justify-center rounded-md border border-neutral-200 text-black transition-colors md:hidden dark:border-neutral-700 dark:text-white"
-      >
-        <Bars3Icon className="h-4" />
-      </button>
+      {!hideTrigger ? (
+        <button
+          onClick={openMobileMenu}
+          aria-label="Open mobile menu"
+          className="flex h-11 w-11 items-center justify-center rounded-control border border-neutral-200 text-black transition-colors md:hidden"
+        >
+          <Bars3Icon className="h-4" />
+        </button>
+      ) : null}
       <Transition show={isOpen}>
         <Dialog onClose={closeMobileMenu} className="relative z-50">
           <Transition.Child
@@ -65,10 +79,10 @@ export default function MobileMenu({ megaMenu }: { megaMenu: MegaMenuItem[] }) {
             leaveFrom="translate-x-0"
             leaveTo="translate-x-[-100%]"
           >
-            <Dialog.Panel className="fixed bottom-0 left-0 right-0 top-0 flex h-full w-full flex-col bg-white pb-6 dark:bg-black">
+            <Dialog.Panel className="fixed bottom-0 left-0 right-0 top-0 flex h-full w-full flex-col bg-white pb-6">
               <div className="p-4">
                 <button
-                  className="mb-4 flex h-11 w-11 items-center justify-center rounded-md border border-neutral-200 text-black transition-colors dark:border-neutral-700 dark:text-white"
+                  className="mb-4 flex h-11 w-11 items-center justify-center rounded-control border border-neutral-200 text-black transition-colors"
                   onClick={closeMobileMenu}
                   aria-label="Close mobile menu"
                 >
@@ -77,7 +91,7 @@ export default function MobileMenu({ megaMenu }: { megaMenu: MegaMenuItem[] }) {
 
                 <div className="mb-4 w-full">
                   <Suspense fallback={<SearchSkeleton />}>
-                    <Search />
+                    <Search actionPath={searchPath} />
                   </Suspense>
                 </div>
                 {megaMenu.length ? (
@@ -111,21 +125,21 @@ function MobileMenuItem({
   const hasChildren = item.children && item.children.length > 0;
 
   return (
-    <li className="border-b border-neutral-200 dark:border-neutral-700">
+    <li className="border-b border-neutral-200">
       <div className="flex items-center justify-between">
-        <Link
-          href={item.path}
-          prefetch={true}
-          onClick={onNavigate}
-          className="flex-1 py-3 text-lg text-black transition-colors hover:text-neutral-500 dark:text-white"
-        >
-          {item.title}
-        </Link>
+          <Link
+            href={item.path}
+            prefetch={false}
+            onClick={onNavigate}
+            className="flex-1 py-3 text-lg text-black transition-colors hover:text-neutral-500"
+          >
+            {item.title}
+          </Link>
         {hasChildren ? (
           <button
             onClick={() => setExpanded(!expanded)}
             aria-label={`Expand ${item.title}`}
-            className="p-3 text-neutral-500 dark:text-neutral-400"
+            className="p-3 text-neutral-500"
           >
             <ChevronDownIcon
               className={`h-4 w-4 transition-transform ${
@@ -141,9 +155,9 @@ function MobileMenuItem({
             <li key={child.path}>
               <Link
                 href={child.path}
-                prefetch={true}
+                prefetch={false}
                 onClick={onNavigate}
-                className="block py-1.5 text-base text-neutral-500 transition-colors hover:text-black dark:text-neutral-400 dark:hover:text-white"
+                className="block py-1.5 text-base text-neutral-500 transition-colors hover:text-black"
               >
                 {child.title}
               </Link>

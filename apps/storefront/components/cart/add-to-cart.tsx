@@ -2,21 +2,22 @@
 
 import { PlusIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
-import { addItem } from "components/cart/actions";
 import { Product, ProductVariant } from "lib/types";
 import { useSearchParams } from "next/navigation";
-import { useActionState } from "react";
-import { useCart } from "./cart-context";
+import { useState } from "react";
+import { useCartMutations } from "./use-cart-mutations";
 
 function SubmitButton({
   availableForSale,
   selectedVariantId,
+  pending,
 }: {
   availableForSale: boolean;
   selectedVariantId: string | undefined;
+  pending: boolean;
 }) {
   const buttonClasses =
-    "relative flex w-full items-center justify-center rounded-full bg-blue-600 p-4 tracking-wide text-white";
+    "relative flex w-full items-center justify-center rounded-control bg-primary p-4 tracking-wide text-primary-foreground";
   const disabledClasses = "cursor-not-allowed opacity-60 hover:opacity-60";
 
   if (!availableForSale) {
@@ -46,22 +47,24 @@ function SubmitButton({
     <button
       aria-label="Add to cart"
       className={clsx(buttonClasses, {
-        "hover:opacity-90": true,
+        "hover:opacity-90": !pending,
+        [disabledClasses]: pending,
       })}
+      disabled={pending}
     >
       <div className="absolute left-0 ml-4">
         <PlusIcon className="h-5" />
       </div>
-      Add To Cart
+      {pending ? "Adding..." : "Add To Cart"}
     </button>
   );
 }
 
 export function AddToCart({ product }: { product: Product }) {
   const { variants, availableForSale } = product;
-  const { addCartItem } = useCart();
+  const { addItem, isMutating } = useCartMutations();
+  const [message, setMessage] = useState<string | null>(null);
   const searchParams = useSearchParams();
-  const [message, formAction] = useActionState(addItem, null);
 
   const variant = variants.find((variant: ProductVariant) =>
     variant.selectedOptions.every(
@@ -70,24 +73,37 @@ export function AddToCart({ product }: { product: Product }) {
   );
   const defaultVariantId = variants.length === 1 ? variants[0]?.id : undefined;
   const selectedVariantId = variant?.id || defaultVariantId;
-  const addItemAction = formAction.bind(null, selectedVariantId);
   const finalVariant = variants.find(
     (variant) => variant.id === selectedVariantId,
-  )!;
+  );
+
+  const pending = isMutating;
 
   return (
     <form
-      action={async () => {
-        addCartItem(finalVariant, product);
-        addItemAction();
+      onSubmit={(event) => {
+        event.preventDefault();
+        if (!selectedVariantId || !finalVariant) {
+          setMessage("Error adding item to cart");
+          return;
+        }
+        void (async () => {
+          try {
+            await addItem(finalVariant, product, 1);
+            setMessage(null);
+          } catch {
+            setMessage("Error adding item to cart");
+          }
+        })();
       }}
     >
       <SubmitButton
         availableForSale={availableForSale}
         selectedVariantId={selectedVariantId}
+        pending={pending}
       />
       <p aria-live="polite" className="sr-only" role="status">
-        {message}
+        {message ?? ""}
       </p>
     </form>
   );

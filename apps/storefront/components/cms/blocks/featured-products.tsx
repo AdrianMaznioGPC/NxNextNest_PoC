@@ -1,5 +1,5 @@
 import type { FeaturedProductsBlock } from "lib/types";
-import Link from "next/link";
+import SmartLink from "components/smart-link";
 import { GridTileImage } from "components/grid/tile";
 import { registerBlockRenderer } from "../block-registry";
 
@@ -11,9 +11,9 @@ function FeaturedProducts({ block }: { block: FeaturedProductsBlock }) {
       <h2 className="mb-4 px-4 text-2xl font-bold">{block.heading}</h2>
       <div className="mx-auto grid max-w-(--breakpoint-2xl) gap-4 px-4 md:grid-cols-3">
         {block.products.map((product) => (
-          <Link
+          <SmartLink
             key={product.handle}
-            href={`/product/${product.handle}`}
+            href={product.path}
             className="relative aspect-square"
           >
             <GridTileImage
@@ -28,7 +28,7 @@ function FeaturedProducts({ block }: { block: FeaturedProductsBlock }) {
                 position: "bottom",
               }}
             />
-          </Link>
+          </SmartLink>
         ))}
       </div>
     </section>

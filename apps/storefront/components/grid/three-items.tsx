@@ -1,6 +1,6 @@
 import { GridTileImage } from "components/grid/tile";
 import type { Product } from "lib/types";
-import Link from "next/link";
+import SmartLink from "components/smart-link";
 
 function ThreeItemGridItem({
   item,
@@ -19,10 +19,9 @@ function ThreeItemGridItem({
           : "md:col-span-2 md:row-span-1"
       }
     >
-      <Link
+      <SmartLink
         className="relative block aspect-square h-full w-full"
-        href={`/product/${item.handle}`}
-        prefetch={true}
+        href={item.path}
       >
         <GridTileImage
           src={item.featuredImage.url}
@@ -41,7 +40,7 @@ function ThreeItemGridItem({
             currencyCode: item.priceRange.maxVariantPrice.currencyCode,
           }}
         />
-      </Link>
+      </SmartLink>
     </div>
   );
 }

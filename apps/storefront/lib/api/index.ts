@@ -1,22 +1,25 @@
 import { TAGS } from "lib/constants";
 import type {
   Cart,
-  CategoryListPageData,
-  CategoryPageData,
   Collection,
+  DomainConfigModel,
   GlobalLayoutData,
-  HomePageData,
+  LocaleContext,
   Menu,
   Page,
+  PageBootstrapModel,
   Product,
-  ProductPageData,
-  SearchPageData,
+  SwitchUrlRequest,
+  SwitchUrlResponse,
+  SlotPayloadModel,
+  SlotReference,
 } from "lib/types";
 import {
   unstable_cacheLife as cacheLife,
   unstable_cacheTag as cacheTag,
 } from "next/cache";
 import { cookies } from "next/headers";
+import { cache } from "react";
 
 const BFF_URL = process.env.BFF_URL || "http://localhost:4000";
 
@@ -45,6 +48,43 @@ function qs(params: Record<string, string | boolean | undefined>): string {
   return str ? `?${str}` : "";
 }
 
+function normalizeQuery(
+  query: Record<string, string | undefined>,
+): Record<string, string | undefined> {
+  const normalized: Record<string, string | undefined> = {};
+  for (const [key, value] of Object.entries(query)) {
+    if (value !== undefined) normalized[key] = value;
+  }
+  return normalized;
+}
+
+function sortedRecordEntries(record: Record<string, string>) {
+  return Object.entries(record).sort(([a], [b]) => a.localeCompare(b));
+}
+
+function buildQueryString(query: Record<string, string>) {
+  return new URLSearchParams(sortedRecordEntries(query)).toString();
+}
+
+function localeQuery(localeContext?: Partial<LocaleContext>) {
+  return {
+    locale: localeContext?.locale,
+    language: localeContext?.language,
+    region: localeContext?.region,
+    currency: localeContext?.currency,
+    market: localeContext?.market,
+    domain: localeContext?.domain,
+  };
+}
+
+function languageScopedTag(
+  resource: "products" | "collections" | "menus" | "pages",
+  localeContext?: Partial<LocaleContext>,
+) {
+  const language = localeContext?.language;
+  return language ? `${resource}:lang:${language}` : undefined;
+}
+
 // -- Products ----------------------------------------------------------------
 
 export async function getProducts({
@@ -55,60 +95,98 @@ export async function getProducts({
   query?: string;
   reverse?: boolean;
   sortKey?: string;
-}): Promise<Product[]> {
+}, localeContext?: Partial<LocaleContext>): Promise<Product[]> {
   "use cache";
   cacheTag(TAGS.products);
+  const productsLanguageTag = languageScopedTag("products", localeContext);
+  if (productsLanguageTag) {
+    cacheTag(productsLanguageTag);
+  }
   cacheLife("days");
 
-  return bffFetch(`/products${qs({ q: query, sortKey, reverse })}`);
+  return bffFetch(
+    `/products${qs({ q: query, sortKey, reverse, ...localeQuery(localeContext) })}`,
+  );
 }
 
-export async function getProduct(handle: string): Promise<Product | undefined> {
+export async function getProduct(
+  handle: string,
+  localeContext?: Partial<LocaleContext>,
+): Promise<Product | undefined> {
   "use cache";
   cacheTag(TAGS.products);
+  const productsLanguageTag = languageScopedTag("products", localeContext);
+  if (productsLanguageTag) {
+    cacheTag(productsLanguageTag);
+  }
   cacheLife("days");
 
-  return bffFetch(`/products/${handle}`);
+  return bffFetch(`/products/${handle}${qs(localeQuery(localeContext))}`);
 }
 
 export async function getProductRecommendations(
   productId: string,
+  localeContext?: Partial<LocaleContext>,
 ): Promise<Product[]> {
   "use cache";
   cacheTag(TAGS.products);
+  const productsLanguageTag = languageScopedTag("products", localeContext);
+  if (productsLanguageTag) {
+    cacheTag(productsLanguageTag);
+  }
   cacheLife("days");
 
-  return bffFetch(`/products/${productId}/recommendations`);
+  return bffFetch(
+    `/products/${productId}/recommendations${qs(localeQuery(localeContext))}`,
+  );
 }
 
 // -- Collections -------------------------------------------------------------
 
-export async function getCollections(): Promise<Collection[]> {
+export async function getCollections(
+  localeContext?: Partial<LocaleContext>,
+): Promise<Collection[]> {
   "use cache";
   cacheTag(TAGS.collections);
+  const collectionsLanguageTag = languageScopedTag("collections", localeContext);
+  if (collectionsLanguageTag) {
+    cacheTag(collectionsLanguageTag);
+  }
   cacheLife("days");
 
-  return bffFetch("/collections");
+  return bffFetch(`/collections${qs(localeQuery(localeContext))}`);
 }
 
 export async function getCollection(
   handle: string,
+  localeContext?: Partial<LocaleContext>,
 ): Promise<Collection | undefined> {
   "use cache";
   cacheTag(TAGS.collections);
+  const collectionsLanguageTag = languageScopedTag("collections", localeContext);
+  if (collectionsLanguageTag) {
+    cacheTag(collectionsLanguageTag);
+  }
   cacheLife("days");
 
-  return bffFetch(`/collections/${handle}`);
+  return bffFetch(`/collections/${handle}${qs(localeQuery(localeContext))}`);
 }
 
 export async function getCollectionByPath(
   slugs: string[],
+  localeContext?: Partial<LocaleContext>,
 ): Promise<Collection | undefined> {
   "use cache";
   cacheTag(TAGS.collections);
+  const collectionsLanguageTag = languageScopedTag("collections", localeContext);
+  if (collectionsLanguageTag) {
+    cacheTag(collectionsLanguageTag);
+  }
   cacheLife("days");
 
-  return bffFetch(`/collections/by-path/${slugs.join("/")}`);
+  return bffFetch(
+    `/collections/by-path/${slugs.join("/")}${qs(localeQuery(localeContext))}`,
+  );
 }
 
 export async function getCollectionProducts({
@@ -119,9 +197,18 @@ export async function getCollectionProducts({
   collection: string;
   reverse?: boolean;
   sortKey?: string;
-}): Promise<Product[]> {
+}, localeContext?: Partial<LocaleContext>): Promise<Product[]> {
   "use cache";
   cacheTag(TAGS.collections, TAGS.products);
+  const collectionsLanguageTag = languageScopedTag("collections", localeContext);
+  const productsLanguageTag = languageScopedTag("products", localeContext);
+  if (collectionsLanguageTag && productsLanguageTag) {
+    cacheTag(collectionsLanguageTag, productsLanguageTag);
+  } else if (collectionsLanguageTag) {
+    cacheTag(collectionsLanguageTag);
+  } else if (productsLanguageTag) {
+    cacheTag(productsLanguageTag);
+  }
   cacheLife("days");
 
   // Use by-path endpoint for nested collection keys (e.g. "brakes/pads")
@@ -129,108 +216,178 @@ export async function getCollectionProducts({
     ? `/collections/by-path/${collection}/products`
     : `/collections/${collection}/products`;
 
-  return bffFetch(`${path}${qs({ sortKey, reverse })}`);
+  return bffFetch(
+    `${path}${qs({ sortKey, reverse, ...localeQuery(localeContext) })}`,
+  );
 }
 
 // -- Menu --------------------------------------------------------------------
 
-export async function getMenu(handle: string): Promise<Menu[]> {
+export async function getMenu(
+  handle: string,
+  localeContext?: Partial<LocaleContext>,
+): Promise<Menu[]> {
   "use cache";
   cacheTag(TAGS.collections);
+  const menusLanguageTag = languageScopedTag("menus", localeContext);
+  if (menusLanguageTag) {
+    cacheTag(menusLanguageTag);
+  }
   cacheLife("days");
 
-  return bffFetch(`/menus/${handle}`);
+  return bffFetch(`/menus/${handle}${qs(localeQuery(localeContext))}`);
 }
 
 // -- Pages -------------------------------------------------------------------
 
-export async function getPage(handle: string): Promise<Page> {
-  return bffFetch(`/pages/${handle}`);
+export async function getPage(
+  handle: string,
+  localeContext?: Partial<LocaleContext>,
+): Promise<Page> {
+  "use cache";
+  cacheTag(TAGS.pages);
+  const pagesLanguageTag = languageScopedTag("pages", localeContext);
+  if (pagesLanguageTag) {
+    cacheTag(pagesLanguageTag);
+  }
+  cacheLife("days");
+
+  return bffFetch(`/pages/${handle}${qs(localeQuery(localeContext))}`);
 }
 
-export async function getPages(): Promise<Page[]> {
-  return bffFetch("/pages");
+export async function getPages(
+  localeContext?: Partial<LocaleContext>,
+): Promise<Page[]> {
+  "use cache";
+  cacheTag(TAGS.pages);
+  const pagesLanguageTag = languageScopedTag("pages", localeContext);
+  if (pagesLanguageTag) {
+    cacheTag(pagesLanguageTag);
+  }
+  cacheLife("days");
+
+  return bffFetch(`/pages${qs(localeQuery(localeContext))}`);
 }
 
 // -- Layout data -------------------------------------------------------------
 
-export async function getLayoutData(): Promise<GlobalLayoutData> {
+export async function getLayoutData(
+  localeContext?: Partial<LocaleContext>,
+): Promise<GlobalLayoutData> {
   "use cache";
   cacheTag(TAGS.collections);
-  cacheLife("days");
-
-  return bffFetch("/page-data/layout");
-}
-
-// -- Page data contracts -----------------------------------------------------
-
-export async function getHomePageData(): Promise<HomePageData> {
-  "use cache";
-  cacheTag(TAGS.products);
-  cacheLife("days");
-
-  return bffFetch("/page-data/home");
-}
-
-export async function getCategoryListPageData(): Promise<CategoryListPageData> {
-  "use cache";
-  cacheTag(TAGS.collections);
-  cacheLife("days");
-
-  return bffFetch("/page-data/categories");
-}
-
-export async function getCategoryPageData(
-  slugs: string[],
-  sortKey?: string,
-  reverse?: boolean,
-): Promise<CategoryPageData> {
-  "use cache";
-  cacheTag(TAGS.collections, TAGS.products);
+  const collectionsLanguageTag = languageScopedTag("collections", localeContext);
+  const menusLanguageTag = languageScopedTag("menus", localeContext);
+  if (collectionsLanguageTag && menusLanguageTag) {
+    cacheTag(collectionsLanguageTag, menusLanguageTag);
+  } else if (collectionsLanguageTag) {
+    cacheTag(collectionsLanguageTag);
+  } else if (menusLanguageTag) {
+    cacheTag(menusLanguageTag);
+  }
   cacheLife("days");
 
   return bffFetch(
-    `/page-data/categories/${slugs.join("/")}${qs({ sortKey, reverse })}`,
+    `/page-data/layout${qs({
+      ...localeQuery(localeContext),
+    })}`,
   );
 }
 
-export async function getProductPageData(
-  handle: string,
-): Promise<ProductPageData> {
+export async function getPageBootstrap(
+  path: string,
+  query: Record<string, string | undefined> = {},
+  localeContext?: Partial<LocaleContext>,
+): Promise<PageBootstrapModel> {
   "use cache";
-  cacheTag(TAGS.products);
   cacheLife("days");
 
-  return bffFetch(`/page-data/product/${handle}`);
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  const finalQuery = normalizeQuery(query);
+  const bootstrap = await bffFetch<PageBootstrapModel>(
+    `/page-data/bootstrap${qs({
+      path: normalizedPath,
+      ...finalQuery,
+      ...localeQuery(localeContext),
+    })}`,
+  );
+
+  const allTags = new Set<string>();
+  for (const slot of bootstrap.slots) {
+    for (const tag of slot.revalidateTags) {
+      allTags.add(tag);
+    }
+  }
+  if (allTags.size > 0) {
+    cacheTag(...allTags);
+  }
+  const locale = bootstrap.page.localeContext?.locale;
+  if (locale) {
+    cacheTag(`i18n:${locale}`);
+  }
+  cacheTag(
+    `experience:${bootstrap.shell.experience.experienceProfileId}`,
+    `theme:${bootstrap.shell.experience.themeKey}:${bootstrap.shell.experience.themeRevision}`,
+    `theme-pack:${bootstrap.shell.experience.themeTokenPack ?? bootstrap.shell.experience.themeKey}`,
+  );
+  return bootstrap;
 }
 
-export async function getSearchPageData({
-  query,
-  sortKey,
-  reverse,
-}: {
-  query?: string;
-  sortKey?: string;
-  reverse?: boolean;
-}): Promise<SearchPageData> {
-  "use cache";
-  cacheTag(TAGS.products);
-  cacheLife("days");
+const getSlotPayloadCached = cache(
+  async (
+    endpoint: string,
+    normalizedQueryString: string,
+  ): Promise<SlotPayloadModel> => {
+    "use cache";
+    cacheLife("minutes");
 
-  return bffFetch(`/page-data/search${qs({ q: query, sortKey, reverse })}`);
+    const payload = await bffFetch<SlotPayloadModel>(
+      `${endpoint}?${normalizedQueryString}`,
+    );
+    if (payload.revalidateTags.length > 0) {
+      cacheTag(...payload.revalidateTags);
+    }
+    return payload;
+  },
+);
+
+export async function getSlotPayload(slotRef: SlotReference) {
+  const normalizedQuery = buildQueryString(slotRef.query);
+  return getSlotPayloadCached(slotRef.endpoint, normalizedQuery);
+}
+
+export async function getDomainConfig(): Promise<DomainConfigModel> {
+  "use cache";
+  cacheLife("minutes");
+  return bffFetch("/i18n/domain-config");
+}
+
+export async function resolveSwitchUrl(
+  payload: SwitchUrlRequest,
+): Promise<SwitchUrlResponse> {
+  return bffFetch("/i18n/switch-url", {
+    method: "POST",
+    cache: "no-store",
+    body: JSON.stringify(payload),
+  });
 }
 
 // -- Cart --------------------------------------------------------------------
 
 export async function createCart(): Promise<Cart> {
-  return bffFetch("/cart", { method: "POST" });
+  return bffFetch("/cart/current", {
+    method: "POST",
+    headers: await cookieHeader(),
+  });
 }
 
-export async function getCart(): Promise<Cart | undefined> {
-  const cartId = (await cookies()).get("cartId")?.value;
-  if (!cartId) return undefined;
+export async function getCart(
+  localeContext?: Partial<LocaleContext>,
+): Promise<Cart | undefined> {
   try {
-    const cart = await bffFetch<Cart | undefined>(`/cart/${cartId}`);
+    const cart = await bffFetch<Cart | undefined>(`/cart/current${qs(localeQuery(localeContext))}`, {
+      headers: await cookieHeader(),
+    });
     return cart || undefined;
   } catch {
     return undefined;
@@ -239,28 +396,44 @@ export async function getCart(): Promise<Cart | undefined> {
 
 export async function addToCart(
   lines: { merchandiseId: string; quantity: number }[],
+  localeContext?: Partial<LocaleContext>,
 ): Promise<Cart> {
-  const cartId = (await cookies()).get("cartId")?.value!;
-  return bffFetch(`/cart/${cartId}/lines`, {
+  return bffFetch(`/cart/current/lines${qs(localeQuery(localeContext))}`, {
     method: "POST",
+    headers: await cookieHeader(),
     body: JSON.stringify({ lines }),
   });
 }
 
-export async function removeFromCart(lineIds: string[]): Promise<Cart> {
-  const cartId = (await cookies()).get("cartId")?.value!;
-  return bffFetch(`/cart/${cartId}/lines`, {
+export async function removeFromCart(
+  lineIds: string[],
+  localeContext?: Partial<LocaleContext>,
+): Promise<Cart> {
+  return bffFetch(`/cart/current/lines${qs(localeQuery(localeContext))}`, {
     method: "DELETE",
+    headers: await cookieHeader(),
     body: JSON.stringify({ lineIds }),
   });
 }
 
 export async function updateCart(
   lines: { id: string; merchandiseId: string; quantity: number }[],
+  localeContext?: Partial<LocaleContext>,
 ): Promise<Cart> {
-  const cartId = (await cookies()).get("cartId")?.value!;
-  return bffFetch(`/cart/${cartId}/lines`, {
+  return bffFetch(`/cart/current/lines${qs(localeQuery(localeContext))}`, {
     method: "PATCH",
+    headers: await cookieHeader(),
     body: JSON.stringify({ lines }),
   });
+}
+
+async function cookieHeader(): Promise<Record<string, string> | undefined> {
+  const cookieStore = await cookies();
+  const rawCookies = cookieStore.toString();
+  if (!rawCookies) {
+    return undefined;
+  }
+  return {
+    cookie: rawCookies,
+  };
 }

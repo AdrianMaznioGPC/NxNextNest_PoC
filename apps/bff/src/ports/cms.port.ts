@@ -1,4 +1,4 @@
-import type { Image } from "@commerce/shared-types";
+import type { Image, LocaleContext } from "@commerce/shared-types";
 
 export type CmsRawHeroBanner = {
   type: "hero-banner";
@@ -42,7 +42,10 @@ export type CmsRawPage = {
 };
 
 export interface CmsPort {
-  getPage(slug: string): Promise<CmsRawPage | undefined>;
+  getPage(
+    slug: string,
+    localeContext?: LocaleContext,
+  ): Promise<CmsRawPage | undefined>;
 }
 
 export const CMS_PORT = Symbol("CMS_PORT");

@@ -1,11 +1,19 @@
 "use client";
 
 import { Bars3Icon } from "@heroicons/react/24/outline";
+import SmartLink from "components/smart-link";
+import { useT } from "lib/i18n/messages-context";
 import type { MegaMenuItem } from "lib/types";
-import Link from "next/link";
 import { useCallback, useRef, useState } from "react";
 
-export function MegaMenu({ items }: { items: MegaMenuItem[] }) {
+export function MegaMenu({
+  items,
+  categoryListPath = "/categories",
+}: {
+  items: MegaMenuItem[];
+  categoryListPath?: string;
+}) {
+  const t = useT("nav");
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -33,74 +41,72 @@ export function MegaMenu({ items }: { items: MegaMenuItem[] }) {
     >
       {/* Trigger */}
       <button
-        className="flex items-center gap-2 py-3 text-sm font-semibold text-neutral-700 transition-colors hover:text-black dark:text-neutral-300 dark:hover:text-white"
+        className="flex items-center gap-2 py-3 text-sm font-semibold text-neutral-700 transition-colors hover:text-black"
         aria-expanded={open}
       >
         <Bars3Icon className="h-4 w-4" />
-        Browse Products
+        {t("browseProducts")}
       </button>
 
       {/* Dropdown */}
       {open ? (
-        <div className="absolute left-0 top-full z-50 flex rounded-b-lg border border-neutral-200 bg-white shadow-lg dark:border-neutral-700 dark:bg-neutral-900">
+        <div className="absolute left-0 top-full z-50 flex rounded-b-lg border border-neutral-200 bg-white shadow-lg">
           {/* Left panel: category list */}
-          <ul className="w-56 border-r border-neutral-200 py-2 dark:border-neutral-700">
+          <ul className="w-56 border-r border-neutral-200 py-2">
             {items.map((item, i) => (
               <li key={item.path} onMouseEnter={() => setActiveDebounced(i)}>
-                <Link
+                <SmartLink
                   href={item.path}
-                  prefetch={true}
+                  intent="shell"
                   className={`flex items-center justify-between px-4 py-2 text-sm transition-colors ${
                     activeIndex === i
-                      ? "bg-neutral-100 font-medium text-black dark:bg-neutral-800 dark:text-white"
-                      : "text-neutral-600 hover:bg-neutral-50 dark:text-neutral-400 dark:hover:bg-neutral-800"
+                      ? "bg-neutral-100 font-medium text-black"
+                      : "text-neutral-600 hover:bg-neutral-50"
                   }`}
                 >
                   {item.title}
                   {item.children?.length ? (
                     <span className="text-neutral-400">›</span>
                   ) : null}
-                </Link>
+                </SmartLink>
               </li>
             ))}
 
             {/* View all */}
-            <li className="border-t border-neutral-200 pt-2 dark:border-neutral-700">
-              <Link
-                href="/categories"
-                prefetch={true}
-                className="block px-4 py-2 text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
+            <li className="border-t border-neutral-200 pt-2">
+              <SmartLink
+                href={categoryListPath}
+                intent="shell"
+                className="block px-4 py-2 text-sm font-medium text-blue-600 hover:underline"
               >
-                View all categories
-              </Link>
+                {t("viewAllCategories")}
+              </SmartLink>
             </li>
           </ul>
 
           {/* Right panel: subcategories for hovered category */}
           {activeItem?.children?.length ? (
             <div className="w-80 p-6" onMouseEnter={cancelDebounce}>
-              <h3 className="mb-3 text-sm font-semibold text-neutral-900 dark:text-white">
+              <h3 className="mb-3 text-sm font-semibold text-neutral-900">
                 {activeItem.title}
               </h3>
               <div className="grid grid-cols-2 gap-x-6 gap-y-1">
                 {activeItem.children.map((child) => (
-                  <Link
+                  <SmartLink
                     key={child.path}
                     href={child.path}
-                    prefetch={true}
-                    className="py-1.5 text-sm text-neutral-600 transition-colors hover:text-black dark:text-neutral-400 dark:hover:text-white"
+                    className="py-1.5 text-sm text-neutral-600 transition-colors hover:text-black"
                   >
                     {child.title}
-                  </Link>
+                  </SmartLink>
                 ))}
               </div>
-              <Link
+              <SmartLink
                 href={activeItem.path}
-                prefetch={true}
-                className="mt-4 inline-block text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
+                className="mt-4 inline-block text-sm font-medium text-blue-600 hover:underline"
               >
-                View all {activeItem.title}
-              </Link>
+                {`${t("viewAllPrefix")} ${activeItem.title}`}
+              </SmartLink>
             </div>
           ) : null}
         </div>

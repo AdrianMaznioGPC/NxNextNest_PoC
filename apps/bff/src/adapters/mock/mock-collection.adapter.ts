@@ -1,5 +1,5 @@
-import type { Collection, Product } from "@commerce/shared-types";
-import { Injectable } from "@nestjs/common";
+import type { Collection, LocaleContext, Product } from "@commerce/shared-types";
+import { Injectable, Logger } from "@nestjs/common";
 import { CollectionPort } from "../../ports/collection.port";
 import {
   collectionProductMap,
@@ -7,18 +7,41 @@ import {
   getAllCollectionsFlat,
   products,
 } from "./mock-data";
+import {
+  localizeCollection,
+  localizeCollections,
+  localizeProducts,
+  telemetryCoverage,
+  type LocalizationTelemetry,
+} from "./mock-commerce-localization";
 
 @Injectable()
 export class MockCollectionAdapter implements CollectionPort {
-  async getCollections(): Promise<Collection[]> {
-    return collections;
+  private readonly logger = new Logger(MockCollectionAdapter.name);
+
+  async getCollections(localeContext?: LocaleContext): Promise<Collection[]> {
+    const localized = localizeCollections(collections, localeContext);
+    this.logTelemetry("get_collections", localized.telemetry);
+    return localized.value;
   }
 
-  async getCollection(handle: string): Promise<Collection | undefined> {
-    return getAllCollectionsFlat().find((c) => c.handle === handle);
+  async getCollection(
+    handle: string,
+    localeContext?: LocaleContext,
+  ): Promise<Collection | undefined> {
+    const collection = getAllCollectionsFlat().find((c) => c.handle === handle);
+    if (!collection) {
+      return undefined;
+    }
+    const localized = localizeCollection(collection, localeContext);
+    this.logTelemetry("get_collection", localized.telemetry, { handle });
+    return localized.value;
   }
 
-  async getCollectionByPath(slugs: string[]): Promise<Collection | undefined> {
+  async getCollectionByPath(
+    slugs: string[],
+    localeContext?: LocaleContext,
+  ): Promise<Collection | undefined> {
     if (slugs.length === 0) return undefined;
 
     // First slug is a top-level collection
@@ -33,14 +56,18 @@ export class MockCollectionAdapter implements CollectionPort {
       if (!child) return undefined;
       current = child;
     }
-    return current;
+    const localized = localizeCollection(current, localeContext);
+    this.logTelemetry("get_collection_by_path", localized.telemetry, {
+      slugs: slugs.join("/"),
+    });
+    return localized.value;
   }
 
   async getCollectionProducts(params: {
     collection: string;
     reverse?: boolean;
     sortKey?: string;
-  }): Promise<Product[]> {
+  }, localeContext?: LocaleContext): Promise<Product[]> {
     const ids = collectionProductMap[params.collection];
     if (!ids) return [];
 
@@ -68,6 +95,52 @@ export class MockCollectionAdapter implements CollectionPort {
       result.reverse();
     }
 
-    return result;
+    const localized = localizeProducts(result, localeContext);
+    this.logTelemetry("get_collection_products", localized.telemetry, {
+      collection: params.collection,
+    });
+    return localized.value;
+  }
+
+  private logTelemetry(
+    operation: string,
+    telemetry: LocalizationTelemetry,
+    details: Record<string, unknown> = {},
+  ) {
+    const coverage = telemetryCoverage(telemetry);
+    this.logger.log(
+      JSON.stringify({
+        metric: "commerce_localization_request_total",
+        operation,
+        entityType: "collection",
+        language: telemetry.language,
+        fallbackCount: 0,
+        totalFields: telemetry.totalFields,
+        coverage,
+        ...details,
+      }),
+    );
+    this.logger.log(
+      JSON.stringify({
+        metric: "commerce_translation_coverage_ratio",
+        operation,
+        entityType: "collection",
+        language: telemetry.language,
+        coverage,
+      }),
+    );
+    if (telemetry.fallbackCount > 0) {
+      this.logger.warn(
+        JSON.stringify({
+          metric: "commerce_translation_fallback_total",
+          operation,
+          entityType: "collection",
+          language: telemetry.language,
+          fallbackCount: telemetry.fallbackCount,
+          totalFields: telemetry.totalFields,
+          ...details,
+        }),
+      );
+    }
   }
 }

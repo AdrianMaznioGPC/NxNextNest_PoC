@@ -23,7 +23,9 @@ registerBlockResolver("rich-text", async (raw) => ({
 registerBlockResolver("featured-products", async (raw, ctx) => {
   const products = (
     await Promise.all(
-      raw.productHandles.map((h: string) => ctx.products.getProduct(h)),
+      raw.productHandles.map((h: string) =>
+        ctx.products.getProduct(h, ctx.localeContext),
+      ),
     )
   ).filter((p): p is Product => p !== undefined);
 
@@ -39,7 +41,7 @@ registerBlockResolver("featured-products", async (raw, ctx) => {
 registerBlockResolver("product-carousel", async (raw, ctx) => {
   const products = await ctx.collections.getCollectionProducts({
     collection: raw.collectionHandle,
-  });
+  }, ctx.localeContext);
 
   return {
     type: "product-carousel" as const,

@@ -1,7 +1,33 @@
 @import "tailwindcss";
+@import "./themes/base-tokens.css";
 
 @plugin "@tailwindcss/container-queries";
 @plugin "@tailwindcss/typography";
+
+@theme {
+  --color-accent: var(--theme-accent);
+  --color-surface: var(--theme-surface);
+  --color-foreground: var(--theme-foreground);
+  --color-muted-surface: var(--theme-muted-surface);
+  --color-muted: var(--theme-muted);
+  --color-border: var(--theme-border);
+  --color-border-strong: var(--theme-border-strong);
+  --color-card: var(--theme-card);
+  --color-card-foreground: var(--theme-card-foreground);
+  --color-card-border: var(--theme-card-border);
+  --color-card-border-hover: var(--theme-card-border-hover);
+  --color-logo: var(--theme-logo);
+  --color-logo-shell: var(--theme-logo-shell);
+  --color-logo-shell-border: var(--theme-logo-shell-border);
+  --color-link: var(--theme-link);
+  --color-link-hover: var(--theme-link-hover);
+  --color-selection: var(--theme-selection);
+  --color-selection-foreground: var(--theme-selection-foreground);
+  --color-primary: var(--theme-primary);
+  --color-primary-foreground: var(--theme-primary-foreground);
+  --color-price-badge: var(--theme-price-badge);
+  --color-price-badge-foreground: var(--theme-price-badge-foreground);
+}
 
 @layer base {
   *,
@@ -9,13 +35,17 @@
   ::before,
   ::backdrop,
   ::file-selector-button {
-    border-color: var(--color-gray-200, currentColor);
+    border-color: var(--theme-border, currentColor);
+  }
+
+  button {
+    border-radius: var(--theme-radius-control);
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+@layer utilities {
+  .rounded-control {
+    border-radius: var(--theme-radius-control);
   }
 }
 
@@ -28,5 +58,5 @@
 a,
 input,
 button {
-  @apply focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-neutral-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-50 dark:focus-visible:ring-neutral-600 dark:focus-visible:ring-offset-neutral-900;
+  @apply focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-border-strong focus-visible:ring-offset-2 focus-visible:ring-offset-surface;
 }

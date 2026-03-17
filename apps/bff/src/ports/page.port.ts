@@ -1,9 +1,12 @@
-import type { Page } from "@commerce/shared-types";
+import type { LocaleContext, Page } from "@commerce/shared-types";
 
 export interface PagePort {
-  getPage(handle: string): Promise<Page | undefined>;
+  getPage(
+    handle: string,
+    localeContext?: LocaleContext,
+  ): Promise<Page | undefined>;
 
-  getPages(): Promise<Page[]>;
+  getPages(localeContext?: LocaleContext): Promise<Page[]>;
 }
 
 export const PAGE_PORT = Symbol("PAGE_PORT");

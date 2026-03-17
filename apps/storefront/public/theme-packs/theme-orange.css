@@ -1,0 +1,25 @@
+:root {
+  --theme-accent: #f97316;
+  --theme-surface: #ffffff;
+  --theme-foreground: #0a0a0a;
+  --theme-muted-surface: #fafafa;
+  --theme-muted: #525252;
+  --theme-border: #e5e5e5;
+  --theme-border-strong: #d4d4d4;
+  --theme-card: #ffffff;
+  --theme-card-foreground: #0a0a0a;
+  --theme-card-border: #e5e5e5;
+  --theme-card-border-hover: #a3a3a3;
+  --theme-logo: #9a3412;
+  --theme-logo-shell: #ffffff;
+  --theme-logo-shell-border: #e5e5e5;
+  --theme-link: #c2410c;
+  --theme-link-hover: #9a3412;
+  --theme-selection: #fdba74;
+  --theme-selection-foreground: #0a0a0a;
+  --theme-primary: #f97316;
+  --theme-primary-foreground: #0a0a0a;
+  --theme-price-badge: #f97316;
+  --theme-price-badge-foreground: #0a0a0a;
+  --theme-radius-control: 0.375rem;
+}

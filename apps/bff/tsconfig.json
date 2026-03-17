@@ -8,6 +8,9 @@
     "target": "ES2021",
     "outDir": "./dist",
     "baseUrl": ".",
+    "paths": {
+      "@commerce/shared-types": ["../../libs/shared-types/src/index.ts"]
+    },
     "noEmit": false
   },
   "include": ["src/**/*"]

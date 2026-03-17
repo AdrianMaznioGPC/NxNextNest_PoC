@@ -16,9 +16,7 @@ function HeroBanner({ block }: { block: HeroBannerBlock }) {
       />
       <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/30 text-white">
         <h1 className="text-4xl font-bold">{block.heading}</h1>
-        {block.subheading && (
-          <p className="mt-2 text-lg">{block.subheading}</p>
-        )}
+        {block.subheading && <p className="mt-2 text-lg">{block.subheading}</p>}
         {block.ctaLabel && block.ctaUrl && (
           <Link
             href={block.ctaUrl}

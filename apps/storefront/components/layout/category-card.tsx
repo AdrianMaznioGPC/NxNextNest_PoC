@@ -1,5 +1,5 @@
 import type { Collection } from "lib/types";
-import Link from "next/link";
+import SmartLink from "components/smart-link";
 
 export default function CategoryCard({
   collection,
@@ -7,21 +7,21 @@ export default function CategoryCard({
   collection: Collection;
 }) {
   return (
-    <Link
+    <SmartLink
       href={collection.path}
-      className="group relative flex flex-col overflow-hidden rounded-lg border border-neutral-200 bg-white p-6 transition-colors hover:border-neutral-400 dark:border-neutral-800 dark:bg-black dark:hover:border-neutral-600"
+      className="group relative flex flex-col overflow-hidden rounded-lg border border-card-border bg-card p-6 transition-colors hover:border-card-border-hover"
     >
-      <h3 className="text-lg font-semibold text-black group-hover:underline dark:text-white">
+      <h3 className="text-lg font-semibold text-card-foreground group-hover:underline">
         {collection.title}
       </h3>
-      <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">
+      <p className="mt-2 text-sm text-muted">
         {collection.description}
       </p>
       {collection.subcollections && collection.subcollections.length > 0 && (
-        <p className="mt-4 text-xs text-neutral-400 dark:text-neutral-500">
+        <p className="mt-4 text-xs text-muted">
           {collection.subcollections.length} subcategories
         </p>
       )}
-    </Link>
+    </SmartLink>
   );
 }

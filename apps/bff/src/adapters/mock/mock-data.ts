@@ -2,6 +2,10 @@ import type {
   Breadcrumb,
   Cart,
   Collection,
+  DomainConfigModel,
+  I18nMessagesModel,
+  LanguageCode,
+  LocaleContext,
   Menu,
   Page,
   Product,
@@ -42,6 +46,7 @@ function product(
   return {
     id,
     handle,
+    path: `/product/${handle}`,
     availableForSale,
     title,
     description,
@@ -297,6 +302,17 @@ export const collections: Collection[] = [
     path: "/categories/exhaust",
     updatedAt: new Date().toISOString(),
   },
+  {
+    handle: "Oil",
+    title: "Oil",
+    description: "Cat-back systems, mufflers, and exhaust tips",
+    seo: {
+      title: "Exhaust",
+      description: "Cat-back systems, mufflers, and exhaust tips",
+    },
+    path: "/categories/exhaust",
+    updatedAt: new Date().toISOString(),
+  },
 ];
 
 /** Flat list of all collections including children, for lookups */
@@ -382,6 +398,7 @@ export const menus: Record<string, Menu[]> = {
     { title: "Suspension", path: "/categories/suspension" },
     { title: "Lighting", path: "/categories/lighting" },
     { title: "Exhaust", path: "/categories/exhaust" },
+    { title: "oil", path: "/categories/oil" },
   ],
   "next-js-frontend-footer-menu": [
     { title: "Home", path: "/" },
@@ -397,6 +414,7 @@ export const pages: Page[] = [
     id: "page-1",
     title: "About",
     handle: "about",
+    path: "/about",
     body: "<p>We are a modern car parts company committed to quality products and great customer experiences.</p>",
     bodySummary: "We are a modern car parts company.",
     seo: {
@@ -410,6 +428,7 @@ export const pages: Page[] = [
     id: "page-2",
     title: "Terms & Conditions",
     handle: "terms-and-conditions",
+    path: "/terms-and-conditions",
     body: "<p>These are the terms and conditions for using our store.</p>",
     bodySummary: "Terms and conditions.",
     seo: {
@@ -423,6 +442,7 @@ export const pages: Page[] = [
     id: "page-3",
     title: "Privacy Policy",
     handle: "privacy-policy",
+    path: "/privacy-policy",
     body: "<p>Your privacy is important to us.</p>",
     bodySummary: "Our privacy policy.",
     seo: { title: "Privacy Policy", description: "Read our privacy policy." },
@@ -433,6 +453,7 @@ export const pages: Page[] = [
     id: "page-4",
     title: "FAQ",
     handle: "faq",
+    path: "/faq",
     body: "<h2>FAQ</h2><h3>How long does shipping take?</h3><p>5-7 business days.</p>",
     bodySummary: "Frequently asked questions.",
     seo: { title: "FAQ", description: "Frequently asked questions." },
@@ -440,6 +461,192 @@ export const pages: Page[] = [
     updatedAt: new Date().toISOString(),
   },
 ];
+
+export const staticRouteSegmentCatalog: Record<
+  string,
+  {
+    search: string;
+    product: string;
+    categories: string;
+    cart: string;
+  }
+> = {
+  "en-US": {
+    search: "search",
+    product: "product",
+    categories: "categories",
+    cart: "cart",
+  },
+  "es-ES": {
+    search: "buscar",
+    product: "producto",
+    categories: "categorias",
+    cart: "carrito",
+  },
+  "nl-NL": {
+    search: "zoeken",
+    product: "product",
+    categories: "categorieen",
+    cart: "winkelwagen",
+  },
+  "fr-FR": {
+    search: "recherche",
+    product: "produit",
+    categories: "categories",
+    cart: "panier",
+  },
+};
+
+export const localeByLanguage: Record<LanguageCode, string> = {
+  en: "en-US",
+  es: "es-ES",
+  nl: "nl-NL",
+  fr: "fr-FR",
+};
+
+export const supportedLanguageCodes: LanguageCode[] = [
+  "en",
+  "es",
+  "nl",
+  "fr",
+];
+
+export const productSlugCatalog: Record<string, Record<string, string>> = {
+  "en-US": {
+    "ceramic-brake-pads": "ceramic-brake-pads",
+    "drilled-rotors": "drilled-rotors",
+    "performance-air-filter": "performance-air-filter",
+    "iridium-spark-plugs": "iridium-spark-plugs",
+    "coilover-kit": "coilover-kit",
+    "sway-bar-end-links": "sway-bar-end-links",
+    "led-headlight-bulbs": "led-headlight-bulbs",
+    "smoked-tail-lights": "smoked-tail-lights",
+    "cat-back-exhaust": "cat-back-exhaust",
+    "exhaust-tip-clamp-on": "exhaust-tip-clamp-on",
+    "short-ram-intake": "short-ram-intake",
+    "wheel-spacers": "wheel-spacers",
+  },
+  "es-ES": {
+    "ceramic-brake-pads": "pastillas-freno-ceramicas",
+    "drilled-rotors": "rotores-perforados-ranurados",
+    "performance-air-filter": "filtro-aire-rendimiento",
+    "iridium-spark-plugs": "bujias-iridio",
+    "coilover-kit": "kit-coilover-ajustable",
+    "sway-bar-end-links": "bieletas-barra-estabilizadora",
+    "led-headlight-bulbs": "bombillas-led-faros",
+    "smoked-tail-lights": "cubiertas-faros-traseros-ahumadas",
+    "cat-back-exhaust": "escape-cat-back",
+    "exhaust-tip-clamp-on": "punta-escape-abrazadera",
+    "short-ram-intake": "admision-short-ram",
+    "wheel-spacers": "separadores-rueda",
+  },
+  "nl-NL": {
+    "ceramic-brake-pads": "keramische-remblokken",
+    "drilled-rotors": "geperforeerde-remschijven",
+    "performance-air-filter": "performance-luchtfilter",
+    "iridium-spark-plugs": "iridium-bougies",
+    "coilover-kit": "coilover-kit",
+    "sway-bar-end-links": "stabilisatorstang-koppelstangen",
+    "led-headlight-bulbs": "led-koplamp-lampen",
+    "smoked-tail-lights": "getinte-achterlichten",
+    "cat-back-exhaust": "cat-back-uitlaat",
+    "exhaust-tip-clamp-on": "uitlaattip-klemmodel",
+    "short-ram-intake": "short-ram-inlaat",
+    "wheel-spacers": "wielspacers",
+  },
+  "fr-FR": {
+    "ceramic-brake-pads": "plaquettes-de-frein-ceramique",
+    "drilled-rotors": "disques-perfores-rainures",
+    "performance-air-filter": "filtre-a-air-performance",
+    "iridium-spark-plugs": "bougies-iridium",
+    "coilover-kit": "kit-combines-filetes",
+    "sway-bar-end-links": "biellettes-barre-stabilisatrice",
+    "led-headlight-bulbs": "ampoules-led-phares",
+    "smoked-tail-lights": "feux-arriere-fumes",
+    "cat-back-exhaust": "echappement-cat-back",
+    "exhaust-tip-clamp-on": "embout-echappement-collier",
+    "short-ram-intake": "admission-short-ram",
+    "wheel-spacers": "elargisseurs-roue",
+  },
+};
+
+export const pageSlugCatalog: Record<string, Record<string, string>> = {
+  "en-US": {
+    about: "about",
+    "terms-and-conditions": "terms-and-conditions",
+    "privacy-policy": "privacy-policy",
+    faq: "faq",
+  },
+  "es-ES": {
+    about: "acerca-de",
+    "terms-and-conditions": "terminos-condiciones",
+    "privacy-policy": "politica-privacidad",
+    faq: "preguntas-frecuentes",
+  },
+  "nl-NL": {
+    about: "over-ons",
+    "terms-and-conditions": "voorwaarden",
+    "privacy-policy": "privacybeleid",
+    faq: "veelgestelde-vragen",
+  },
+  "fr-FR": {
+    about: "a-propos",
+    "terms-and-conditions": "conditions-generales",
+    "privacy-policy": "politique-de-confidentialite",
+    faq: "faq",
+  },
+};
+
+export const categorySlugCatalog: Record<string, Record<string, string>> = {
+  "en-US": {
+    brakes: "brakes",
+    "brakes/pads": "brakes/pads",
+    "brakes/rotors": "brakes/rotors",
+    engine: "engine",
+    "engine/filters": "engine/filters",
+    "engine/ignition": "engine/ignition",
+    suspension: "suspension",
+    lighting: "lighting",
+    exhaust: "exhaust",
+    oil: "oil",
+  },
+  "es-ES": {
+    brakes: "frenos",
+    "brakes/pads": "frenos/pastillas",
+    "brakes/rotors": "frenos/rotores",
+    engine: "motor",
+    "engine/filters": "motor/filtros",
+    "engine/ignition": "motor/encendido",
+    suspension: "suspension",
+    lighting: "iluminacion",
+    exhaust: "escape",
+    oil: "aceite",
+  },
+  "nl-NL": {
+    brakes: "remmen",
+    "brakes/pads": "remmen/remblokken",
+    "brakes/rotors": "remmen/remschijven",
+    engine: "motor",
+    "engine/filters": "motor/filters",
+    "engine/ignition": "motor/ontsteking",
+    suspension: "vering",
+    lighting: "verlichting",
+    exhaust: "uitlaat",
+    oil: "olie",
+  },
+  "fr-FR": {
+    brakes: "freins",
+    "brakes/pads": "freins/plaquettes",
+    "brakes/rotors": "freins/disques",
+    engine: "moteur",
+    "engine/filters": "moteur/filtres",
+    "engine/ignition": "moteur/allumage",
+    suspension: "suspension",
+    lighting: "eclairage",
+    exhaust: "echappement",
+    oil: "huile",
+  },
+};
 
 export function createEmptyCart(): Cart {
   return {
@@ -453,4 +660,373 @@ export function createEmptyCart(): Cart {
       totalTaxAmount: { amount: "0.00", currencyCode: "USD" },
     },
   };
+}
+
+export const defaultLocaleContext: LocaleContext = {
+  locale: "en-US",
+  language: "en",
+  region: "US",
+  currency: "USD",
+  market: "US",
+  domain: "storefront.example.com",
+};
+
+export const domainConfig: DomainConfigModel = {
+  version: "2026-03-15-region-language-v1",
+  updatedAt: new Date().toISOString(),
+  maxAgeSeconds: 60,
+  defaultDomain: defaultLocaleContext.domain,
+  domains: [
+    {
+      host: "storefront.example.com",
+      canonical: true,
+      storeKey: "store-a",
+      experienceProfileId: "exp-store-a-v1",
+      storeFlagIconSrc: "/icons/eu.svg",
+      storeFlagIconLabel: "European Union",
+      themeKey: "theme-default",
+      themeRevision: "2026-q3-v1",
+      themeTokenPack: "theme-default",
+      regionCode: "US",
+      defaultLanguage: "en",
+      supportedLanguages: supportedLanguageCodes,
+      cartUxMode: "drawer",
+      cartPath: "/cart",
+      openCartOnAdd: true,
+      ...defaultLocaleContext,
+    },
+    {
+      host: "storefront.es.example.com",
+      canonical: true,
+      storeKey: "store-b",
+      experienceProfileId: "exp-store-b-v1",
+      storeFlagIconSrc: "/icons/spain.svg",
+      storeFlagIconLabel: "Spain",
+      themeKey: "theme-green",
+      themeRevision: "2026-q3-v1",
+      themeTokenPack: "theme-green",
+      regionCode: "ES",
+      defaultLanguage: "es",
+      supportedLanguages: supportedLanguageCodes,
+      cartUxMode: "page",
+      cartPath: "/carrito",
+      openCartOnAdd: true,
+      locale: "es-ES",
+      language: "es",
+      region: "ES",
+      currency: "EUR",
+      market: "ES",
+      domain: "storefront.es.example.com",
+    },
+    {
+      host: "storefront.nl.example.com",
+      canonical: true,
+      storeKey: "store-c",
+      experienceProfileId: "exp-store-c-v1",
+      storeFlagIconSrc: "/icons/netherlands.svg",
+      storeFlagIconLabel: "Netherlands",
+      themeKey: "theme-orange",
+      themeRevision: "2026-q3-v1",
+      themeTokenPack: "theme-orange",
+      regionCode: "NL",
+      defaultLanguage: "nl",
+      supportedLanguages: supportedLanguageCodes,
+      cartUxMode: "page",
+      cartPath: "/winkelwagen",
+      openCartOnAdd: true,
+      locale: "nl-NL",
+      language: "nl",
+      region: "NL",
+      currency: "EUR",
+      market: "NL",
+      domain: "storefront.nl.example.com",
+    },
+  ],
+  aliases: [
+    {
+      host: "www.storefront.example.com",
+      canonicalHost: "storefront.example.com",
+    },
+    {
+      host: "www.storefront.nl.example.com",
+      canonicalHost: "storefront.nl.example.com",
+    },
+    {
+      host: "www.storefront.es.example.com",
+      canonicalHost: "storefront.es.example.com",
+    },
+  ],
+};
+
+const messageCatalogByLocale: Record<string, Record<string, Record<string, string>>> = {
+  "en-US": {
+    common: {
+      searchPlaceholder: "Search for products...",
+    },
+    nav: {
+      browseProducts: "Browse Products",
+      viewAllCategories: "View all categories",
+      viewAllPrefix: "View all",
+    },
+    cart: {
+      title: "My Cart",
+      empty: "Your cart is empty.",
+      taxes: "Taxes",
+      shipping: "Shipping",
+      shippingAtCheckout: "Calculated at checkout",
+      total: "Total",
+      checkout: "Proceed to Checkout",
+    },
+    page: {
+      homeTitle: "Home",
+      homeDescription: "High-performance ecommerce store built with Next.js.",
+      searchTitle: "Search",
+      searchDescription: "Search for products in the store.",
+      cartTitle: "Cart",
+      cartDescription: "Review and update items in your cart.",
+      allCategories: "All Categories",
+      allCategoriesDescription: "Browse all product categories.",
+      notFoundTitle: "Not Found",
+      notFoundDescription: "The requested page could not be found.",
+      productsSuffix: "products",
+    },
+    search: {
+      noResults: 'There are no products that match "{query}"',
+      showing: 'Showing {totalResults} {resultsWord} for "{query}"',
+      result: "result",
+      results: "results",
+    },
+    sort: {
+      relevance: "Relevance",
+      trending: "Trending",
+      latestArrivals: "Latest arrivals",
+      priceLowToHigh: "Price: Low to high",
+      priceHighToLow: "Price: High to low",
+    },
+  },
+  "es-ES": {
+    common: {
+      searchPlaceholder: "Buscar productos...",
+    },
+    nav: {
+      browseProducts: "Explorar productos",
+      viewAllCategories: "Ver todas las categorías",
+      viewAllPrefix: "Ver todo",
+    },
+    cart: {
+      title: "Mi carrito",
+      empty: "Tu carrito está vacío.",
+      taxes: "Impuestos",
+      shipping: "Envío",
+      shippingAtCheckout: "Calculado al finalizar la compra",
+      total: "Total",
+      checkout: "Finalizar compra",
+    },
+    page: {
+      homeTitle: "Inicio",
+      homeDescription: "Tienda ecommerce de alto rendimiento con Next.js.",
+      searchTitle: "Buscar",
+      searchDescription: "Busca productos en la tienda.",
+      cartTitle: "Carrito",
+      cartDescription: "Revisa y actualiza los productos de tu carrito.",
+      allCategories: "Todas las categorías",
+      allCategoriesDescription: "Explora todas las categorías de productos.",
+      notFoundTitle: "No encontrado",
+      notFoundDescription: "No se pudo encontrar la página solicitada.",
+      productsSuffix: "productos",
+    },
+    search: {
+      noResults: 'No hay productos que coincidan con "{query}"',
+      showing: 'Mostrando {totalResults} {resultsWord} para "{query}"',
+      result: "resultado",
+      results: "resultados",
+    },
+    sort: {
+      relevance: "Relevancia",
+      trending: "Tendencias",
+      latestArrivals: "Novedades",
+      priceLowToHigh: "Precio: de menor a mayor",
+      priceHighToLow: "Precio: de mayor a menor",
+    },
+  },
+  "nl-NL": {
+    common: {
+      searchPlaceholder: "Zoek naar producten...",
+    },
+    nav: {
+      browseProducts: "Blader door producten",
+      viewAllCategories: "Bekijk alle categorieen",
+      viewAllPrefix: "Bekijk alle",
+    },
+    cart: {
+      title: "Mijn winkelwagen",
+      empty: "Je winkelwagen is leeg.",
+      taxes: "Belastingen",
+      shipping: "Verzending",
+      shippingAtCheckout: "Berekend bij afrekenen",
+      total: "Totaal",
+      checkout: "Doorgaan naar afrekenen",
+    },
+    page: {
+      homeTitle: "Home",
+      homeDescription: "High-performance ecommerce storefront gebouwd met Next.js.",
+      searchTitle: "Zoeken",
+      searchDescription: "Zoek producten in de winkel.",
+      cartTitle: "Winkelwagen",
+      cartDescription: "Bekijk en wijzig artikelen in je winkelwagen.",
+      allCategories: "Alle categorieen",
+      allCategoriesDescription: "Bekijk alle productcategorieen.",
+      notFoundTitle: "Niet gevonden",
+      notFoundDescription: "De opgevraagde pagina kon niet worden gevonden.",
+      productsSuffix: "producten",
+    },
+    search: {
+      noResults: 'Er zijn geen producten die overeenkomen met "{query}"',
+      showing: 'Toont {totalResults} {resultsWord} voor "{query}"',
+      result: "resultaat",
+      results: "resultaten",
+    },
+    sort: {
+      relevance: "Relevantie",
+      trending: "Trending",
+      latestArrivals: "Nieuw binnen",
+      priceLowToHigh: "Prijs: laag naar hoog",
+      priceHighToLow: "Prijs: hoog naar laag",
+    },
+  },
+  "fr-FR": {
+    common: {
+      searchPlaceholder: "Rechercher des produits...",
+    },
+    nav: {
+      browseProducts: "Parcourir les produits",
+      viewAllCategories: "Voir toutes les categories",
+      viewAllPrefix: "Voir tout",
+    },
+    cart: {
+      title: "Mon panier",
+      empty: "Votre panier est vide.",
+      taxes: "Taxes",
+      shipping: "Livraison",
+      shippingAtCheckout: "Calcule a la commande",
+      total: "Total",
+      checkout: "Passer au paiement",
+    },
+    page: {
+      homeTitle: "Accueil",
+      homeDescription: "Storefront e-commerce haute performance avec Next.js.",
+      searchTitle: "Recherche",
+      searchDescription: "Recherchez des produits dans la boutique.",
+      cartTitle: "Panier",
+      cartDescription: "Consultez et modifiez les articles de votre panier.",
+      allCategories: "Toutes les categories",
+      allCategoriesDescription: "Parcourez toutes les categories de produits.",
+      notFoundTitle: "Introuvable",
+      notFoundDescription: "La page demandee est introuvable.",
+      productsSuffix: "produits",
+    },
+    search: {
+      noResults: 'Aucun produit ne correspond a "{query}"',
+      showing: '{totalResults} {resultsWord} pour "{query}"',
+      result: "resultat",
+      results: "resultats",
+    },
+    sort: {
+      relevance: "Pertinence",
+      trending: "Tendance",
+      latestArrivals: "Nouveautes",
+      priceLowToHigh: "Prix : croissant",
+      priceHighToLow: "Prix : decroissant",
+    },
+  },
+};
+
+export const translationVersion = "2026-03-15";
+
+function pickNamespaces(
+  catalog: Record<string, Record<string, string>>,
+  namespaces: string[],
+): Record<string, Record<string, string>> {
+  const selected: Record<string, Record<string, string>> = {};
+  for (const ns of namespaces) {
+    if (catalog[ns] !== undefined) {
+      selected[ns] = catalog[ns];
+    }
+  }
+  return selected;
+}
+
+export function getMessagesForLocale(
+  locale: string,
+  namespaces: string[],
+): I18nMessagesModel {
+  const fallbackLocale = defaultLocaleContext.locale;
+  const resolvedLocale = resolveCatalogLocale(locale);
+  const baseCatalog =
+    messageCatalogByLocale[resolvedLocale] ??
+    messageCatalogByLocale[fallbackLocale]!;
+  const messages = pickNamespaces(baseCatalog, namespaces);
+
+  return {
+    locale: resolvedLocale,
+    namespaces,
+    messages,
+    translationVersion,
+  };
+}
+
+export function getCatalogValue(
+  locale: string,
+  path: string,
+): string | undefined {
+  const fallbackLocale = defaultLocaleContext.locale;
+  const resolvedLocale = resolveCatalogLocale(locale);
+  const catalog =
+    messageCatalogByLocale[resolvedLocale] ??
+    messageCatalogByLocale[fallbackLocale];
+  if (!catalog) return undefined;
+
+  const parts = path.split(".");
+  let current: unknown = catalog;
+  for (const part of parts) {
+    if (!current || typeof current !== "object" || !(part in current)) {
+      return undefined;
+    }
+    current = (current as Record<string, unknown>)[part];
+  }
+
+  return typeof current === "string" ? current : undefined;
+}
+
+export function resolveCatalogLocale(localeOrLanguage?: string): string {
+  if (!localeOrLanguage) {
+    return defaultLocaleContext.locale;
+  }
+
+  if (messageCatalogByLocale[localeOrLanguage]) {
+    return localeOrLanguage;
+  }
+
+  const language = normalizeLanguage(localeOrLanguage);
+  if (language && localeByLanguage[language]) {
+    return localeByLanguage[language];
+  }
+
+  return defaultLocaleContext.locale;
+}
+
+export function normalizeLanguage(input?: string): LanguageCode | undefined {
+  if (!input) return undefined;
+  const candidate = input.includes("-")
+    ? input.split("-")[0]
+    : input;
+  if (
+    candidate === "en" ||
+    candidate === "es" ||
+    candidate === "nl" ||
+    candidate === "fr"
+  ) {
+    return candidate;
+  }
+  return undefined;
 }

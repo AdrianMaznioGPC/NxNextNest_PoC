@@ -4,11 +4,16 @@
   "projectType": "application",
   "targets": {
     "dev": {
-      "command": "ts-node -r tsconfig-paths/register src/main.ts",
+      "command": "npm run start:dev",
       "options": { "cwd": "apps/bff" }
     },
     "build": {
       "command": "tsc -p tsconfig.json",
+      "options": { "cwd": "apps/bff" }
+    },
+    "start": {
+      "dependsOn": ["build"],
+      "command": "node dist/apps/bff/src/main.js",
       "options": { "cwd": "apps/bff" }
     }
   }

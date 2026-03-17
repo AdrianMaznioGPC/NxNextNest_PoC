@@ -1,0 +1,50 @@
+:root {
+  color-scheme: light;
+  --theme-accent: #14b8a6;
+  --theme-surface: #ffffff;
+  --theme-foreground: #0a0a0a;
+  --theme-muted-surface: #fafafa;
+  --theme-muted: #525252;
+  --theme-border: #e5e5e5;
+  --theme-border-strong: #d4d4d4;
+  --theme-card: #ffffff;
+  --theme-card-foreground: #0a0a0a;
+  --theme-card-border: #e5e5e5;
+  --theme-card-border-hover: #a3a3a3;
+  --theme-logo: #0a0a0a;
+  --theme-logo-shell: #ffffff;
+  --theme-logo-shell-border: #e5e5e5;
+  --theme-link: #0a0a0a;
+  --theme-link-hover: #262626;
+  --theme-selection: #5eead4;
+  --theme-selection-foreground: #0a0a0a;
+  --theme-primary: #2563eb;
+  --theme-primary-foreground: #ffffff;
+  --theme-price-badge: #2563eb;
+  --theme-price-badge-foreground: #ffffff;
+  --theme-radius-control: 0.5rem;
+
+  /* Compatibility aliases for still-migrating surfaces */
+  --surface-bg: var(--theme-surface);
+  --surface-fg: var(--theme-foreground);
+  --surface-muted-bg: var(--theme-muted-surface);
+  --surface-muted-fg: var(--theme-muted);
+  --border-default: var(--theme-border);
+  --border-strong: var(--theme-border-strong);
+  --card-bg: var(--theme-card);
+  --card-fg: var(--theme-card-foreground);
+  --card-border: var(--theme-card-border);
+  --card-border-hover: var(--theme-card-border-hover);
+  --logo-mark: var(--theme-logo);
+  --logo-shell-bg: var(--theme-logo-shell);
+  --logo-shell-border: var(--theme-logo-shell-border);
+  --link-fg: var(--theme-link);
+  --link-hover-fg: var(--theme-link-hover);
+  --selection-bg: var(--theme-selection);
+  --selection-fg: var(--theme-selection-foreground);
+  --action-primary-bg: var(--theme-primary);
+  --action-primary-fg: var(--theme-primary-foreground);
+  --price-badge-bg: var(--theme-price-badge);
+  --price-badge-fg: var(--theme-price-badge-foreground);
+  --radius-control: var(--theme-radius-control);
+}

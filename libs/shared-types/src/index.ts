@@ -15,6 +15,7 @@ export type Cart = {
 export type CartProduct = {
   id: string;
   handle: string;
+  path: string;
   title: string;
   featuredImage: Image;
 };
@@ -69,6 +70,7 @@ export type Page = {
   id: string;
   title: string;
   handle: string;
+  path: string;
   body: string;
   bodySummary: string;
   seo?: SEO;
@@ -79,6 +81,7 @@ export type Page = {
 export type Product = {
   id: string;
   handle: string;
+  path: string;
   availableForSale: boolean;
   title: string;
   description: string;
@@ -205,4 +208,353 @@ export type SearchPageData = {
 export type GlobalLayoutData = {
   megaMenu: MegaMenuItem[];
   featuredLinks: FeaturedLink[];
+  routes: {
+    home: string;
+    search: string;
+    categoryList: string;
+    cart: string;
+  };
+};
+
+// -- Resolved page contract ---------------------------------------------------
+
+export type SortOption = {
+  title: string;
+  slug: string | null;
+  sortKey: "RELEVANCE" | "BEST_SELLING" | "CREATED_AT" | "PRICE";
+  reverse: boolean;
+};
+
+export type PageSeo = {
+  title: string;
+  description: string;
+  robots?: {
+    index?: boolean;
+    follow?: boolean;
+    googleBot?: {
+      index?: boolean;
+      follow?: boolean;
+    };
+  };
+  openGraph?: {
+    type?: string;
+    publishedTime?: string;
+    modifiedTime?: string;
+    images?: {
+      url: string;
+      width?: number;
+      height?: number;
+      alt?: string;
+    }[];
+  };
+  jsonLd?: Record<string, unknown>;
+};
+
+export type ResolvedPageStatus = 200 | 301 | 404;
+
+export type ResolvedPageSchemaVersion = 1 | 2;
+
+export type SlotPriority = "critical" | "deferred";
+
+export type LocaleContext = {
+  locale: string;
+  language: LanguageCode;
+  region: string;
+  currency: string;
+  market: string;
+  domain: string;
+};
+
+export type LanguageCode = "en" | "es" | "nl" | "fr";
+
+export type LinkLocalizationAudit = {
+  language: LanguageCode;
+  defaultLanguage: LanguageCode;
+  nonCompliantLinkCount: number;
+  normalizedLinkCount?: number;
+  samplePaths?: string[];
+};
+
+export type CartUxMode = "drawer" | "page";
+export type MerchandisingMode = "discovery" | "conversion" | "clearance";
+export type MerchandisingSortSlug =
+  | "trending-desc"
+  | "price-asc"
+  | "price-desc"
+  | "latest-desc";
+
+export type StoreContext = {
+  storeKey: string;
+  experienceProfileId: string;
+  storeFlagIconSrc: string;
+  storeFlagIconLabel: string;
+  themeKey: string;
+  themeRevision: string;
+  themeTokenPack?: string;
+  language: LanguageCode;
+  defaultLanguage: LanguageCode;
+  supportedLanguages: LanguageCode[];
+  cartUxMode: CartUxMode;
+  cartPath: string;
+  openCartOnAdd: boolean;
+};
+
+export type I18nMessageDescriptor = {
+  namespace: string;
+  key: string;
+  values?: Record<string, string | number | boolean>;
+  fallback?: string;
+};
+
+export type DomainConfigEntry = LocaleContext & {
+  host: string;
+  canonical?: boolean;
+  regionCode: string;
+  defaultLanguage: LanguageCode;
+  supportedLanguages: LanguageCode[];
+  storeKey: StoreContext["storeKey"];
+  experienceProfileId: StoreContext["experienceProfileId"];
+  storeFlagIconSrc: StoreContext["storeFlagIconSrc"];
+  storeFlagIconLabel: StoreContext["storeFlagIconLabel"];
+  themeKey: StoreContext["themeKey"];
+  themeRevision: StoreContext["themeRevision"];
+  themeTokenPack?: StoreContext["themeTokenPack"];
+  cartUxMode: StoreContext["cartUxMode"];
+  cartPath: StoreContext["cartPath"];
+  openCartOnAdd: StoreContext["openCartOnAdd"];
+};
+
+export type DomainConfigAlias = {
+  host: string;
+  canonicalHost: string;
+};
+
+export type DomainConfigModel = {
+  version: string;
+  updatedAt: string;
+  maxAgeSeconds: number;
+  defaultDomain: string;
+  domains: DomainConfigEntry[];
+  aliases?: DomainConfigAlias[];
+};
+
+export type I18nMessagesModel = {
+  locale: string;
+  namespaces: string[];
+  messages: Record<string, Record<string, string>>;
+  translationVersion: string;
+};
+
+export type SlotStreamMode = "blocking" | "deferred";
+
+export type SlotDataMode = "inline" | "reference";
+
+export type SlotReference = {
+  endpoint: string;
+  query: Record<string, string>;
+  ttlSeconds: number;
+};
+
+export type SlotPresentation = {
+  variantKey: string;
+  layoutKey?: string;
+  density?: "compact" | "comfortable";
+  flags?: Record<string, boolean>;
+};
+
+export type ResolvedPageSlot = {
+  id: string;
+  rendererKey: string;
+  props: Record<string, unknown>;
+  priority?: SlotPriority;
+  cacheTags?: string[];
+};
+
+export type SlotManifest = {
+  id: string;
+  rendererKey: string;
+  priority: SlotPriority;
+  stream: SlotStreamMode;
+  dataMode: SlotDataMode;
+  presentation?: SlotPresentation;
+  inlineProps?: Record<string, unknown>;
+  slotRef?: SlotReference;
+  revalidateTags: string[];
+  staleAfterSeconds: number;
+  fallbackKey?: string;
+};
+
+export type SlotPayloadModel = {
+  slotId: string;
+  rendererKey: string;
+  props: Record<string, unknown>;
+  presentation?: SlotPresentation;
+  revalidateTags: string[];
+  staleAfterSeconds: number;
+  slotVersion: string;
+  requestId?: string;
+  timings?: {
+    totalMs: number;
+  };
+};
+
+export type PageContentNode =
+  | {
+      type: "home";
+      blocks: CmsBlock[];
+      containerClassName?: string;
+    }
+  | {
+      type: "category-list";
+      title: string;
+      collections: Collection[];
+      containerClassName?: string;
+    }
+  | {
+      type: "category-subcollections";
+      breadcrumbs: Breadcrumb[];
+      title: string;
+      description: string;
+      subcollections: Collection[];
+      containerClassName?: string;
+    }
+  | {
+      type: "category-products";
+      breadcrumbs: Breadcrumb[];
+      title: string;
+      description: string;
+      products: Product[];
+      sortOptions: SortOption[];
+      containerClassName?: string;
+    }
+  | {
+      type: "product-detail";
+      product: Product;
+      breadcrumbs: Breadcrumb[];
+      recommendations: Product[];
+      containerClassName?: string;
+    }
+  | {
+      type: "search-results";
+      query: string;
+      summaryText?: string;
+      products: Product[];
+      sortOptions: SortOption[];
+      containerClassName?: string;
+    }
+  | {
+      type: "content-page";
+      page: Page;
+      containerClassName?: string;
+    }
+  | {
+      type: "cart-page";
+      title: string;
+      description?: string;
+      containerClassName?: string;
+    };
+
+export type ResolvedPageModel = {
+  schemaVersion: ResolvedPageSchemaVersion;
+  path: string;
+  status: ResolvedPageStatus;
+  routeKind?:
+    | "home"
+    | "search"
+    | "category-list"
+    | "category-detail"
+    | "product-detail"
+    | "content-page"
+    | "cart";
+  requestedPath?: string;
+  resolvedPath?: string;
+  canonicalPath?: string;
+  localeContext?: LocaleContext;
+  seo: PageSeo;
+  content?: PageContentNode[];
+  slots?: ResolvedPageSlot[];
+  revalidateTags: string[];
+  canonicalUrl?: string;
+  alternates?: Record<string, string>;
+  translationVersion?: string;
+  redirectTo?: string;
+  matchedRuleId?: string;
+  assemblerKey?: string;
+  assemblyVersion?: string;
+  requestId?: string;
+  timings?: {
+    routeMs: number;
+    assemblyMs: number;
+    totalMs: number;
+  };
+  cacheHints?: {
+    maxAgeSeconds: number;
+    staleWhileRevalidateSeconds: number;
+  };
+  translationSource?: "bff-bootstrap";
+  localizationAudit?: LinkLocalizationAudit;
+  merchandisingApplied?: {
+    mode: MerchandisingMode;
+    defaultSortSlug?: MerchandisingSortSlug;
+  };
+};
+
+export type PageBootstrapModel = {
+  page: Omit<
+    ResolvedPageModel,
+    "content" | "slots" | "revalidateTags"
+  >;
+  shell: {
+    namespaces: string[];
+    messages: Record<string, Record<string, string>>;
+    experience: {
+      storeKey: string;
+      experienceProfileId: string;
+      storeFlagIconSrc: StoreContext["storeFlagIconSrc"];
+      storeFlagIconLabel: StoreContext["storeFlagIconLabel"];
+      themeKey: string;
+      themeRevision: string;
+      themeTokenPack?: StoreContext["themeTokenPack"];
+      language: StoreContext["language"];
+      defaultLanguage: StoreContext["defaultLanguage"];
+      supportedLanguages: StoreContext["supportedLanguages"];
+      cartUxMode: StoreContext["cartUxMode"];
+      cartPath: StoreContext["cartPath"];
+      openCartOnAdd: StoreContext["openCartOnAdd"];
+      merchandisingMode: MerchandisingMode;
+      merchandisingProfileId: string;
+      layoutKey: string;
+    };
+  };
+  slots: SlotManifest[];
+};
+
+export type SwitchUrlRequest = {
+  path: string;
+  query?: Record<string, string | undefined>;
+  sourceHost: string;
+  sourceOrigin?: string;
+  targetRegion: string;
+  targetLanguage: LanguageCode;
+};
+
+export type SwitchUrlResponse = {
+  targetUrl: string;
+  resolved: {
+    routeKind?:
+      | "home"
+      | "search"
+      | "category-list"
+      | "category-detail"
+      | "product-detail"
+      | "content-page"
+      | "cart";
+    fallbackApplied: boolean;
+    reason?:
+      | "translated_slug_missing"
+      | "entity_unavailable_in_region"
+      | "cart_disabled_in_target_store"
+      | "unknown_route"
+      | "target_region_unresolved";
+  };
 };
