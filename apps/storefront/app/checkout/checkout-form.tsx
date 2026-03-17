@@ -1,8 +1,14 @@
 "use client";
 
-import type { AddressFormSchema, Cart, CheckoutConfig, Money } from "lib/types";
+import type {
+  AddressFormSchema,
+  Cart,
+  CheckoutConfig,
+  Money,
+  SavedAddress,
+} from "lib/types";
 import { useTranslations } from "next-intl";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { OrderSummary } from "./order-summary";
 import { AddressSection } from "./sections/address-section";
 import { DeliverySection } from "./sections/delivery-section";
@@ -26,13 +32,58 @@ function buildInitialValues(schema: AddressFormSchema): Record<string, string> {
 export default function CheckoutForm({ cart, config }: CheckoutFormProps) {
   const t = useTranslations("checkout");
 
-  const [addressValues, setAddressValues] = useState<Record<string, string>>(
-    () => buildInitialValues(config.addressSchema),
+  const hasSavedAddresses = config.savedAddresses.length > 0;
+
+  // Pre-select the default shipping address if available
+  const defaultShipping = config.savedAddresses.find(
+    (a) => a.isDefaultShipping,
   );
+
+  const [selectedShippingAddressId, setSelectedShippingAddressId] = useState<
+    string | null
+  >(defaultShipping?.id ?? null);
+
+  const [addressValues, setAddressValues] = useState<Record<string, string>>(
+    () => defaultShipping?.values ?? buildInitialValues(config.addressSchema),
+  );
+
+  const handleSelectShippingAddress = useCallback(
+    (address: SavedAddress | null) => {
+      if (address) {
+        setSelectedShippingAddressId(address.id);
+        setAddressValues(address.values);
+      } else {
+        setSelectedShippingAddressId(null);
+        setAddressValues(buildInitialValues(config.addressSchema));
+      }
+    },
+    [config.addressSchema],
+  );
+
+  // Pre-select the default billing address if available
+  const defaultBilling = config.savedAddresses.find((a) => a.isDefaultBilling);
+
+  const [selectedBillingAddressId, setSelectedBillingAddressId] = useState<
+    string | null
+  >(defaultBilling?.id ?? null);
 
   const [useDifferentBilling, setUseDifferentBilling] = useState(false);
   const [billingValues, setBillingValues] = useState<Record<string, string>>(
-    () => buildInitialValues(config.billingAddressSchema),
+    () =>
+      defaultBilling?.values ?? buildInitialValues(config.billingAddressSchema),
+  );
+
+  const handleSelectBillingAddress = useCallback(
+    (address: SavedAddress | null) => {
+      if (address) {
+        setSelectedBillingAddressId(address.id);
+        setBillingValues(address.values);
+      } else {
+        setSelectedBillingAddressId(null);
+        setBillingValues(buildInitialValues(config.billingAddressSchema));
+      }
+    },
+    [config.billingAddressSchema],
   );
 
   const [selectedDelivery, setSelectedDelivery] = useState(
@@ -50,10 +101,12 @@ export default function CheckoutForm({ cart, config }: CheckoutFormProps) {
   }, [config.deliveryOptions, selectedDelivery]);
 
   function handleAddressChange(fieldName: string, value: string) {
+    setSelectedShippingAddressId(null);
     setAddressValues((prev) => ({ ...prev, [fieldName]: value }));
   }
 
   function handleBillingChange(fieldName: string, value: string) {
+    setSelectedBillingAddressId(null);
     setBillingValues((prev) => ({ ...prev, [fieldName]: value }));
   }
 
@@ -64,13 +117,18 @@ export default function CheckoutForm({ cart, config }: CheckoutFormProps) {
 
   return (
     <div className="lg:grid lg:grid-cols-12 lg:gap-x-8">
-      <form onSubmit={handleSubmit} className="space-y-8 lg:col-span-7">
+      <form onSubmit={handleSubmit} className="min-w-0 space-y-8 lg:col-span-7">
         <AddressSection
           title={t("shippingAddress")}
           idPrefix="shipping"
           schema={config.addressSchema}
           values={addressValues}
           onChange={handleAddressChange}
+          savedAddresses={hasSavedAddresses ? config.savedAddresses : undefined}
+          selectedAddressId={selectedShippingAddressId}
+          onSelectSavedAddress={
+            hasSavedAddresses ? handleSelectShippingAddress : undefined
+          }
         />
 
         <label className="flex cursor-pointer items-center gap-3 text-sm font-medium text-neutral-700 dark:text-neutral-300">
@@ -90,6 +148,13 @@ export default function CheckoutForm({ cart, config }: CheckoutFormProps) {
             schema={config.billingAddressSchema}
             values={billingValues}
             onChange={handleBillingChange}
+            savedAddresses={
+              hasSavedAddresses ? config.savedAddresses : undefined
+            }
+            selectedAddressId={selectedBillingAddressId}
+            onSelectSavedAddress={
+              hasSavedAddresses ? handleSelectBillingAddress : undefined
+            }
           />
         )}
 

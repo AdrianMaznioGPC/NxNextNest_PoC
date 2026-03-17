@@ -6,6 +6,7 @@ import { CartController } from "./modules/cart/cart.controller";
 import { CheckoutController } from "./modules/checkout/checkout.controller";
 import { CatalogDomainService } from "./modules/collection/catalog-domain.service";
 import { CollectionController } from "./modules/collection/collection.controller";
+import { AddressBookController } from "./modules/customer/address-book.controller";
 import { MenuController } from "./modules/menu/menu.controller";
 import { NavigationDomainService } from "./modules/menu/navigation-domain.service";
 import { ContentDomainService } from "./modules/page-data/content-domain.service";
@@ -24,6 +25,7 @@ import { StoreInterceptor } from "./store";
     CollectionController,
     CartController,
     CheckoutController,
+    AddressBookController,
     PageController,
     MenuController,
     PageDataController,

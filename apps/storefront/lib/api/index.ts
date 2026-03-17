@@ -12,6 +12,7 @@ import type {
   Page,
   Product,
   ProductPageData,
+  SavedAddress,
   SearchPageData,
 } from "lib/types";
 import {
@@ -25,6 +26,16 @@ const BFF_URL = process.env.BFF_URL || "http://localhost:4000";
 export async function getStoreCode(): Promise<string> {
   const h = await headers();
   return h.get("x-store-code") ?? defaultStoreCode;
+}
+
+export async function getCustomerId(): Promise<string | undefined> {
+  return (await cookies()).get("customerId")?.value;
+}
+
+/** Build headers that identify the current customer (if authenticated). */
+async function customerHeaders(): Promise<Record<string, string>> {
+  const customerId = await getCustomerId();
+  return customerId ? { "x-customer-id": customerId } : {};
 }
 
 async function bffFetch<T>(
@@ -269,11 +280,62 @@ export async function getSearchPageData(
 export async function getCheckoutConfig(
   storeCode: string,
 ): Promise<CheckoutConfig> {
-  "use cache";
-  cacheTag(TAGS.checkout);
-  cacheLife("days");
+  return bffFetch(storeCode, "/checkout/config", {
+    headers: await customerHeaders(),
+  });
+}
 
-  return bffFetch(storeCode, "/checkout/config");
+// -- Addresses ---------------------------------------------------------------
+
+export async function getAddresses(storeCode: string): Promise<SavedAddress[]> {
+  return bffFetch(storeCode, "/customers/me/addresses", {
+    headers: await customerHeaders(),
+  });
+}
+
+export async function createAddress(
+  storeCode: string,
+  address: Omit<SavedAddress, "id">,
+): Promise<SavedAddress> {
+  return bffFetch(storeCode, "/customers/me/addresses", {
+    method: "POST",
+    body: JSON.stringify(address),
+    headers: await customerHeaders(),
+  });
+}
+
+export async function updateAddress(
+  storeCode: string,
+  addressId: string,
+  patch: Partial<Omit<SavedAddress, "id">>,
+): Promise<SavedAddress> {
+  return bffFetch(storeCode, `/customers/me/addresses/${addressId}`, {
+    method: "PATCH",
+    body: JSON.stringify(patch),
+    headers: await customerHeaders(),
+  });
+}
+
+export async function deleteAddress(
+  storeCode: string,
+  addressId: string,
+): Promise<void> {
+  return bffFetch(storeCode, `/customers/me/addresses/${addressId}`, {
+    method: "DELETE",
+    headers: await customerHeaders(),
+  });
+}
+
+export async function setDefaultAddress(
+  storeCode: string,
+  addressId: string,
+  type: "shipping" | "billing",
+): Promise<SavedAddress> {
+  return bffFetch(storeCode, `/customers/me/addresses/${addressId}/default`, {
+    method: "POST",
+    body: JSON.stringify({ type }),
+    headers: await customerHeaders(),
+  });
 }
 
 // -- Cart --------------------------------------------------------------------

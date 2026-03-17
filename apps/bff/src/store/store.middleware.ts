@@ -15,10 +15,16 @@ export class StoreInterceptor implements NestInterceptor {
     const req = context.switchToHttp().getRequest();
     const code = req.headers?.["x-store-code"] ?? defaultStoreCode;
     const config = stores[code] ?? stores[defaultStoreCode]!;
+    const customerId =
+      req.cookies?.["customerId"] ??
+      req.headers?.["x-customer-id"] ??
+      undefined;
+
     req[STORE_CONTEXT_KEY] = {
       storeCode: config.storeCode,
       locale: config.locale,
       currency: config.currency,
+      customerId,
     };
     return next.handle();
   }

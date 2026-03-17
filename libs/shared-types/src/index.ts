@@ -308,9 +308,18 @@ export type PaymentOption = {
   icon?: string;
 };
 
+export type SavedAddress = {
+  id: string;
+  label: string;
+  values: Record<string, string>;
+  isDefaultShipping: boolean;
+  isDefaultBilling: boolean;
+};
+
 export type CheckoutConfig = {
   addressSchema: AddressFormSchema;
   billingAddressSchema: AddressFormSchema;
   deliveryOptions: DeliveryOption[];
   paymentOptions: PaymentOption[];
+  savedAddresses: SavedAddress[];
 };

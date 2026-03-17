@@ -12,6 +12,7 @@ import { PAGE_PORT } from "../../ports/page.port";
 import { PRICING_PORT } from "../../ports/pricing.port";
 import { PRODUCT_PORT } from "../../ports/product.port";
 import { StoreContext } from "../../store";
+import { MockAddressStore } from "./mock-address-store";
 import { MockAvailabilityAdapter } from "./mock-availability.adapter";
 import { MockCartStore } from "./mock-cart-store";
 import { MockCartAdapter } from "./mock-cart.adapter";
@@ -28,6 +29,7 @@ import { MockProductAdapter } from "./mock-product.adapter";
 
 const providers = [
   StoreContext,
+  MockAddressStore,
   MockCartStore,
   { provide: AVAILABILITY_PORT, useClass: MockAvailabilityAdapter },
   { provide: CHECKOUT_PORT, useClass: MockCheckoutAdapter },

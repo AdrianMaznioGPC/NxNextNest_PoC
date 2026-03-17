@@ -20,4 +20,12 @@ export class StoreContext {
   get currency(): string {
     return this.request?.[STORE_CONTEXT_KEY]?.currency ?? defaults.currency;
   }
+
+  get customerId(): string | undefined {
+    return this.request?.[STORE_CONTEXT_KEY]?.customerId;
+  }
+
+  get isAuthenticated(): boolean {
+    return this.customerId !== undefined;
+  }
 }
