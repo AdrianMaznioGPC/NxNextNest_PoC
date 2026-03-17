@@ -14,7 +14,7 @@ interface OrderSummaryProps {
 function OrderSummaryLineItem({ item }: { item: Cart["lines"][number] }) {
   return (
     <li className="flex gap-4 py-3">
-      <div className="relative h-16 w-16 flex-none overflow-hidden rounded-md border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-900">
+      <div className="relative h-16 w-16 flex-none rounded-md border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-900">
         <Image
           src={item.merchandise.product.featuredImage.url}
           alt={
@@ -23,7 +23,7 @@ function OrderSummaryLineItem({ item }: { item: Cart["lines"][number] }) {
           }
           width={64}
           height={64}
-          className="h-full w-full object-cover"
+          className="h-full w-full rounded-md object-cover"
         />
         <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-neutral-800 text-[10px] font-medium text-white dark:bg-neutral-200 dark:text-black">
           {item.quantity}
