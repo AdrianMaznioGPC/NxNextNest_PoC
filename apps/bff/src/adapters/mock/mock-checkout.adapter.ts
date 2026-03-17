@@ -1,7 +1,8 @@
 import type { CheckoutConfig } from "@commerce/shared-types";
 import { Inject, Injectable } from "@nestjs/common";
+import { RAW_CUSTOMER_PORT } from "../../modules/system/system.module";
 import type { CheckoutPort } from "../../ports/checkout.port";
-import { CUSTOMER_PORT, CustomerPort } from "../../ports/customer.port";
+import type { CustomerPort } from "../../ports/customer.port";
 import { StoreContext } from "../../store";
 import {
   addressSchemas,
@@ -15,7 +16,7 @@ import { getStoreData } from "./data/store-data";
 export class MockCheckoutAdapter implements CheckoutPort {
   constructor(
     private readonly store: StoreContext,
-    @Inject(CUSTOMER_PORT) private readonly customer: CustomerPort,
+    @Inject(RAW_CUSTOMER_PORT) private readonly customer: CustomerPort,
   ) {}
 
   async getCheckoutConfig(): Promise<CheckoutConfig> {

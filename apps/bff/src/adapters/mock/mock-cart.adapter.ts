@@ -1,8 +1,12 @@
 import type { Cart, CartItem } from "@commerce/shared-types";
 import { Inject, Injectable } from "@nestjs/common";
+import {
+  RAW_PRICING_PORT,
+  RAW_PRODUCT_PORT,
+} from "../../modules/system/system.module";
 import { CartPort } from "../../ports/cart.port";
-import { PRICING_PORT, type PricingPort } from "../../ports/pricing.port";
-import { PRODUCT_PORT, type ProductPort } from "../../ports/product.port";
+import type { PricingPort } from "../../ports/pricing.port";
+import type { ProductPort } from "../../ports/product.port";
 import { StoreContext } from "../../store";
 import { createEmptyCart } from "./data/cart-data";
 import { MockCartStore } from "./mock-cart-store";
@@ -10,8 +14,8 @@ import { MockCartStore } from "./mock-cart-store";
 @Injectable()
 export class MockCartAdapter implements CartPort {
   constructor(
-    @Inject(PRODUCT_PORT) private readonly products: ProductPort,
-    @Inject(PRICING_PORT) private readonly pricing: PricingPort,
+    @Inject(RAW_PRODUCT_PORT) private readonly products: ProductPort,
+    @Inject(RAW_PRICING_PORT) private readonly pricing: PricingPort,
     private readonly storeCtx: StoreContext,
     private readonly cartStore: MockCartStore,
   ) {}

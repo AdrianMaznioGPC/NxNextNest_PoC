@@ -12,7 +12,10 @@
   "error": {
     "title": "Oh no!",
     "description": "There was an issue with our storefront. This could be a temporary issue, please try your action again.",
-    "tryAgain": "Try Again"
+    "tryAgain": "Try Again",
+    "serviceUnavailable": "Service is temporarily busy. Please try again in a moment.",
+    "upstreamTimeout": "The request took too long. Please try again.",
+    "generic": "Something went wrong. Please try again."
   },
   "sort": {
     "relevance": "Relevance",

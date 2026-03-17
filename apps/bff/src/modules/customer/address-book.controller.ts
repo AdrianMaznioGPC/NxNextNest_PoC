@@ -10,11 +10,16 @@ import {
   Param,
   Patch,
   Post,
+  SetMetadata,
 } from "@nestjs/common";
 import { CUSTOMER_PORT, CustomerPort } from "../../ports/customer.port";
 import { StoreContext } from "../../store";
+import { CACHE_ROUTE_KIND_KEY } from "../system/cache-policy.service";
+import { LOAD_SHED_SCOPE_KEY } from "../system/load-shedding.config";
 
 @Controller("customers/me/addresses")
+@SetMetadata(LOAD_SHED_SCOPE_KEY, "customers")
+@SetMetadata(CACHE_ROUTE_KIND_KEY, "customers")
 export class AddressBookController {
   constructor(
     @Inject(CUSTOMER_PORT) private readonly customer: CustomerPort,
@@ -34,9 +39,7 @@ export class AddressBookController {
   }
 
   @Post()
-  createAddress(
-    @Body() body: Omit<SavedAddress, "id">,
-  ): Promise<SavedAddress> {
+  createAddress(@Body() body: Omit<SavedAddress, "id">): Promise<SavedAddress> {
     const customerId = this.requireAuth();
     return this.customer.createAddress(customerId, body);
   }
@@ -65,11 +68,7 @@ export class AddressBookController {
     @Body("type") type: "shipping" | "billing",
   ): Promise<SavedAddress> {
     const customerId = this.requireAuth();
-    const result = await this.customer.setDefaultAddress(
-      customerId,
-      id,
-      type,
-    );
+    const result = await this.customer.setDefaultAddress(customerId, id, type);
     if (!result) throw new NotFoundException("Address not found");
     return result;
   }

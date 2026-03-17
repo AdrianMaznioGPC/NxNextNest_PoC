@@ -11,9 +11,19 @@ import { TAGS } from "lib/constants";
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 
+/** Maps BFF error codes to user-facing messages, using server message as fallback. */
 function extractErrorMessage(error: unknown, fallback: string): string {
   if (error instanceof BffError) {
-    return error.response.message;
+    switch (error.response.errorCode) {
+      case "CIRCUIT_OPEN":
+      case "CONCURRENCY_LIMIT":
+      case "OVERLOADED":
+        return "Service is temporarily busy. Please try again in a moment.";
+      case "UPSTREAM_TIMEOUT":
+        return "The request took too long. Please try again.";
+      default:
+        return error.response.message;
+    }
   }
   return fallback;
 }

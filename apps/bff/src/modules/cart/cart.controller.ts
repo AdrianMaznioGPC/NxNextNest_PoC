@@ -8,12 +8,17 @@ import {
   Param,
   Patch,
   Post,
+  SetMetadata,
 } from "@nestjs/common";
 import { CART_PORT, CartPort } from "../../ports/cart.port";
 import { CHECKOUT_PORT, type CheckoutPort } from "../../ports/checkout.port";
+import { CACHE_ROUTE_KIND_KEY } from "../system/cache-policy.service";
+import { LOAD_SHED_SCOPE_KEY } from "../system/load-shedding.config";
 import { AddToCartDto, RemoveFromCartDto, UpdateCartDto } from "./cart.dto";
 
 @Controller("cart")
+@SetMetadata(LOAD_SHED_SCOPE_KEY, "cart")
+@SetMetadata(CACHE_ROUTE_KIND_KEY, "cart")
 export class CartController {
   constructor(
     @Inject(CART_PORT) private readonly cart: CartPort,

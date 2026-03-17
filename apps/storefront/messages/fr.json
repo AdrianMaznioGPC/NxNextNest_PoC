@@ -12,7 +12,10 @@
   "error": {
     "title": "Oh non !",
     "description": "Un problème est survenu avec notre boutique. Il peut s'agir d'un problème temporaire, veuillez réessayer.",
-    "tryAgain": "Réessayer"
+    "tryAgain": "Réessayer",
+    "serviceUnavailable": "Le service est temporairement surchargé. Veuillez réessayer dans un instant.",
+    "upstreamTimeout": "La requête a pris trop de temps. Veuillez réessayer.",
+    "generic": "Une erreur est survenue. Veuillez réessayer."
   },
   "sort": {
     "relevance": "Pertinence",

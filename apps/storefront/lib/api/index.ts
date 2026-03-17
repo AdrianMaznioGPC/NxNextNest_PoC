@@ -78,6 +78,13 @@ async function bffFetch<T>(
         message: res.statusText,
       };
     }
+    const retryAfter = res.headers.get("Retry-After");
+    if (retryAfter) {
+      errorBody.details = {
+        ...errorBody.details,
+        retryAfterSeconds: Number(retryAfter),
+      };
+    }
     throw new BffError(errorBody);
   }
   const text = await res.text();

@@ -1,7 +1,6 @@
 import { Module } from "@nestjs/common";
 import { APP_INTERCEPTOR } from "@nestjs/core";
 import { MockBackendModule } from "./adapters/mock/mock-backend.module";
-import { AppController } from "./app.controller";
 import { CartController } from "./modules/cart/cart.controller";
 import { CheckoutController } from "./modules/checkout/checkout.controller";
 import { CatalogDomainService } from "./modules/collection/catalog-domain.service";
@@ -11,12 +10,12 @@ import { ContentDomainService } from "./modules/page-data/content-domain.service
 import { PageDataController } from "./modules/page-data/page-data.controller";
 import { PageDataService } from "./modules/page-data/page-data.service";
 import { ProductDomainService } from "./modules/product/product-domain.service";
+import { SystemModule } from "./modules/system/system.module";
 import { StoreInterceptor } from "./store";
 
 @Module({
-  imports: [MockBackendModule],
+  imports: [MockBackendModule, SystemModule],
   controllers: [
-    AppController,
     CartController,
     CheckoutController,
     AddressBookController,

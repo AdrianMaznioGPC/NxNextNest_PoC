@@ -4,10 +4,8 @@ import type {
   Collection,
 } from "@commerce/shared-types";
 import { Inject, Injectable } from "@nestjs/common";
-import {
-  COLLECTION_PORT,
-  type CollectionPort,
-} from "../../ports/collection.port";
+import { RAW_COLLECTION_PORT } from "../../modules/system/system.module";
+import type { CollectionPort } from "../../ports/collection.port";
 import { ProductPort } from "../../ports/product.port";
 import { StoreContext } from "../../store";
 import { productsByStore } from "./data/product-data";
@@ -17,7 +15,7 @@ import { getStoreData } from "./data/store-data";
 export class MockProductAdapter implements ProductPort {
   constructor(
     private readonly storeCtx: StoreContext,
-    @Inject(COLLECTION_PORT)
+    @Inject(RAW_COLLECTION_PORT)
     private readonly collections: CollectionPort,
   ) {}
 
