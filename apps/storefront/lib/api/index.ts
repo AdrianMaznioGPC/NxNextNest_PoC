@@ -265,11 +265,6 @@ export async function getSearchPageData(
 
 // -- Cart --------------------------------------------------------------------
 
-export async function createCart(): Promise<Cart> {
-  const storeCode = await getStoreCode();
-  return bffFetch(storeCode, "/cart", { method: "POST" });
-}
-
 export async function getCart(): Promise<Cart | undefined> {
   const storeCode = await getStoreCode();
   const cartId = (await cookies()).get("cartId")?.value;
@@ -282,33 +277,41 @@ export async function getCart(): Promise<Cart | undefined> {
   }
 }
 
+/**
+ * Adds lines to the cart. Creates a new cart if no cartId cookie exists.
+ * Persists the cart ID in a cookie from the BFF response.
+ */
 export async function addToCart(
   lines: { merchandiseId: string; quantity: number }[],
 ): Promise<Cart> {
   const storeCode = await getStoreCode();
-  const cartId = (await cookies()).get("cartId")?.value!;
-  return bffFetch(storeCode, `/cart/${cartId}/lines`, {
+  const cartId = (await cookies()).get("cartId")?.value;
+  const cart = await bffFetch<Cart>(storeCode, "/cart/lines", {
     method: "POST",
-    body: JSON.stringify({ lines }),
+    body: JSON.stringify({ cartId, lines }),
   });
+  if (!cartId && cart.id) {
+    (await cookies()).set("cartId", cart.id);
+  }
+  return cart;
 }
 
-export async function removeFromCart(lineIds: string[]): Promise<Cart> {
+export async function removeFromCart(merchandiseIds: string[]): Promise<Cart> {
   const storeCode = await getStoreCode();
   const cartId = (await cookies()).get("cartId")?.value!;
-  return bffFetch(storeCode, `/cart/${cartId}/lines`, {
-    method: "DELETE",
-    body: JSON.stringify({ lineIds }),
+  return bffFetch(storeCode, "/cart/remove", {
+    method: "POST",
+    body: JSON.stringify({ cartId, merchandiseIds }),
   });
 }
 
 export async function updateCart(
-  lines: { id: string; merchandiseId: string; quantity: number }[],
+  lines: { merchandiseId: string; quantity: number }[],
 ): Promise<Cart> {
   const storeCode = await getStoreCode();
   const cartId = (await cookies()).get("cartId")?.value!;
-  return bffFetch(storeCode, `/cart/${cartId}/lines`, {
+  return bffFetch(storeCode, "/cart/lines", {
     method: "PATCH",
-    body: JSON.stringify({ lines }),
+    body: JSON.stringify({ cartId, lines }),
   });
 }

@@ -3,6 +3,7 @@ import {
   ArrayMinSize,
   IsArray,
   IsInt,
+  IsOptional,
   IsString,
   Min,
   ValidateNested,
@@ -18,6 +19,10 @@ export class CartLineDto {
 }
 
 export class AddToCartDto {
+  @IsOptional()
+  @IsString()
+  cartId?: string;
+
   @IsArray()
   @ArrayMinSize(1)
   @ValidateNested({ each: true })
@@ -26,16 +31,16 @@ export class AddToCartDto {
 }
 
 export class RemoveFromCartDto {
+  @IsString()
+  cartId!: string;
+
   @IsArray()
   @ArrayMinSize(1)
   @IsString({ each: true })
-  lineIds!: string[];
+  merchandiseIds!: string[];
 }
 
 export class UpdateCartLineDto {
-  @IsString()
-  id!: string;
-
   @IsString()
   merchandiseId!: string;
 
@@ -45,6 +50,9 @@ export class UpdateCartLineDto {
 }
 
 export class UpdateCartDto {
+  @IsString()
+  cartId!: string;
+
   @IsArray()
   @ArrayMinSize(1)
   @ValidateNested({ each: true })
