@@ -8,21 +8,26 @@ import {
   updateCart,
 } from "lib/api";
 import { TAGS } from "lib/constants";
+import { getTranslations } from "next-intl/server";
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 
-/** Maps BFF error codes to user-facing messages, using server message as fallback. */
-function extractErrorMessage(error: unknown, fallback: string): string {
+/** Maps BFF error codes to user-facing translated messages. */
+async function extractErrorMessage(
+  error: unknown,
+  fallback: string,
+): Promise<string> {
   if (error instanceof BffError) {
+    const t = await getTranslations("error");
     switch (error.response.errorCode) {
       case "CIRCUIT_OPEN":
       case "CONCURRENCY_LIMIT":
       case "OVERLOADED":
-        return "Service is temporarily busy. Please try again in a moment.";
+        return t("serviceUnavailable");
       case "UPSTREAM_TIMEOUT":
-        return "The request took too long. Please try again.";
+        return t("upstreamTimeout");
       case "ITEMS_NOT_PURCHASABLE":
-        return "This item is currently unavailable for purchase. Please try again later.";
+        return t("itemNotPurchasable");
       default:
         return error.response.message;
     }
@@ -35,7 +40,8 @@ export async function addItem(
   selectedVariantId: string | undefined,
 ): Promise<string | null | undefined> {
   if (!selectedVariantId) {
-    return "Missing variant selection";
+    const t = await getTranslations("error");
+    return t("missingVariant");
   }
 
   try {

@@ -1,13 +1,15 @@
 import Grid from "components/grid";
 import Breadcrumbs from "components/layout/breadcrumbs";
 import CategoryCard from "components/layout/category-card";
+import Pagination from "components/layout/pagination";
 import ProductGridItems from "components/layout/product-grid-items";
 import FilterList from "components/layout/search/filter";
 import { getCategoryPageData, getStoreCode } from "lib/api";
-import { categoryUrl, resolveSortFromSlug } from "lib/utils";
+import { categoryUrl } from "lib/utils";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
+import { Suspense } from "react";
 
 type Props = {
   params: Promise<{ params: string[] }>;
@@ -53,31 +55,18 @@ export default async function CategoryPage(props: Props) {
   if (!parsed) return notFound();
 
   const searchParams = await props.searchParams;
-  const { sort } = (searchParams ?? {}) as { [key: string]: string };
+  const { sort, page: pageParam } = (searchParams ?? {}) as {
+    [key: string]: string;
+  };
 
   const storeCode = await getStoreCode();
+  const page = pageParam ? parseInt(pageParam, 10) : undefined;
 
-  // First fetch to get the page structure and BFF-provided sort options
   let data;
   try {
-    data = await getCategoryPageData(storeCode, parsed.categoryId);
+    data = await getCategoryPageData(storeCode, parsed.categoryId, sort, page);
   } catch {
     return notFound();
-  }
-
-  // If sort options exist and a sort slug was provided, resolve and re-fetch with sort
-  if (sort && data.sortOptions) {
-    const { sortKey, reverse } = resolveSortFromSlug(sort, data.sortOptions);
-    try {
-      data = await getCategoryPageData(
-        storeCode,
-        parsed.categoryId,
-        sortKey,
-        reverse,
-      );
-    } catch {
-      return notFound();
-    }
   }
 
   const {
@@ -87,6 +76,7 @@ export default async function CategoryPage(props: Props) {
     subcollections,
     products,
     sortOptions,
+    pagination,
   } = data;
 
   const tBreadcrumbs = await getTranslations("breadcrumbs");
@@ -140,9 +130,16 @@ export default async function CategoryPage(props: Props) {
       {!products || products.length === 0 ? (
         <p className="py-3 text-lg">{tCategories("noProducts")}</p>
       ) : (
-        <Grid className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-          <ProductGridItems products={products} />
-        </Grid>
+        <>
+          <Grid className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            <ProductGridItems products={products} />
+          </Grid>
+          {pagination && (
+            <Suspense fallback={null}>
+              <Pagination pagination={pagination} />
+            </Suspense>
+          )}
+        </>
       )}
     </>
   );

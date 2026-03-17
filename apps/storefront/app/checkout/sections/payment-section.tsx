@@ -2,9 +2,9 @@
 
 import clsx from "clsx";
 import type { PaymentOption } from "lib/types";
-import { useTranslations } from "next-intl";
 
 interface PaymentSectionProps {
+  title: string;
   options: PaymentOption[];
   selected: string;
   onSelect: (id: string) => void;
@@ -13,15 +13,12 @@ interface PaymentSectionProps {
 export function PaymentSection({
   options,
   selected,
+  title,
   onSelect,
 }: PaymentSectionProps) {
-  const t = useTranslations("checkout");
-
   return (
     <fieldset>
-      <legend className="mb-4 text-lg font-semibold">
-        {t("paymentMethod")}
-      </legend>
+      <legend className="mb-4 text-lg font-semibold">{title}</legend>
       <div className="space-y-3">
         {options.map((option) => {
           const isSelected = selected === option.id;
@@ -47,10 +44,10 @@ export function PaymentSection({
                 />
                 <div>
                   <p className="text-sm font-medium text-black dark:text-white">
-                    {t(option.labelKey)}
+                    {option.label}
                   </p>
                   <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                    {t(option.descriptionKey)}
+                    {option.description}
                   </p>
                 </div>
               </div>

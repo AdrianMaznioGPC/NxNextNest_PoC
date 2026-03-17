@@ -5,19 +5,16 @@ import type {
   Collection,
   SitemapEntry,
 } from "@commerce/shared-types";
-import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import {
   COLLECTION_PORT,
   type CollectionPort,
 } from "../../ports/collection.port";
-import { ProductDomainService } from "../product/product-domain.service";
 
 @Injectable()
 export class CatalogDomainService {
   constructor(
     @Inject(COLLECTION_PORT) private readonly collections: CollectionPort,
-    @Inject(forwardRef(() => ProductDomainService))
-    private readonly productDomain: ProductDomainService,
   ) {}
 
   getCollections(): Promise<Collection[]> {
@@ -39,8 +36,9 @@ export class CatalogDomainService {
 
   async getCategoryPage(
     categoryId: string,
-    sortKey?: string,
-    reverse?: boolean,
+    sort?: string,
+    page?: number,
+    pageSize?: number,
   ): Promise<CategoryPageData | undefined> {
     const collection = await this.collections.getCollectionById(categoryId);
     if (!collection) return undefined;
@@ -59,20 +57,20 @@ export class CatalogDomainService {
       };
     }
 
-    const { SORT_OPTIONS } = await import("../page-data/sort-options");
-
-    const products = await this.productDomain.getCollectionProducts({
-      collection: collection.id,
-      sortKey,
-      reverse,
+    const result = await this.collections.getCollectionProducts({
+      collectionId: collection.id,
+      sort,
+      page,
+      pageSize,
     });
 
     return {
       collection,
       canonicalSlug: collection.handle,
       breadcrumbs,
-      products,
-      sortOptions: SORT_OPTIONS,
+      products: result.products,
+      sortOptions: result.sortOptions,
+      pagination: result.pagination,
     };
   }
 

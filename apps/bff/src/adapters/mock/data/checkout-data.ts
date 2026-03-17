@@ -11,7 +11,7 @@ const frAddressSchema: AddressFormSchema = {
     [
       {
         name: "firstName",
-        labelKey: "firstName",
+        label: "Prénom",
         type: "text",
         autoComplete: "given-name",
         required: true,
@@ -19,7 +19,7 @@ const frAddressSchema: AddressFormSchema = {
       },
       {
         name: "lastName",
-        labelKey: "lastName",
+        label: "Nom",
         type: "text",
         autoComplete: "family-name",
         required: true,
@@ -29,7 +29,7 @@ const frAddressSchema: AddressFormSchema = {
     [
       {
         name: "email",
-        labelKey: "email",
+        label: "E-mail",
         type: "email",
         autoComplete: "email",
         required: true,
@@ -37,7 +37,7 @@ const frAddressSchema: AddressFormSchema = {
       },
       {
         name: "phone",
-        labelKey: "phone",
+        label: "Téléphone",
         type: "tel",
         autoComplete: "tel",
         required: false,
@@ -47,7 +47,7 @@ const frAddressSchema: AddressFormSchema = {
     [
       {
         name: "address",
-        labelKey: "address",
+        label: "Adresse",
         type: "text",
         autoComplete: "street-address",
         required: true,
@@ -57,7 +57,7 @@ const frAddressSchema: AddressFormSchema = {
     [
       {
         name: "postalCode",
-        labelKey: "postalCode",
+        label: "Code postal",
         type: "text",
         autoComplete: "postal-code",
         required: true,
@@ -70,7 +70,7 @@ const frAddressSchema: AddressFormSchema = {
       },
       {
         name: "city",
-        labelKey: "city",
+        label: "Ville",
         type: "text",
         autoComplete: "address-level2",
         required: true,
@@ -80,15 +80,15 @@ const frAddressSchema: AddressFormSchema = {
     [
       {
         name: "country",
-        labelKey: "country",
+        label: "Pays",
         type: "select",
         autoComplete: "country-name",
         required: true,
         colSpan: 2,
         options: [
-          { value: "FR", labelKey: "countries.france" },
-          { value: "BE", labelKey: "countries.belgium" },
-          { value: "LU", labelKey: "countries.luxembourg" },
+          { value: "FR", label: "France" },
+          { value: "BE", label: "Belgique" },
+          { value: "LU", label: "Luxembourg" },
         ],
       },
     ],
@@ -100,7 +100,7 @@ const ieAddressSchema: AddressFormSchema = {
     [
       {
         name: "firstName",
-        labelKey: "firstName",
+        label: "First Name",
         type: "text",
         autoComplete: "given-name",
         required: true,
@@ -108,7 +108,7 @@ const ieAddressSchema: AddressFormSchema = {
       },
       {
         name: "lastName",
-        labelKey: "lastName",
+        label: "Last Name",
         type: "text",
         autoComplete: "family-name",
         required: true,
@@ -118,7 +118,7 @@ const ieAddressSchema: AddressFormSchema = {
     [
       {
         name: "email",
-        labelKey: "email",
+        label: "Email",
         type: "email",
         autoComplete: "email",
         required: true,
@@ -126,7 +126,7 @@ const ieAddressSchema: AddressFormSchema = {
       },
       {
         name: "phone",
-        labelKey: "phone",
+        label: "Phone",
         type: "tel",
         autoComplete: "tel",
         required: false,
@@ -136,7 +136,7 @@ const ieAddressSchema: AddressFormSchema = {
     [
       {
         name: "address",
-        labelKey: "address",
+        label: "Address",
         type: "text",
         autoComplete: "street-address",
         required: true,
@@ -146,7 +146,7 @@ const ieAddressSchema: AddressFormSchema = {
     [
       {
         name: "city",
-        labelKey: "city",
+        label: "City",
         type: "text",
         autoComplete: "address-level2",
         required: true,
@@ -154,7 +154,7 @@ const ieAddressSchema: AddressFormSchema = {
       },
       {
         name: "county",
-        labelKey: "county",
+        label: "County",
         type: "text",
         autoComplete: "address-level1",
         required: true,
@@ -164,7 +164,7 @@ const ieAddressSchema: AddressFormSchema = {
     [
       {
         name: "eircode",
-        labelKey: "eircode",
+        label: "Eircode",
         type: "text",
         autoComplete: "postal-code",
         required: false,
@@ -176,14 +176,14 @@ const ieAddressSchema: AddressFormSchema = {
       },
       {
         name: "country",
-        labelKey: "country",
+        label: "Country",
         type: "select",
         autoComplete: "country-name",
         required: true,
         colSpan: 1,
         options: [
-          { value: "IE", labelKey: "countries.ireland" },
-          { value: "GB", labelKey: "countries.unitedKingdom" },
+          { value: "IE", label: "Ireland" },
+          { value: "GB", label: "United Kingdom" },
         ],
       },
     ],
@@ -204,7 +204,7 @@ const frBillingAddressSchema: AddressFormSchema = {
     [
       {
         name: "firstName",
-        labelKey: "firstName",
+        label: "Prénom",
         type: "text",
         autoComplete: "billing given-name",
         required: true,
@@ -212,7 +212,7 @@ const frBillingAddressSchema: AddressFormSchema = {
       },
       {
         name: "lastName",
-        labelKey: "lastName",
+        label: "Nom",
         type: "text",
         autoComplete: "billing family-name",
         required: true,
@@ -222,7 +222,7 @@ const frBillingAddressSchema: AddressFormSchema = {
     [
       {
         name: "address",
-        labelKey: "address",
+        label: "Adresse",
         type: "text",
         autoComplete: "billing street-address",
         required: true,
@@ -232,7 +232,7 @@ const frBillingAddressSchema: AddressFormSchema = {
     [
       {
         name: "postalCode",
-        labelKey: "postalCode",
+        label: "Code postal",
         type: "text",
         autoComplete: "billing postal-code",
         required: true,
@@ -245,7 +245,7 @@ const frBillingAddressSchema: AddressFormSchema = {
       },
       {
         name: "city",
-        labelKey: "city",
+        label: "Ville",
         type: "text",
         autoComplete: "billing address-level2",
         required: true,
@@ -255,15 +255,15 @@ const frBillingAddressSchema: AddressFormSchema = {
     [
       {
         name: "country",
-        labelKey: "country",
+        label: "Pays",
         type: "select",
         autoComplete: "billing country-name",
         required: true,
         colSpan: 2,
         options: [
-          { value: "FR", labelKey: "countries.france" },
-          { value: "BE", labelKey: "countries.belgium" },
-          { value: "LU", labelKey: "countries.luxembourg" },
+          { value: "FR", label: "France" },
+          { value: "BE", label: "Belgique" },
+          { value: "LU", label: "Luxembourg" },
         ],
       },
     ],
@@ -275,7 +275,7 @@ const ieBillingAddressSchema: AddressFormSchema = {
     [
       {
         name: "firstName",
-        labelKey: "firstName",
+        label: "First Name",
         type: "text",
         autoComplete: "billing given-name",
         required: true,
@@ -283,7 +283,7 @@ const ieBillingAddressSchema: AddressFormSchema = {
       },
       {
         name: "lastName",
-        labelKey: "lastName",
+        label: "Last Name",
         type: "text",
         autoComplete: "billing family-name",
         required: true,
@@ -293,7 +293,7 @@ const ieBillingAddressSchema: AddressFormSchema = {
     [
       {
         name: "address",
-        labelKey: "address",
+        label: "Address",
         type: "text",
         autoComplete: "billing street-address",
         required: true,
@@ -303,7 +303,7 @@ const ieBillingAddressSchema: AddressFormSchema = {
     [
       {
         name: "city",
-        labelKey: "city",
+        label: "City",
         type: "text",
         autoComplete: "billing address-level2",
         required: true,
@@ -311,7 +311,7 @@ const ieBillingAddressSchema: AddressFormSchema = {
       },
       {
         name: "county",
-        labelKey: "county",
+        label: "County",
         type: "text",
         autoComplete: "billing address-level1",
         required: true,
@@ -321,7 +321,7 @@ const ieBillingAddressSchema: AddressFormSchema = {
     [
       {
         name: "eircode",
-        labelKey: "eircode",
+        label: "Eircode",
         type: "text",
         autoComplete: "billing postal-code",
         required: false,
@@ -333,14 +333,14 @@ const ieBillingAddressSchema: AddressFormSchema = {
       },
       {
         name: "country",
-        labelKey: "country",
+        label: "Country",
         type: "select",
         autoComplete: "billing country-name",
         required: true,
         colSpan: 1,
         options: [
-          { value: "IE", labelKey: "countries.ireland" },
-          { value: "GB", labelKey: "countries.unitedKingdom" },
+          { value: "IE", label: "Ireland" },
+          { value: "GB", label: "United Kingdom" },
         ],
       },
     ],
@@ -358,40 +358,40 @@ export const deliveryOptionsByStore: Record<string, DeliveryOption[]> = {
   fr: [
     {
       id: "colissimo",
-      labelKey: "delivery.colissimo",
-      descriptionKey: "delivery.colissimoDescription",
+      label: "Colissimo",
+      description: "5 à 7 jours ouvrables",
       price: { amount: "4.99", currencyCode: "EUR" },
     },
     {
       id: "chronopost",
-      labelKey: "delivery.chronopost",
-      descriptionKey: "delivery.chronopostDescription",
+      label: "Chronopost",
+      description: "2 à 3 jours ouvrables",
       price: { amount: "9.99", currencyCode: "EUR" },
     },
     {
       id: "chronopost-express",
-      labelKey: "delivery.chronopostExpress",
-      descriptionKey: "delivery.chronopostExpressDescription",
+      label: "Chronopost Express",
+      description: "Jour ouvrable suivant",
       price: { amount: "19.99", currencyCode: "EUR" },
     },
   ],
   ie: [
     {
       id: "standard",
-      labelKey: "delivery.standard",
-      descriptionKey: "delivery.standardDescription",
+      label: "Standard Shipping",
+      description: "5-7 business days",
       price: { amount: "4.99", currencyCode: "EUR" },
     },
     {
       id: "express",
-      labelKey: "delivery.express",
-      descriptionKey: "delivery.expressDescription",
+      label: "Express Shipping",
+      description: "2-3 business days",
       price: { amount: "9.99", currencyCode: "EUR" },
     },
     {
       id: "nextDay",
-      labelKey: "delivery.nextDay",
-      descriptionKey: "delivery.nextDayDescription",
+      label: "Next Day Delivery",
+      description: "Next business day",
       price: { amount: "14.99", currencyCode: "EUR" },
     },
   ],
@@ -403,30 +403,30 @@ export const paymentOptionsByStore: Record<string, PaymentOption[]> = {
   fr: [
     {
       id: "card",
-      labelKey: "payment.creditCard",
-      descriptionKey: "payment.creditCardDescription",
+      label: "Carte de crédit",
+      description: "Visa, Mastercard, American Express",
     },
     {
       id: "paypal",
-      labelKey: "payment.paypal",
-      descriptionKey: "payment.paypalDescription",
+      label: "PayPal",
+      description: "Payer avec votre compte PayPal",
     },
   ],
   ie: [
     {
       id: "card",
-      labelKey: "payment.creditCard",
-      descriptionKey: "payment.creditCardDescription",
+      label: "Credit Card",
+      description: "Visa, Mastercard, American Express",
     },
     {
       id: "paypal",
-      labelKey: "payment.paypal",
-      descriptionKey: "payment.paypalDescription",
+      label: "PayPal",
+      description: "Pay with your PayPal account",
     },
     {
       id: "ideal",
-      labelKey: "payment.ideal",
-      descriptionKey: "payment.idealDescription",
+      label: "iDEAL",
+      description: "Pay with your bank account",
     },
   ],
 };

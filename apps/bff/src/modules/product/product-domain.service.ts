@@ -3,26 +3,16 @@ import type {
   Breadcrumb,
   Product,
   ProductPageData,
-  SearchPageData,
   SitemapEntry,
 } from "@commerce/shared-types";
 import { Inject, Injectable } from "@nestjs/common";
 import {
   AVAILABILITY_PORT,
   type AvailabilityPort,
-  type ProductAvailability,
-  type VariantStockInfo,
 } from "../../ports/availability.port";
-import {
-  COLLECTION_PORT,
-  type CollectionPort,
-} from "../../ports/collection.port";
-import {
-  PRICING_PORT,
-  type PricingPort,
-  type ProductPricing,
-} from "../../ports/pricing.port";
+import { PRICING_PORT, type PricingPort } from "../../ports/pricing.port";
 import { PRODUCT_PORT, type ProductPort } from "../../ports/product.port";
+import { mapToProduct } from "./product-enrichment";
 
 @Injectable()
 export class ProductDomainService {
@@ -30,7 +20,6 @@ export class ProductDomainService {
     @Inject(PRODUCT_PORT) private readonly products: ProductPort,
     @Inject(PRICING_PORT) private readonly pricing: PricingPort,
     @Inject(AVAILABILITY_PORT) private readonly availability: AvailabilityPort,
-    @Inject(COLLECTION_PORT) private readonly collections: CollectionPort,
   ) {}
 
   async getProduct(handle: string): Promise<Product | undefined> {
@@ -61,30 +50,6 @@ export class ProductDomainService {
     return this.enrichBatch(bases);
   }
 
-  async getProducts(params: {
-    query?: string;
-    sortKey?: string;
-    reverse?: boolean;
-  }): Promise<Product[]> {
-    const bases = await this.products.getProducts({ query: params.query });
-    const enriched = await this.enrichBatch(bases);
-    return sortProducts(enriched, params.sortKey, params.reverse);
-  }
-
-  async getCollectionProducts(params: {
-    collection: string;
-    sortKey?: string;
-    reverse?: boolean;
-  }): Promise<Product[]> {
-    const ids = await this.collections.getCollectionProductIds(
-      params.collection,
-    );
-    if (!ids.length) return [];
-
-    const products = await this.getProductsByIds(ids);
-    return sortProducts(products, params.sortKey, params.reverse);
-  }
-
   async getRecommendations(productId: string): Promise<Product[]> {
     const bases = await this.products.getProductRecommendations(productId);
     return this.enrichBatch(bases);
@@ -111,22 +76,6 @@ export class ProductDomainService {
       canonicalSlug: product.handle,
       breadcrumbs,
       recommendations,
-    };
-  }
-
-  async getSearchResults(
-    query?: string,
-    sortKey?: string,
-    reverse?: boolean,
-  ): Promise<SearchPageData> {
-    const { SORT_OPTIONS } = await import("../page-data/sort-options");
-    const products = await this.getProducts({ query, sortKey, reverse });
-
-    return {
-      query: query ?? "",
-      products,
-      totalResults: products.length,
-      sortOptions: SORT_OPTIONS,
     };
   }
 
@@ -217,119 +166,4 @@ export class ProductDomainService {
       ),
     );
   }
-}
-
-// -- Pure helper functions ---------------------------------------------------
-
-function mapToProduct(
-  base: BaseProduct,
-  pricing: ProductPricing | undefined,
-  avail: ProductAvailability | undefined,
-  breadcrumbs: Breadcrumb[],
-): Product {
-  const variantPrices = pricing?.variantPrices ?? new Map();
-  const variantAvail =
-    avail?.variantAvailability ?? new Map<string, VariantStockInfo>();
-  const allAmounts = [...variantPrices.values()].map((p) =>
-    parseFloat(p.amount),
-  );
-
-  // A product is only purchasable when we have BOTH pricing and availability data.
-  // If either upstream is down (resilience fallback returns undefined / empty map),
-  // we mark the product as unavailable rather than silently allowing a $0 purchase.
-  const hasPricing = pricing !== undefined && allAmounts.length > 0;
-  const hasAvailability = avail !== undefined;
-
-  const UNAVAILABLE_STOCK_INFO: VariantStockInfo = {
-    purchasable: false,
-    stockStatus: "unavailable",
-    stockMessage: "Currently Unavailable",
-  };
-
-  return {
-    id: base.id,
-    handle: base.handle,
-    title: base.title,
-    description: base.description,
-    descriptionHtml: base.descriptionHtml,
-    options: base.options,
-    featuredImage: base.featuredImage,
-    images: base.images,
-    seo: base.seo,
-    tags: base.tags,
-    updatedAt: base.updatedAt,
-    purchasable: hasPricing && hasAvailability ? avail.purchasable : false,
-    stockStatus:
-      hasPricing && hasAvailability ? avail.stockStatus : "unavailable",
-    stockMessage:
-      hasPricing && hasAvailability
-        ? avail.stockMessage
-        : "Currently Unavailable",
-    priceRange: {
-      minVariantPrice: hasPricing
-        ? {
-            amount: Math.min(...allAmounts).toFixed(2),
-            currencyCode: pricing.minVariantPrice.currencyCode,
-          }
-        : undefined,
-      maxVariantPrice: hasPricing
-        ? {
-            amount: Math.max(...allAmounts).toFixed(2),
-            currencyCode: pricing.maxVariantPrice.currencyCode,
-          }
-        : undefined,
-    },
-    variants: base.variants.map((v) => {
-      const stock = variantAvail.get(v.id);
-      const variantHasPrice = variantPrices.has(v.id);
-      const variantInfo: VariantStockInfo =
-        hasPricing && hasAvailability && stock
-          ? {
-              purchasable: stock.purchasable && variantHasPrice,
-              stockStatus: variantHasPrice ? stock.stockStatus : "unavailable",
-              stockMessage: variantHasPrice
-                ? stock.stockMessage
-                : "Currently Unavailable",
-            }
-          : UNAVAILABLE_STOCK_INFO;
-
-      return {
-        ...v,
-        purchasable: variantInfo.purchasable,
-        stockStatus: variantInfo.stockStatus,
-        stockMessage: variantInfo.stockMessage,
-        price: variantPrices.get(v.id),
-      };
-    }),
-    breadcrumbs,
-  };
-}
-
-function sortProducts(
-  products: Product[],
-  sortKey?: string,
-  reverse?: boolean,
-): Product[] {
-  const sorted = [...products];
-
-  if (sortKey === "PRICE") {
-    sorted.sort(
-      (a, b) =>
-        parseFloat(a.priceRange.minVariantPrice?.amount ?? "0") -
-        parseFloat(b.priceRange.minVariantPrice?.amount ?? "0"),
-    );
-  } else if (sortKey === "CREATED_AT" || sortKey === "CREATED") {
-    sorted.sort(
-      (a, b) =>
-        new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime(),
-    );
-  } else if (sortKey === "BEST_SELLING") {
-    // No sales data available in mock — preserve original order
-    // which acts as the default "best selling" ranking.
-    // Real adapters should sort by actual sales volume.
-  }
-
-  if (reverse) sorted.reverse();
-
-  return sorted;
 }

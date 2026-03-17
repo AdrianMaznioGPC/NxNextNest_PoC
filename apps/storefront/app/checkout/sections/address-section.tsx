@@ -6,7 +6,6 @@ import type {
   AddressFormSchema,
   SavedAddress,
 } from "lib/types";
-import { useTranslations } from "next-intl";
 
 interface AddressSectionProps {
   title: string;
@@ -75,8 +74,6 @@ function SelectField({
   onChange: (value: string) => void;
   label: string;
 }) {
-  const t = useTranslations("checkout");
-
   return (
     <div>
       <label
@@ -99,7 +96,7 @@ function SelectField({
         </option>
         {field.options?.map((opt) => (
           <option key={opt.value} value={opt.value}>
-            {t(opt.labelKey)}
+            {opt.label}
           </option>
         ))}
       </select>
@@ -118,8 +115,7 @@ function AddressField({
   value: string;
   onChange: (value: string) => void;
 }) {
-  const t = useTranslations("checkout");
-  const label = t(field.labelKey);
+  const label = field.label;
 
   if (field.type === "select") {
     return (

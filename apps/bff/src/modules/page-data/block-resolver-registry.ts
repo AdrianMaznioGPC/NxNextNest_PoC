@@ -1,5 +1,6 @@
 import type { CmsBlock } from "@commerce/shared-types";
 import type { CmsRawBlock, CmsRawBlockOf } from "../../ports/cms.types";
+import type { CollectionPort } from "../../ports/collection.port";
 import type { NavigationPort } from "../../ports/navigation.port";
 import type { CatalogDomainService } from "../collection/catalog-domain.service";
 import type { ProductDomainService } from "../product/product-domain.service";
@@ -7,6 +8,7 @@ import type { ProductDomainService } from "../product/product-domain.service";
 export type BlockResolverContext = {
   productDomain: ProductDomainService;
   catalogDomain: CatalogDomainService;
+  collections: CollectionPort;
   navigation: NavigationPort;
 };
 

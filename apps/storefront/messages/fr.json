@@ -15,15 +15,11 @@
     "tryAgain": "Réessayer",
     "serviceUnavailable": "Le service est temporairement surchargé. Veuillez réessayer dans un instant.",
     "upstreamTimeout": "La requête a pris trop de temps. Veuillez réessayer.",
+    "itemNotPurchasable": "Cet article n'est actuellement pas disponible à l'achat. Veuillez réessayer plus tard.",
+    "missingVariant": "Veuillez sélectionner une option.",
     "generic": "Une erreur est survenue. Veuillez réessayer."
   },
-  "sort": {
-    "relevance": "Pertinence",
-    "trending": "Tendances",
-    "latestArrivals": "Dernières nouveautés",
-    "priceLowToHigh": "Prix : croissant",
-    "priceHighToLow": "Prix : décroissant"
-  },
+
   "search": {
     "title": "Recherche",
     "description": "Rechercher des produits dans la boutique.",
@@ -64,7 +60,7 @@
   "footer": {
     "allRightsReserved": "Tous droits réservés."
   },
-  "variants": {},
+
   "nav": {
     "browseProducts": "Parcourir les produits",
     "viewAllCategories": "Voir toutes les catégories",
@@ -89,52 +85,19 @@
     "defaultShipping": "Livraison par défaut",
     "defaultBilling": "Facturation par défaut",
     "defaultShippingAndBilling": "Par défaut",
-    "firstName": "Prénom",
-    "lastName": "Nom",
-    "email": "E-mail",
-    "phone": "Téléphone",
-    "address": "Adresse",
-    "city": "Ville",
-    "postalCode": "Code postal",
-    "country": "Pays",
-    "county": "Comté",
-    "eircode": "Eircode",
     "deliveryMethod": "Mode de livraison",
-    "delivery": {
-      "colissimo": "Colissimo",
-      "colissimoDescription": "5 à 7 jours ouvrables",
-      "chronopost": "Chronopost",
-      "chronopostDescription": "2 à 3 jours ouvrables",
-      "chronopostExpress": "Chronopost Express",
-      "chronopostExpressDescription": "Jour ouvrable suivant",
-      "standard": "Livraison standard",
-      "standardDescription": "5 à 7 jours ouvrables",
-      "express": "Livraison express",
-      "expressDescription": "2 à 3 jours ouvrables",
-      "nextDay": "Livraison le lendemain",
-      "nextDayDescription": "Jour ouvrable suivant"
-    },
     "paymentMethod": "Mode de paiement",
-    "payment": {
-      "creditCard": "Carte de crédit",
-      "creditCardDescription": "Visa, Mastercard, American Express",
-      "ideal": "iDEAL",
-      "idealDescription": "Payer avec votre compte bancaire",
-      "paypal": "PayPal",
-      "paypalDescription": "Payer avec votre compte PayPal"
-    },
-    "countries": {
-      "france": "France",
-      "belgium": "Belgique",
-      "luxembourg": "Luxembourg",
-      "ireland": "Irlande",
-      "unitedKingdom": "Royaume-Uni"
-    },
     "orderSummary": "Récapitulatif de commande",
     "subtotal": "Sous-total",
     "taxes": "Taxes",
     "shipping": "Livraison",
     "total": "Total",
     "placeOrder": "Passer la commande"
+  },
+  "pagination": {
+    "ariaLabel": "Pagination",
+    "previous": "Page précédente",
+    "next": "Page suivante",
+    "goToPage": "Aller à la page {page}"
   }
 }

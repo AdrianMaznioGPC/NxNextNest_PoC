@@ -4,14 +4,14 @@ import type { BlockResolver } from "../block-resolver-registry";
 export const productCarouselResolver: BlockResolver<
   CmsRawProductCarousel
 > = async (raw, ctx) => {
-  const products = await ctx.productDomain.getCollectionProducts({
-    collection: raw.collectionHandle,
+  const result = await ctx.collections.getCollectionProducts({
+    collectionId: raw.collectionHandle,
   });
 
   return {
     type: "product-carousel" as const,
     id: raw.id,
     heading: raw.heading,
-    products,
+    products: result.products,
   };
 };

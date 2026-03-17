@@ -2,6 +2,10 @@ import type { CmsBlock, HomePageData } from "@commerce/shared-types";
 import { Inject, Injectable } from "@nestjs/common";
 import { CMS_PORT, type CmsPort } from "../../ports/cms.port";
 import {
+  COLLECTION_PORT,
+  type CollectionPort,
+} from "../../ports/collection.port";
+import {
   NAVIGATION_PORT,
   type NavigationPort,
 } from "../../ports/navigation.port";
@@ -16,6 +20,7 @@ registerAllBlockResolvers();
 export class ContentDomainService {
   constructor(
     @Inject(CMS_PORT) private readonly cms: CmsPort,
+    @Inject(COLLECTION_PORT) private readonly collections: CollectionPort,
     @Inject(NAVIGATION_PORT) private readonly navigation: NavigationPort,
     private readonly productDomain: ProductDomainService,
     private readonly catalogDomain: CatalogDomainService,
@@ -25,6 +30,7 @@ export class ContentDomainService {
     return {
       productDomain: this.productDomain,
       catalogDomain: this.catalogDomain,
+      collections: this.collections,
       navigation: this.navigation,
     };
   }

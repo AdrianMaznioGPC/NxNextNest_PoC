@@ -12,6 +12,7 @@ import {
   RAW_PAGE_PORT,
   RAW_PRICING_PORT,
   RAW_PRODUCT_PORT,
+  RAW_SEARCH_PORT,
 } from "../../modules/system/system.module";
 import { StoreContext } from "../../store";
 import { MockAddressStore } from "./mock-address-store";
@@ -28,6 +29,7 @@ import { MockOrderAdapter } from "./mock-order.adapter";
 import { MockPageAdapter } from "./mock-page.adapter";
 import { MockPricingAdapter } from "./mock-pricing.adapter";
 import { MockProductAdapter } from "./mock-product.adapter";
+import { MockSearchAdapter } from "./mock-search.adapter";
 
 const providers = [
   StoreContext,
@@ -45,6 +47,7 @@ const providers = [
   { provide: RAW_PAGE_PORT, useClass: MockPageAdapter },
   { provide: RAW_PRICING_PORT, useClass: MockPricingAdapter },
   { provide: RAW_PRODUCT_PORT, useClass: MockProductAdapter },
+  { provide: RAW_SEARCH_PORT, useClass: MockSearchAdapter },
 ];
 
 @Module({

@@ -250,6 +250,7 @@ export type CategoryPageData = {
   subcollections?: Collection[];
   products?: Product[];
   sortOptions?: SortOption[];
+  pagination?: PaginationMeta;
 };
 
 export type ProductPageData = {
@@ -259,19 +260,24 @@ export type ProductPageData = {
   recommendations: Product[];
 };
 
+export type PaginationMeta = {
+  page: number;
+  pageSize: number;
+  totalResults: number;
+  totalPages: number;
+};
+
 export type SortOption = {
   slug: string;
-  labelKey: string;
-  sortKey: string;
-  reverse: boolean;
+  label: string;
   isDefault?: boolean;
 };
 
 export type SearchPageData = {
   query: string;
   products: Product[];
-  totalResults: number;
   sortOptions: SortOption[];
+  pagination: PaginationMeta;
 };
 
 export type GlobalLayoutData = {
@@ -283,7 +289,7 @@ export type GlobalLayoutData = {
 
 export type AddressFieldOption = {
   value: string;
-  labelKey: string;
+  label: string;
 };
 
 export type AddressFieldValidation = {
@@ -294,7 +300,7 @@ export type AddressFieldValidation = {
 
 export type AddressFieldConfig = {
   name: string;
-  labelKey: string;
+  label: string;
   type: "text" | "email" | "tel" | "select";
   autoComplete?: string;
   required: boolean;
@@ -309,15 +315,15 @@ export type AddressFormSchema = {
 
 export type DeliveryOption = {
   id: string;
-  labelKey: string;
-  descriptionKey: string;
+  label: string;
+  description: string;
   price: Money;
 };
 
 export type PaymentOption = {
   id: string;
-  labelKey: string;
-  descriptionKey: string;
+  label: string;
+  description: string;
   icon?: string;
 };
 

@@ -12,6 +12,7 @@ import {
   RAW_PAGE_PORT,
   RAW_PRICING_PORT,
   RAW_PRODUCT_PORT,
+  RAW_SEARCH_PORT,
 } from "../../modules/system/system.module";
 import type { AvailabilityPort } from "../../ports/availability.port";
 import type { CartPort } from "../../ports/cart.port";
@@ -25,6 +26,7 @@ import type { OrderPort } from "../../ports/order.port";
 import type { PagePort } from "../../ports/page.port";
 import type { PricingPort } from "../../ports/pricing.port";
 import type { ProductPort } from "../../ports/product.port";
+import type { SearchPort } from "../../ports/search.port";
 import { StoreContext } from "../../store";
 import { MockAddressStore } from "../mock/mock-address-store";
 import { MockAvailabilityAdapter } from "../mock/mock-availability.adapter";
@@ -40,6 +42,7 @@ import { MockOrderAdapter } from "../mock/mock-order.adapter";
 import { MockPageAdapter } from "../mock/mock-page.adapter";
 import { MockPricingAdapter } from "../mock/mock-pricing.adapter";
 import { MockProductAdapter } from "../mock/mock-product.adapter";
+import { MockSearchAdapter } from "../mock/mock-search.adapter";
 import { ChaosConfigService } from "./chaos-config.service";
 import { ChaosController } from "./chaos.controller";
 import { createChaosAdapter } from "./create-chaos-adapter";
@@ -62,6 +65,7 @@ const MOCK_ORDER = Symbol("MOCK_ORDER");
 const MOCK_PAGE = Symbol("MOCK_PAGE");
 const MOCK_PRICING = Symbol("MOCK_PRICING");
 const MOCK_PRODUCT = Symbol("MOCK_PRODUCT");
+const MOCK_SEARCH = Symbol("MOCK_SEARCH");
 
 /**
  * A backend module that wraps all mock adapters with chaos injection.
@@ -88,13 +92,15 @@ const MOCK_PRODUCT = Symbol("MOCK_PRODUCT");
     // keeping internal wiring within the unwrapped layer.
     { provide: MOCK_AVAILABILITY, useClass: MockAvailabilityAdapter },
     { provide: MOCK_CMS, useClass: MockCmsAdapter },
-    { provide: MOCK_COLLECTION, useClass: MockCollectionAdapter },
     { provide: MOCK_CUSTOMER, useClass: MockCustomerAdapter },
     { provide: MOCK_MENU, useClass: MockMenuAdapter },
     { provide: MOCK_NAVIGATION, useClass: MockNavigationAdapter },
     { provide: MOCK_ORDER, useClass: MockOrderAdapter },
     { provide: MOCK_PAGE, useClass: MockPageAdapter },
     { provide: MOCK_PRICING, useClass: MockPricingAdapter },
+
+    { provide: MOCK_SEARCH, useClass: MockSearchAdapter },
+    { provide: MOCK_COLLECTION, useClass: MockCollectionAdapter },
 
     // MockProductAdapter injects RAW_COLLECTION_PORT → wire to MOCK_COLLECTION
     {
@@ -204,6 +210,12 @@ const MOCK_PRODUCT = Symbol("MOCK_PRODUCT");
         createChaosAdapter(mock, chaos, "product"),
       inject: [MOCK_PRODUCT, ChaosConfigService],
     },
+    {
+      provide: RAW_SEARCH_PORT,
+      useFactory: (mock: SearchPort, chaos: ChaosConfigService) =>
+        createChaosAdapter(mock, chaos, "search"),
+      inject: [MOCK_SEARCH, ChaosConfigService],
+    },
   ],
   exports: [
     StoreContext,
@@ -220,6 +232,7 @@ const MOCK_PRODUCT = Symbol("MOCK_PRODUCT");
     RAW_PAGE_PORT,
     RAW_PRICING_PORT,
     RAW_PRODUCT_PORT,
+    RAW_SEARCH_PORT,
   ],
 })
 export class ChaosBackendModule {}

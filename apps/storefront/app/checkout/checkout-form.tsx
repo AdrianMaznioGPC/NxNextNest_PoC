@@ -159,12 +159,14 @@ export default function CheckoutForm({ cart, config }: CheckoutFormProps) {
         )}
 
         <DeliverySection
+          title={t("deliveryMethod")}
           options={config.deliveryOptions}
           selected={selectedDelivery}
           onSelect={setSelectedDelivery}
         />
 
         <PaymentSection
+          title={t("paymentMethod")}
           options={config.paymentOptions}
           selected={selectedPayment}
           onSelect={setSelectedPayment}

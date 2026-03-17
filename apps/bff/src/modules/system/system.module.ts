@@ -21,6 +21,7 @@ import { ORDER_PORT, type OrderPort } from "../../ports/order.port";
 import { PAGE_PORT, type PagePort } from "../../ports/page.port";
 import { PRICING_PORT, type PricingPort } from "../../ports/pricing.port";
 import { PRODUCT_PORT, type ProductPort } from "../../ports/product.port";
+import { SEARCH_PORT, type SearchPort } from "../../ports/search.port";
 import { CachePolicyInterceptor } from "./cache-policy.interceptor";
 import { CachePolicyService } from "./cache-policy.service";
 import { HealthController } from "./health.controller";
@@ -60,6 +61,7 @@ export const RAW_ORDER_PORT = Symbol("RAW_ORDER_PORT");
 export const RAW_PAGE_PORT = Symbol("RAW_PAGE_PORT");
 export const RAW_PRICING_PORT = Symbol("RAW_PRICING_PORT");
 export const RAW_PRODUCT_PORT = Symbol("RAW_PRODUCT_PORT");
+export const RAW_SEARCH_PORT = Symbol("RAW_SEARCH_PORT");
 
 @Global()
 @Module({})
@@ -170,6 +172,12 @@ export class SystemModule {
             createResilientPort(raw, r, "order", ORDER_POLICY),
           inject: [RAW_ORDER_PORT, ResilienceService],
         },
+        {
+          provide: SEARCH_PORT,
+          useFactory: (raw: SearchPort, r: ResilienceService) =>
+            createResilientPort(raw, r, "search", PRODUCT_POLICY),
+          inject: [RAW_SEARCH_PORT, ResilienceService],
+        },
       ],
       exports: [
         backendModule,
@@ -190,6 +198,7 @@ export class SystemModule {
         CART_PORT,
         CHECKOUT_PORT,
         ORDER_PORT,
+        SEARCH_PORT,
       ],
     };
   }

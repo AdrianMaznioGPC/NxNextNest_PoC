@@ -4,14 +4,12 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
-import { useTranslations } from "next-intl";
 import type { ListItem } from ".";
 import { FilterItem } from "./item";
 
 export default function FilterItemDropdown({ list }: { list: ListItem[] }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const t = useTranslations();
   const [active, setActive] = useState("");
   const [openSelect, setOpenSelect] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -36,10 +34,10 @@ export default function FilterItemDropdown({ list }: { list: ListItem[] }) {
         (searchParams.get("sort") === listItem.slug ||
           (!searchParams.get("sort") && listItem.isDefault))
       ) {
-        setActive(t(listItem.labelKey));
+        setActive(listItem.label);
       }
     });
-  }, [pathname, list, searchParams, t]);
+  }, [pathname, list, searchParams]);
 
   return (
     <div className="relative" ref={ref}>

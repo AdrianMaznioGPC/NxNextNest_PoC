@@ -48,13 +48,15 @@ export class PageDataController {
   @SetMetadata(CACHE_ROUTE_KIND_KEY, "category-detail")
   async getCategoryPage(
     @Param("id") id: string,
-    @Query("sortKey") sortKey?: string,
-    @Query("reverse") reverse?: string,
+    @Query("sort") sort?: string,
+    @Query("page") page?: string,
+    @Query("pageSize") pageSize?: string,
   ): Promise<CategoryPageData> {
     const data = await this.pageData.getCategoryPage(
       id,
-      sortKey,
-      reverse === "true",
+      sort,
+      page ? parseInt(page, 10) : undefined,
+      pageSize ? parseInt(pageSize, 10) : undefined,
     );
     if (!data) throw new NotFoundException();
     return data;
@@ -73,10 +75,16 @@ export class PageDataController {
   @SetMetadata(CACHE_ROUTE_KIND_KEY, "search")
   getSearchPage(
     @Query("q") query?: string,
-    @Query("sortKey") sortKey?: string,
-    @Query("reverse") reverse?: string,
+    @Query("sort") sort?: string,
+    @Query("page") page?: string,
+    @Query("pageSize") pageSize?: string,
   ): Promise<SearchPageData> {
-    return this.pageData.getSearchPage(query, sortKey, reverse === "true");
+    return this.pageData.getSearchPage({
+      query,
+      sort,
+      page: page ? parseInt(page, 10) : undefined,
+      pageSize: pageSize ? parseInt(pageSize, 10) : undefined,
+    });
   }
 
   @Get("pages")

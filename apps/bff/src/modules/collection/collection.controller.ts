@@ -1,13 +1,17 @@
-import type { Collection, Product } from "@commerce/shared-types";
-import { Controller, Get, Param, Query } from "@nestjs/common";
-import { ProductDomainService } from "../product/product-domain.service";
+import type { Collection } from "@commerce/shared-types";
+import { Controller, Get, Inject, Param, Query } from "@nestjs/common";
+import {
+  COLLECTION_PORT,
+  type CollectionPort,
+  type CollectionProductsResult,
+} from "../../ports/collection.port";
 import { CatalogDomainService } from "./catalog-domain.service";
 
 @Controller("collections")
 export class CollectionController {
   constructor(
     private readonly catalogDomain: CatalogDomainService,
-    private readonly productDomain: ProductDomainService,
+    @Inject(COLLECTION_PORT) private readonly collections: CollectionPort,
   ) {}
 
   @Get()
@@ -26,13 +30,15 @@ export class CollectionController {
   @Get(":id/products")
   getCollectionProducts(
     @Param("id") id: string,
-    @Query("sortKey") sortKey?: string,
-    @Query("reverse") reverse?: string,
-  ): Promise<Product[]> {
-    return this.productDomain.getCollectionProducts({
-      collection: id,
-      sortKey,
-      reverse: reverse === "true",
+    @Query("sort") sort?: string,
+    @Query("page") page?: string,
+    @Query("pageSize") pageSize?: string,
+  ): Promise<CollectionProductsResult> {
+    return this.collections.getCollectionProducts({
+      collectionId: id,
+      sort,
+      page: page ? parseInt(page, 10) : undefined,
+      pageSize: pageSize ? parseInt(pageSize, 10) : undefined,
     });
   }
 

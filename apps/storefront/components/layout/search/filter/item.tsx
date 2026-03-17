@@ -3,7 +3,6 @@
 import clsx from "clsx";
 import type { SortOption } from "lib/types";
 import { createUrl } from "lib/utils";
-import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import type { ListItem, PathFilterItem } from ".";
@@ -37,7 +36,6 @@ function PathFilterItem({ item }: { item: PathFilterItem }) {
 function SortFilterItem({ item }: { item: SortOption }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const t = useTranslations();
   const isDefault = item.isDefault === true;
   const active = isDefault
     ? !searchParams.get("sort")
@@ -64,7 +62,7 @@ function SortFilterItem({ item }: { item: SortOption }) {
           "underline underline-offset-4": active,
         })}
       >
-        {t(item.labelKey)}
+        {item.label}
       </DynamicTag>
     </li>
   );

@@ -12,6 +12,7 @@ import type {
 import { Inject, Injectable } from "@nestjs/common";
 import { MENU_PORT, type MenuPort } from "../../ports/menu.port";
 import { PAGE_PORT, type PagePort } from "../../ports/page.port";
+import { SEARCH_PORT, type SearchPort } from "../../ports/search.port";
 import { CatalogDomainService } from "../collection/catalog-domain.service";
 import { NavigationDomainService } from "../menu/navigation-domain.service";
 import { ProductDomainService } from "../product/product-domain.service";
@@ -26,6 +27,7 @@ export class PageDataService {
     private readonly navigationDomain: NavigationDomainService,
     @Inject(PAGE_PORT) private readonly pages: PagePort,
     @Inject(MENU_PORT) private readonly menus: MenuPort,
+    @Inject(SEARCH_PORT) private readonly search: SearchPort,
   ) {}
 
   getLayoutData(): Promise<GlobalLayoutData> {
@@ -42,22 +44,30 @@ export class PageDataService {
 
   getCategoryPage(
     categoryId: string,
-    sortKey?: string,
-    reverse?: boolean,
+    sort?: string,
+    page?: number,
+    pageSize?: number,
   ): Promise<CategoryPageData | undefined> {
-    return this.catalogDomain.getCategoryPage(categoryId, sortKey, reverse);
+    return this.catalogDomain.getCategoryPage(categoryId, sort, page, pageSize);
   }
 
   getProductPage(productId: string): Promise<ProductPageData | undefined> {
     return this.productDomain.getProductPage(productId);
   }
 
-  getSearchPage(
-    query?: string,
-    sortKey?: string,
-    reverse?: boolean,
-  ): Promise<SearchPageData> {
-    return this.productDomain.getSearchResults(query, sortKey, reverse);
+  async getSearchPage(params: {
+    query?: string;
+    sort?: string;
+    page?: number;
+    pageSize?: number;
+  }): Promise<SearchPageData> {
+    const result = await this.search.search(params);
+    return {
+      query: params.query ?? "",
+      products: result.products,
+      sortOptions: result.sortOptions,
+      pagination: result.pagination,
+    };
   }
 
   getPages(): Promise<Page[]> {

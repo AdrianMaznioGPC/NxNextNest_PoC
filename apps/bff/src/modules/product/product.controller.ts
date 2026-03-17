@@ -1,21 +1,31 @@
 import type { Product } from "@commerce/shared-types";
-import { Controller, Get, Param, Query } from "@nestjs/common";
+import { Controller, Get, Inject, Param, Query } from "@nestjs/common";
+import {
+  SEARCH_PORT,
+  type SearchPort,
+  type SearchResult,
+} from "../../ports/search.port";
 import { ProductDomainService } from "./product-domain.service";
 
 @Controller("products")
 export class ProductController {
-  constructor(private readonly productDomain: ProductDomainService) {}
+  constructor(
+    private readonly productDomain: ProductDomainService,
+    @Inject(SEARCH_PORT) private readonly search: SearchPort,
+  ) {}
 
   @Get()
   getProducts(
     @Query("q") query?: string,
-    @Query("sortKey") sortKey?: string,
-    @Query("reverse") reverse?: string,
-  ): Promise<Product[]> {
-    return this.productDomain.getProducts({
+    @Query("sort") sort?: string,
+    @Query("page") page?: string,
+    @Query("pageSize") pageSize?: string,
+  ): Promise<SearchResult> {
+    return this.search.search({
       query,
-      sortKey,
-      reverse: reverse === "true",
+      sort,
+      page: page ? parseInt(page, 10) : undefined,
+      pageSize: pageSize ? parseInt(pageSize, 10) : undefined,
     });
   }
 

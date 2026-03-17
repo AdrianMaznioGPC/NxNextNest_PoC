@@ -138,8 +138,9 @@ export async function getCategoryListPageData(
 export async function getCategoryPageData(
   storeCode: string,
   categoryId: string,
-  sortKey?: string,
-  reverse?: boolean,
+  sort?: string,
+  page?: number,
+  pageSize?: number,
 ): Promise<CategoryPageData> {
   "use cache";
   cacheTag(TAGS.collections, TAGS.products);
@@ -147,7 +148,11 @@ export async function getCategoryPageData(
 
   return bffFetch(
     storeCode,
-    `/page-data/categories/${categoryId}${qs({ sortKey, reverse })}`,
+    `/page-data/categories/${categoryId}${qs({
+      sort,
+      page: page?.toString(),
+      pageSize: pageSize?.toString(),
+    })}`,
   );
 }
 
@@ -166,12 +171,14 @@ export async function getSearchPageData(
   storeCode: string,
   {
     query,
-    sortKey,
-    reverse,
+    sort,
+    page,
+    pageSize,
   }: {
     query?: string;
-    sortKey?: string;
-    reverse?: boolean;
+    sort?: string;
+    page?: number;
+    pageSize?: number;
   },
 ): Promise<SearchPageData> {
   "use cache";
@@ -180,7 +187,12 @@ export async function getSearchPageData(
 
   return bffFetch(
     storeCode,
-    `/page-data/search${qs({ q: query, sortKey, reverse })}`,
+    `/page-data/search${qs({
+      q: query,
+      sort,
+      page: page?.toString(),
+      pageSize: pageSize?.toString(),
+    })}`,
   );
 }
 
