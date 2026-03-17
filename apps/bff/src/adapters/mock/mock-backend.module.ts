@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { AVAILABILITY_PORT } from "../../ports/availability.port";
 import { CART_PORT } from "../../ports/cart.port";
+import { CHECKOUT_PORT } from "../../ports/checkout.port";
 import { CMS_PORT } from "../../ports/cms.port";
 import { COLLECTION_PORT } from "../../ports/collection.port";
 import { CUSTOMER_PORT } from "../../ports/customer.port";
@@ -14,6 +15,7 @@ import { StoreContext } from "../../store";
 import { MockAvailabilityAdapter } from "./mock-availability.adapter";
 import { MockCartStore } from "./mock-cart-store";
 import { MockCartAdapter } from "./mock-cart.adapter";
+import { MockCheckoutAdapter } from "./mock-checkout.adapter";
 import { MockCmsAdapter } from "./mock-cms.adapter";
 import { MockCollectionAdapter } from "./mock-collection.adapter";
 import { MockCustomerAdapter } from "./mock-customer.adapter";
@@ -28,6 +30,7 @@ const providers = [
   StoreContext,
   MockCartStore,
   { provide: AVAILABILITY_PORT, useClass: MockAvailabilityAdapter },
+  { provide: CHECKOUT_PORT, useClass: MockCheckoutAdapter },
   { provide: CART_PORT, useClass: MockCartAdapter },
   { provide: CMS_PORT, useClass: MockCmsAdapter },
   { provide: COLLECTION_PORT, useClass: MockCollectionAdapter },

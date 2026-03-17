@@ -71,5 +71,56 @@
   },
   "page": {
     "lastUpdated": "Ce document a été mis à jour le {date}."
+  },
+  "checkout": {
+    "title": "Paiement",
+    "shippingAddress": "Adresse de livraison",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "email": "E-mail",
+    "phone": "Téléphone",
+    "address": "Adresse",
+    "city": "Ville",
+    "postalCode": "Code postal",
+    "country": "Pays",
+    "county": "Comté",
+    "eircode": "Eircode",
+    "deliveryMethod": "Mode de livraison",
+    "delivery": {
+      "colissimo": "Colissimo",
+      "colissimoDescription": "5 à 7 jours ouvrables",
+      "chronopost": "Chronopost",
+      "chronopostDescription": "2 à 3 jours ouvrables",
+      "chronopostExpress": "Chronopost Express",
+      "chronopostExpressDescription": "Jour ouvrable suivant",
+      "standard": "Livraison standard",
+      "standardDescription": "5 à 7 jours ouvrables",
+      "express": "Livraison express",
+      "expressDescription": "2 à 3 jours ouvrables",
+      "nextDay": "Livraison le lendemain",
+      "nextDayDescription": "Jour ouvrable suivant"
+    },
+    "paymentMethod": "Mode de paiement",
+    "payment": {
+      "creditCard": "Carte de crédit",
+      "creditCardDescription": "Visa, Mastercard, American Express",
+      "ideal": "iDEAL",
+      "idealDescription": "Payer avec votre compte bancaire",
+      "paypal": "PayPal",
+      "paypalDescription": "Payer avec votre compte PayPal"
+    },
+    "countries": {
+      "france": "France",
+      "belgium": "Belgique",
+      "luxembourg": "Luxembourg",
+      "ireland": "Irlande",
+      "unitedKingdom": "Royaume-Uni"
+    },
+    "orderSummary": "Récapitulatif de commande",
+    "subtotal": "Sous-total",
+    "taxes": "Taxes",
+    "shipping": "Livraison",
+    "total": "Total",
+    "placeOrder": "Passer la commande"
   }
 }

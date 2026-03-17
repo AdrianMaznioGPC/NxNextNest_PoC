@@ -5,6 +5,8 @@ export type {
 } from "./availability.port";
 export { CART_PORT } from "./cart.port";
 export type { CartPort } from "./cart.port";
+export { CHECKOUT_PORT } from "./checkout.port";
+export type { CheckoutPort } from "./checkout.port";
 export { CMS_PORT } from "./cms.port";
 export type { CmsPort, CmsRawPage } from "./cms.port";
 export type {

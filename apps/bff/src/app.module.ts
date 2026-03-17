@@ -3,6 +3,7 @@ import { APP_INTERCEPTOR } from "@nestjs/core";
 import { MockBackendModule } from "./adapters/mock/mock-backend.module";
 import { AppController } from "./app.controller";
 import { CartController } from "./modules/cart/cart.controller";
+import { CheckoutController } from "./modules/checkout/checkout.controller";
 import { CatalogDomainService } from "./modules/collection/catalog-domain.service";
 import { CollectionController } from "./modules/collection/collection.controller";
 import { MenuController } from "./modules/menu/menu.controller";
@@ -22,6 +23,7 @@ import { StoreInterceptor } from "./store";
     ProductController,
     CollectionController,
     CartController,
+    CheckoutController,
     PageController,
     MenuController,
     PageDataController,

@@ -71,5 +71,56 @@
   },
   "page": {
     "lastUpdated": "This document was last updated on {date}."
+  },
+  "checkout": {
+    "title": "Checkout",
+    "shippingAddress": "Shipping Address",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "city": "City",
+    "postalCode": "Postal Code",
+    "country": "Country",
+    "county": "County",
+    "eircode": "Eircode",
+    "deliveryMethod": "Delivery Method",
+    "delivery": {
+      "colissimo": "Colissimo",
+      "colissimoDescription": "5-7 business days",
+      "chronopost": "Chronopost",
+      "chronopostDescription": "2-3 business days",
+      "chronopostExpress": "Chronopost Express",
+      "chronopostExpressDescription": "Next business day",
+      "standard": "Standard Shipping",
+      "standardDescription": "5-7 business days",
+      "express": "Express Shipping",
+      "expressDescription": "2-3 business days",
+      "nextDay": "Next Day Delivery",
+      "nextDayDescription": "Next business day"
+    },
+    "paymentMethod": "Payment Method",
+    "payment": {
+      "creditCard": "Credit Card",
+      "creditCardDescription": "Visa, Mastercard, American Express",
+      "ideal": "iDEAL",
+      "idealDescription": "Pay with your bank account",
+      "paypal": "PayPal",
+      "paypalDescription": "Pay with your PayPal account"
+    },
+    "countries": {
+      "france": "France",
+      "belgium": "Belgium",
+      "luxembourg": "Luxembourg",
+      "ireland": "Ireland",
+      "unitedKingdom": "United Kingdom"
+    },
+    "orderSummary": "Order Summary",
+    "subtotal": "Subtotal",
+    "taxes": "Taxes",
+    "shipping": "Shipping",
+    "total": "Total",
+    "placeOrder": "Place Order"
   }
 }

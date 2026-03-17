@@ -4,6 +4,7 @@ import type {
   Cart,
   CategoryListPageData,
   CategoryPageData,
+  CheckoutConfig,
   Collection,
   GlobalLayoutData,
   HomePageData,
@@ -261,6 +262,18 @@ export async function getSearchPageData(
     storeCode,
     `/page-data/search${qs({ q: query, sortKey, reverse })}`,
   );
+}
+
+// -- Checkout ----------------------------------------------------------------
+
+export async function getCheckoutConfig(
+  storeCode: string,
+): Promise<CheckoutConfig> {
+  "use cache";
+  cacheTag(TAGS.checkout);
+  cacheLife("days");
+
+  return bffFetch(storeCode, "/checkout/config");
 }
 
 // -- Cart --------------------------------------------------------------------

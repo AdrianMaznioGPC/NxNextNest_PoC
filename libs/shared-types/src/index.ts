@@ -265,3 +265,51 @@ export type GlobalLayoutData = {
   megaMenu: MegaMenuItem[];
   featuredLinks: FeaturedLink[];
 };
+
+// -- Checkout types ----------------------------------------------------------
+
+export type AddressFieldOption = {
+  value: string;
+  labelKey: string;
+};
+
+export type AddressFieldValidation = {
+  pattern?: string;
+  minLength?: number;
+  maxLength?: number;
+};
+
+export type AddressFieldConfig = {
+  name: string;
+  labelKey: string;
+  type: "text" | "email" | "tel" | "select";
+  autoComplete?: string;
+  required: boolean;
+  options?: AddressFieldOption[];
+  colSpan?: 1 | 2 | 3;
+  validation?: AddressFieldValidation;
+};
+
+export type AddressFormSchema = {
+  rows: AddressFieldConfig[][];
+};
+
+export type DeliveryOption = {
+  id: string;
+  labelKey: string;
+  descriptionKey: string;
+  price: Money;
+};
+
+export type PaymentOption = {
+  id: string;
+  labelKey: string;
+  descriptionKey: string;
+  icon?: string;
+};
+
+export type CheckoutConfig = {
+  addressSchema: AddressFormSchema;
+  deliveryOptions: DeliveryOption[];
+  paymentOptions: PaymentOption[];
+};
