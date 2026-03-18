@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Checkbox,
   Field,
   FieldLabel,
   Input,
@@ -17,6 +18,7 @@ import type {
   AddressFormSchema,
   SavedAddress,
 } from "lib/types";
+import { useTranslations } from "next-intl";
 
 interface AddressSectionProps {
   title: string;
@@ -27,6 +29,8 @@ interface AddressSectionProps {
   savedAddresses?: SavedAddress[];
   selectedAddressId?: string | null;
   onSelectSavedAddress?: (address: SavedAddress | null) => void;
+  saveAddress?: boolean;
+  onSaveAddressChange?: (save: boolean) => void;
 }
 
 function TextField({
@@ -157,7 +161,10 @@ export function AddressSection({
   savedAddresses,
   selectedAddressId,
   onSelectSavedAddress,
+  saveAddress,
+  onSaveAddressChange,
 }: AddressSectionProps) {
+  const t = useTranslations("checkout");
   const hasPicker =
     savedAddresses && savedAddresses.length > 0 && onSelectSavedAddress;
   const showForm = !hasPicker || selectedAddressId === null;
@@ -200,6 +207,16 @@ export function AddressSection({
               })}
             </div>
           ))}
+
+          {onSaveAddressChange && (
+            <label className="flex cursor-pointer items-center gap-3 text-sm font-medium text-foreground">
+              <Checkbox
+                checked={saveAddress}
+                onCheckedChange={(val) => onSaveAddressChange(val as boolean)}
+              />
+              {t("saveThisAddress")}
+            </label>
+          )}
         </div>
       )}
     </fieldset>

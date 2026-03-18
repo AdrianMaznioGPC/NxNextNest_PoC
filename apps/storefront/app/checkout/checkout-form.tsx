@@ -10,6 +10,7 @@ import type {
 } from "lib/types";
 import { useTranslations } from "next-intl";
 import { useCallback, useMemo, useState } from "react";
+import { saveNewAddress } from "./actions";
 import { OrderSummary } from "./order-summary";
 import { AddressSection } from "./sections/address-section";
 import { DeliverySection } from "./sections/delivery-section";
@@ -87,6 +88,9 @@ export default function CheckoutForm({ cart, config }: CheckoutFormProps) {
     [config.billingAddressSchema],
   );
 
+  const [saveShippingAddress, setSaveShippingAddress] = useState(false);
+  const [saveBillingAddress, setSaveBillingAddress] = useState(false);
+
   const [selectedDelivery, setSelectedDelivery] = useState(
     config.deliveryOptions[0]!.id,
   );
@@ -111,8 +115,21 @@ export default function CheckoutForm({ cart, config }: CheckoutFormProps) {
     setBillingValues((prev) => ({ ...prev, [fieldName]: value }));
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    // Save new addresses if the user opted in
+    if (saveShippingAddress && selectedShippingAddressId === null) {
+      await saveNewAddress(addressValues, t("savedShippingLabel"));
+    }
+    if (
+      saveBillingAddress &&
+      useDifferentBilling &&
+      selectedBillingAddressId === null
+    ) {
+      await saveNewAddress(billingValues, t("savedBillingLabel"));
+    }
+
     // TODO: integrate with order placement API
   }
 
@@ -130,6 +147,8 @@ export default function CheckoutForm({ cart, config }: CheckoutFormProps) {
           onSelectSavedAddress={
             hasSavedAddresses ? handleSelectShippingAddress : undefined
           }
+          saveAddress={saveShippingAddress}
+          onSaveAddressChange={setSaveShippingAddress}
         />
 
         <label className="flex cursor-pointer items-center gap-3 text-sm font-medium text-foreground">
@@ -154,6 +173,8 @@ export default function CheckoutForm({ cart, config }: CheckoutFormProps) {
             onSelectSavedAddress={
               hasSavedAddresses ? handleSelectBillingAddress : undefined
             }
+            saveAddress={saveBillingAddress}
+            onSaveAddressChange={setSaveBillingAddress}
           />
         )}
 
