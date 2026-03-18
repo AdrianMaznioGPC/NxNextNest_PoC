@@ -82,6 +82,7 @@
     "useDifferentBillingAddress": "Use a different address for billing",
     "savedAddresses": "Saved Addresses",
     "useADifferentAddress": "Use a different address",
+    "useSavedAddress": "\u2190 Use a saved address instead",
     "saveThisAddress": "Save this address for next time",
     "savedShippingLabel": "Shipping address",
     "savedBillingLabel": "Billing address",

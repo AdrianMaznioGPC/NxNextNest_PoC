@@ -82,6 +82,7 @@
     "useDifferentBillingAddress": "Utiliser une adresse de facturation différente",
     "savedAddresses": "Adresses enregistrées",
     "useADifferentAddress": "Utiliser une autre adresse",
+    "useSavedAddress": "\u2190 Utiliser une adresse enregistrée",
     "saveThisAddress": "Enregistrer cette adresse pour la prochaine fois",
     "savedShippingLabel": "Adresse de livraison",
     "savedBillingLabel": "Adresse de facturation",

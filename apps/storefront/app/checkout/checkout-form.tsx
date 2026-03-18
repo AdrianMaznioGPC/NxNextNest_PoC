@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Checkbox } from "@commerce/ui";
+import { Button, Checkbox, Separator } from "@commerce/ui";
 import type {
   AddressFormSchema,
   Cart,
@@ -136,47 +136,53 @@ export default function CheckoutForm({ cart, config }: CheckoutFormProps) {
   return (
     <div className="lg:grid lg:grid-cols-12 lg:gap-x-8">
       <form onSubmit={handleSubmit} className="min-w-0 space-y-8 lg:col-span-7">
-        <AddressSection
-          title={t("shippingAddress")}
-          idPrefix="shipping"
-          schema={config.addressSchema}
-          values={addressValues}
-          onChange={handleAddressChange}
-          savedAddresses={hasSavedAddresses ? config.savedAddresses : undefined}
-          selectedAddressId={selectedShippingAddressId}
-          onSelectSavedAddress={
-            hasSavedAddresses ? handleSelectShippingAddress : undefined
-          }
-          saveAddress={saveShippingAddress}
-          onSaveAddressChange={setSaveShippingAddress}
-        />
-
-        <label className="flex cursor-pointer items-center gap-3 text-sm font-medium text-foreground">
-          <Checkbox
-            checked={useDifferentBilling}
-            onCheckedChange={(val) => setUseDifferentBilling(val as boolean)}
-          />
-          {t("useDifferentBillingAddress")}
-        </label>
-
-        {useDifferentBilling && (
+        <div className="space-y-6">
           <AddressSection
-            title={t("billingAddress")}
-            idPrefix="billing"
-            schema={config.billingAddressSchema}
-            values={billingValues}
-            onChange={handleBillingChange}
+            title={t("shippingAddress")}
+            idPrefix="shipping"
+            schema={config.addressSchema}
+            values={addressValues}
+            onChange={handleAddressChange}
             savedAddresses={
               hasSavedAddresses ? config.savedAddresses : undefined
             }
-            selectedAddressId={selectedBillingAddressId}
+            selectedAddressId={selectedShippingAddressId}
             onSelectSavedAddress={
-              hasSavedAddresses ? handleSelectBillingAddress : undefined
+              hasSavedAddresses ? handleSelectShippingAddress : undefined
             }
-            saveAddress={saveBillingAddress}
-            onSaveAddressChange={setSaveBillingAddress}
+            saveAddress={saveShippingAddress}
+            onSaveAddressChange={setSaveShippingAddress}
           />
-        )}
+
+          <label className="flex cursor-pointer items-center gap-3 text-sm font-medium text-foreground">
+            <Checkbox
+              checked={useDifferentBilling}
+              onCheckedChange={(val) => setUseDifferentBilling(val as boolean)}
+            />
+            {t("useDifferentBillingAddress")}
+          </label>
+
+          {useDifferentBilling && (
+            <AddressSection
+              title={t("billingAddress")}
+              idPrefix="billing"
+              schema={config.billingAddressSchema}
+              values={billingValues}
+              onChange={handleBillingChange}
+              savedAddresses={
+                hasSavedAddresses ? config.savedAddresses : undefined
+              }
+              selectedAddressId={selectedBillingAddressId}
+              onSelectSavedAddress={
+                hasSavedAddresses ? handleSelectBillingAddress : undefined
+              }
+              saveAddress={saveBillingAddress}
+              onSaveAddressChange={setSaveBillingAddress}
+            />
+          )}
+        </div>
+
+        <Separator />
 
         <DeliverySection
           title={t("deliveryMethod")}
@@ -185,12 +191,16 @@ export default function CheckoutForm({ cart, config }: CheckoutFormProps) {
           onSelect={setSelectedDelivery}
         />
 
+        <Separator />
+
         <PaymentSection
           title={t("paymentMethod")}
           options={config.paymentOptions}
           selected={selectedPayment}
           onSelect={setSelectedPayment}
         />
+
+        <Separator />
 
         <Button type="submit" className="w-full rounded-full p-4">
           {t("placeOrder")}
