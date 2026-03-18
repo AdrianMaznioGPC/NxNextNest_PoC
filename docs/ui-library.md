@@ -33,16 +33,16 @@ libs/ui/
 │   │   ├── grid/                  Grid + GridItem layout primitives
 │   │   ├── icon-button/           Square icon-only button (CVA)
 │   │   ├── input/                 Styled text input
-│   │   ├── label/                 Floating product label with price badge
+│   │   ├── label/                 Form label primitive
 │   │   ├── loading-dots/          Animated loading indicator
 │   │   ├── price/                 Locale-aware currency formatting
 │   │   ├── prose/                 Typography container for CMS HTML
-│   │   ├── radio-card/            RadioCardGroup + RadioCard selection
+│   │   ├── radio-card/            RadioCardGroup + RadioCard selection (legacy)
 │   │   ├── alert-dialog/          Confirmation dialog (Base UI)
 │   │   ├── breadcrumb/            Breadcrumb navigation primitives
 │   │   ├── collapsible/           Show/hide content panel (Base UI)
 │   │   ├── combobox/              Searchable autocomplete input (Base UI)
-│   │   ├── field/                 Form field with label, error, description (Base UI)
+│   │   ├── field/                 Form field layout with label, error, description (CVA)
 │   │   ├── meter/                 Static value gauge (Base UI)
 │   │   ├── navigation-menu/       Desktop nav with dropdowns (Base UI)
 │   │   ├── number-field/          Quantity stepper input (Base UI)
@@ -383,60 +383,19 @@ import { Input } from "@commerce/ui";
 
 ### Label
 
-Floating product label overlay with title and optional price badge. Place inside a `position: relative` container.
+Form label primitive. Renders a `<label>` element with consistent styling. Used internally by `FieldLabel` — most consumers should use the Field components instead.
 
 ```tsx
 import { Label } from "@commerce/ui";
 
-<div className="relative">
-  <img src={product.image} />
-  <Label title="Running Shoes" amount="129.99" currencyCode="EUR" />
-</div>;
+<Label htmlFor="email">Email address</Label>;
 ```
 
-| Prop           | Type                   | Default    | Description       |
-| -------------- | ---------------------- | ---------- | ----------------- |
-| `title`        | `string`               | —          | Product title     |
-| `amount`       | `string`               | —          | Price amount      |
-| `currencyCode` | `string`               | —          | ISO 4217 code     |
-| `position`     | `"bottom" \| "center"` | `"bottom"` | Vertical position |
+### RadioCardGroup + RadioCard (Legacy)
 
-### RadioCardGroup + RadioCard
+> **Deprecated.** Use `RadioGroup` + `Field` choice card composition instead (see RadioGroup section below).
 
-Selectable card group for checkout options (delivery, payment, etc.).
-
-```tsx
-import {
-  RadioCardGroup,
-  RadioCard,
-  RadioCardLabel,
-  RadioCardDescription,
-} from "@commerce/ui";
-
-<RadioCardGroup name="delivery" value={selected} onValueChange={setSelected}>
-  <RadioCard value="standard">
-    <RadioCardLabel>Standard Shipping</RadioCardLabel>
-    <RadioCardDescription>3-5 business days</RadioCardDescription>
-  </RadioCard>
-  <RadioCard value="express">
-    <RadioCardLabel>Express Shipping</RadioCardLabel>
-    <RadioCardDescription>1-2 business days</RadioCardDescription>
-  </RadioCard>
-</RadioCardGroup>;
-```
-
-| Prop (RadioCardGroup) | Type                      | Default | Description              |
-| --------------------- | ------------------------- | ------- | ------------------------ |
-| `name`                | `string`                  | —       | Form field name          |
-| `value`               | `string`                  | —       | Currently selected value |
-| `onValueChange`       | `(value: string) => void` | —       | Selection callback       |
-
-| Prop (RadioCard) | Type      | Default | Description       |
-| ---------------- | --------- | ------- | ----------------- |
-| `value`          | `string`  | —       | Option value      |
-| `disabled`       | `boolean` | `false` | Disables the card |
-
-Highlights the active card with `border-primary` and a subtle background tint. Uses token colors so it automatically follows the theme.
+These components are still exported but no longer used in the storefront. Prefer composing `RadioGroup`, `RadioGroupItem`, `FieldLabel`, `Field`, `FieldContent`, `FieldTitle`, and `FieldDescription` for card-style radio selection.
 
 ### Skeleton
 
@@ -738,25 +697,96 @@ import {
 
 ### Field
 
-Form field wrapper with label, description, and error message. Built on Base UI `Field`.
+Form field layout system with label, description, error, and orientation variants. Pure layout components (no Base UI dependency). Follows the shadcn Field pattern.
+
+**Sub-components:** `Field`, `FieldLabel`, `FieldContent`, `FieldTitle`, `FieldDescription`, `FieldError`, `FieldSet`, `FieldLegend`, `FieldGroup`, `FieldSeparator`
+
+#### Basic Field with Input
 
 ```tsx
 import {
-  FieldRoot,
+  Field,
   FieldLabel,
-  FieldControl,
   FieldDescription,
   FieldError,
   Input,
 } from "@commerce/ui";
 
-<FieldRoot>
-  <FieldLabel>Email</FieldLabel>
-  <FieldControl render={<Input type="email" />} />
+<Field>
+  <FieldLabel htmlFor="email">Email</FieldLabel>
+  <Input id="email" type="email" />
   <FieldDescription>We'll never share your email.</FieldDescription>
   <FieldError>Please enter a valid email address.</FieldError>
-</FieldRoot>;
+</Field>;
 ```
+
+#### Choice Card (Radio)
+
+Wrap `FieldLabel` around `Field` with a `RadioGroupItem` for clickable card-style selection:
+
+```tsx
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldLabel,
+  FieldTitle,
+  RadioGroup,
+  RadioGroupItem,
+} from "@commerce/ui";
+
+<RadioGroup defaultValue="standard">
+  <FieldLabel htmlFor="standard">
+    <Field orientation="horizontal">
+      <RadioGroupItem value="standard" id="standard" />
+      <FieldContent>
+        <FieldTitle>Standard Shipping</FieldTitle>
+        <FieldDescription>3-5 business days</FieldDescription>
+      </FieldContent>
+    </Field>
+  </FieldLabel>
+  <FieldLabel htmlFor="express">
+    <Field orientation="horizontal">
+      <RadioGroupItem value="express" id="express" />
+      <FieldContent>
+        <FieldTitle>Express Shipping</FieldTitle>
+        <FieldDescription>1-2 business days</FieldDescription>
+      </FieldContent>
+    </Field>
+  </FieldLabel>
+</RadioGroup>;
+```
+
+#### Fieldset
+
+Group related fields with `FieldSet` and `FieldLegend`:
+
+```tsx
+import {
+  FieldSet,
+  FieldLegend,
+  FieldGroup,
+  Field,
+  FieldLabel,
+  Input,
+} from "@commerce/ui";
+
+<FieldSet>
+  <FieldLegend>Shipping Address</FieldLegend>
+  <FieldGroup>
+    <Field>
+      <FieldLabel htmlFor="name">Full name</FieldLabel>
+      <Input id="name" />
+    </Field>
+    <Field>
+      <FieldLabel htmlFor="city">City</FieldLabel>
+      <Input id="city" />
+    </Field>
+  </FieldGroup>
+</FieldSet>;
+```
+
+**Orientation variants:** `vertical` (default), `horizontal`, `responsive`
 
 ### NumberField
 
@@ -824,22 +854,25 @@ import { ProgressRoot, ProgressTrack, ProgressIndicator } from "@commerce/ui";
 
 ### RadioGroup
 
-Plain radio button group (non-card layout). Built on Base UI `Radio` + `RadioGroup`.
+Radio button group. Built on Base UI `Radio` + `RadioGroup`. Compose with `Field` components for labels, descriptions, and choice card patterns.
 
 ```tsx
-import { RadioGroupRoot, RadioGroupItem } from "@commerce/ui";
+import { RadioGroup, RadioGroupItem } from "@commerce/ui";
+import { Label } from "@commerce/ui";
 
-<RadioGroupRoot defaultValue="standard">
+<RadioGroup defaultValue="standard">
   <div className="flex items-center gap-2">
     <RadioGroupItem value="standard" id="r-standard" />
-    <label htmlFor="r-standard">Standard</label>
+    <Label htmlFor="r-standard">Standard</Label>
   </div>
   <div className="flex items-center gap-2">
     <RadioGroupItem value="express" id="r-express" />
-    <label htmlFor="r-express">Express</label>
+    <Label htmlFor="r-express">Express</Label>
   </div>
-</RadioGroupRoot>;
+</RadioGroup>;
 ```
+
+For card-style selection, see the **Field** component's Choice Card example above.
 
 ### Tabs
 
@@ -1275,14 +1308,14 @@ export { Badge, badgeVariants, type BadgeProps } from "./components/badge";
 
 ## What Belongs Here vs. in the App
 
-| In `@commerce/ui` (42 components)                     | In `apps/storefront/components/`            |
-| ----------------------------------------------------- | ------------------------------------------- |
-| Button, IconButton, Badge, Card, Input, Textarea      | Cart modal, product gallery, navbar         |
-| Dialog, Drawer, DropdownMenu, Select, Accordion       | CMS block renderers                         |
-| Checkbox, Switch, RadioCardGroup, RadioCard           | Store switcher, checkout form               |
-| Container, Grid, GridItem, Label, Separator, Skeleton | Breadcrumbs, pagination                     |
-| Price, Prose, LoadingDots, StarRating, Avatar         | Address picker, variant selector            |
-| No framework-specific imports                         | Uses `next/link`, `next/image`, `next-intl` |
-| No domain types                                       | Imports from `lib/types`                    |
+| In `@commerce/ui` (42 components)                | In `apps/storefront/components/`            |
+| ------------------------------------------------ | ------------------------------------------- |
+| Button, IconButton, Badge, Card, Input, Textarea | Cart modal, product gallery, navbar         |
+| Dialog, Drawer, DropdownMenu, Select, Accordion  | CMS block renderers                         |
+| Checkbox, Switch, RadioGroup, Field              | Store switcher, checkout form               |
+| Container, Grid, GridItem, Separator, Skeleton   | Breadcrumbs, pagination                     |
+| Price, Prose, LoadingDots, StarRating, Avatar    | Address picker, variant selector            |
+| No framework-specific imports                    | Uses `next/link`, `next/image`, `next-intl` |
+| No domain types                                  | Imports from `lib/types`                    |
 
 **Rule of thumb:** If a component can render in a Storybook without Next.js, it belongs in the library. If it needs routing, image optimization, or domain data, it stays in the app and _consumes_ library primitives.
