@@ -1,55 +1,28 @@
 "use client";
 
-import { Checkbox as BaseCheckbox } from "@base-ui/react/checkbox";
-import {
-  forwardRef,
-  type ComponentPropsWithoutRef,
-  type ComponentRef,
-} from "react";
+import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox";
+
+import { CheckIcon } from "@heroicons/react/24/outline";
 import { cn } from "../../lib/utils";
 
-export interface CheckboxProps
-  extends ComponentPropsWithoutRef<typeof BaseCheckbox.Root> {}
-
-/**
- * Accessible checkbox styled with design tokens.
- *
- * @example
- * ```tsx
- * <Checkbox id="terms" />
- * <label htmlFor="terms">Accept terms</label>
- * ```
- */
-export const Checkbox = forwardRef<
-  ComponentRef<typeof BaseCheckbox.Root>,
-  CheckboxProps
->(({ className, ...props }, ref) => (
-  <BaseCheckbox.Root
-    ref={ref}
-    className={cn(
-      "peer h-4 w-4 shrink-0 rounded-sm border border-input shadow-sm",
-      "transition-colors duration-150",
-      "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-      "data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
-      "data-[checked]:bg-primary data-[checked]:border-primary data-[checked]:text-primary-foreground",
-      className,
-    )}
-    {...props}
-  >
-    <BaseCheckbox.Indicator className="flex items-center justify-center">
-      <svg
-        className="h-3.5 w-3.5"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+function Checkbox({ className, ...props }: CheckboxPrimitive.Root.Props) {
+  return (
+    <CheckboxPrimitive.Root
+      data-slot="checkbox"
+      className={cn(
+        "border-input dark:bg-input/30 data-checked:bg-primary data-checked:text-primary-foreground dark:data-checked:bg-primary data-checked:border-primary aria-invalid:aria-checked:border-primary aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 flex size-4 items-center justify-center rounded-[4px] border transition-colors group-has-disabled/field:opacity-50 focus-visible:ring-3 aria-invalid:ring-3 peer relative shrink-0 outline-none after:absolute after:-inset-x-3 after:-inset-y-2 disabled:cursor-not-allowed disabled:opacity-50",
+        className,
+      )}
+      {...props}
+    >
+      <CheckboxPrimitive.Indicator
+        data-slot="checkbox-indicator"
+        className="[&>svg]:size-3.5 grid place-content-center text-current transition-none"
       >
-        <path d="M20 6 9 17l-5-5" />
-      </svg>
-    </BaseCheckbox.Indicator>
-  </BaseCheckbox.Root>
-));
-Checkbox.displayName = "Checkbox";
+        <CheckIcon />
+      </CheckboxPrimitive.Indicator>
+    </CheckboxPrimitive.Root>
+  );
+}
+
+export { Checkbox };

@@ -112,7 +112,7 @@ export function AddressPicker({
 
         <div
           ref={scrollRef}
-          className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin"
+          className="-mx-2 flex gap-3 overflow-x-auto px-2 py-2 scrollbar-thin"
         >
           {addresses.map((address) => {
             const isSelected = selectedId === address.id;

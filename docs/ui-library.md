@@ -623,29 +623,34 @@ Styled select dropdown. Built on Base UI `Select`.
 
 ```tsx
 import {
-  SelectRoot,
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
   SelectTrigger,
   SelectValue,
-  SelectPortal,
-  SelectPositioner,
-  SelectPopup,
-  SelectItem,
 } from "@commerce/ui";
 
-<SelectRoot>
+const items = [
+  { label: "Price: Low to High", value: "price-asc" },
+  { label: "Price: High to Low", value: "price-desc" },
+  { label: "Newest", value: "newest" },
+];
+
+<Select items={items}>
   <SelectTrigger>
     <SelectValue placeholder="Sort by…" />
   </SelectTrigger>
-  <SelectPortal>
-    <SelectPositioner>
-      <SelectPopup>
-        <SelectItem value="price-asc">Price: Low to High</SelectItem>
-        <SelectItem value="price-desc">Price: High to Low</SelectItem>
-        <SelectItem value="newest">Newest</SelectItem>
-      </SelectPopup>
-    </SelectPositioner>
-  </SelectPortal>
-</SelectRoot>;
+  <SelectContent>
+    <SelectGroup>
+      {items.map((item) => (
+        <SelectItem key={item.value} value={item.value}>
+          {item.label}
+        </SelectItem>
+      ))}
+    </SelectGroup>
+  </SelectContent>
+</Select>;
 ```
 
 ### Separator

@@ -1,12 +1,16 @@
 "use client";
 
 import {
+  FieldDescription,
+  FieldLegend,
+  FieldSet,
+  FieldTitle,
   Price,
-  RadioCard,
-  RadioCardDescription,
-  RadioCardGroup,
-  RadioCardLabel,
 } from "@commerce/ui";
+import {
+  ChoiceCardGroup,
+  ChoiceCardItem,
+} from "components/choice-card/choice-card";
 import type { DeliveryOption } from "lib/types";
 
 interface DeliverySectionProps {
@@ -23,27 +27,21 @@ export function DeliverySection({
   onSelect,
 }: DeliverySectionProps) {
   return (
-    <fieldset>
-      <legend className="mb-4 text-lg font-semibold">{title}</legend>
-      <RadioCardGroup name="delivery" value={selected} onValueChange={onSelect}>
+    <FieldSet className="w-full">
+      <FieldLegend variant="label">{title}</FieldLegend>
+      <ChoiceCardGroup value={selected} onValueChange={onSelect}>
         {options.map((option) => (
-          <RadioCard
-            key={option.id}
-            value={option.id}
-            className="justify-between"
-          >
-            <div>
-              <RadioCardLabel>{option.label}</RadioCardLabel>
-              <RadioCardDescription>{option.description}</RadioCardDescription>
-            </div>
+          <ChoiceCardItem key={option.id} value={option.id}>
+            <FieldTitle>{option.label}</FieldTitle>
+            <FieldDescription>{option.description}</FieldDescription>
             <Price
               className="text-sm font-medium text-foreground"
               amount={option.price.amount}
               currencyCode={option.price.currencyCode}
             />
-          </RadioCard>
+          </ChoiceCardItem>
         ))}
-      </RadioCardGroup>
-    </fieldset>
+      </ChoiceCardGroup>
+    </FieldSet>
   );
 }

@@ -1,11 +1,15 @@
 "use client";
 
 import {
-  RadioCard,
-  RadioCardDescription,
-  RadioCardGroup,
-  RadioCardLabel,
+  FieldDescription,
+  FieldLegend,
+  FieldSet,
+  FieldTitle,
 } from "@commerce/ui";
+import {
+  ChoiceCardGroup,
+  ChoiceCardItem,
+} from "components/choice-card/choice-card";
 import type { PaymentOption } from "lib/types";
 
 interface PaymentSectionProps {
@@ -22,16 +26,16 @@ export function PaymentSection({
   onSelect,
 }: PaymentSectionProps) {
   return (
-    <fieldset>
-      <legend className="mb-4 text-lg font-semibold">{title}</legend>
-      <RadioCardGroup name="payment" value={selected} onValueChange={onSelect}>
+    <FieldSet className="w-full">
+      <FieldLegend variant="label">{title}</FieldLegend>
+      <ChoiceCardGroup value={selected} onValueChange={onSelect}>
         {options.map((option) => (
-          <RadioCard key={option.id} value={option.id}>
-            <RadioCardLabel>{option.label}</RadioCardLabel>
-            <RadioCardDescription>{option.description}</RadioCardDescription>
-          </RadioCard>
+          <ChoiceCardItem key={option.id} value={option.id}>
+            <FieldTitle>{option.label}</FieldTitle>
+            <FieldDescription>{option.description}</FieldDescription>
+          </ChoiceCardItem>
         ))}
-      </RadioCardGroup>
-    </fieldset>
+      </ChoiceCardGroup>
+    </FieldSet>
   );
 }

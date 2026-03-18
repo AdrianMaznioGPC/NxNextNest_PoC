@@ -1,6 +1,16 @@
 "use client";
 
-import { FieldLabel, FieldRoot, Input } from "@commerce/ui";
+import {
+  Field,
+  FieldLabel,
+  Input,
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@commerce/ui";
 import { AddressPicker } from "components/address/address-picker";
 import type {
   AddressFieldConfig,
@@ -33,7 +43,7 @@ function TextField({
   label: string;
 }) {
   return (
-    <FieldRoot>
+    <Field>
       <FieldLabel htmlFor={fieldId}>
         {label}
         {!field.required && (
@@ -54,7 +64,7 @@ function TextField({
         minLength={field.validation?.minLength}
         maxLength={field.validation?.maxLength}
       />
-    </FieldRoot>
+    </Field>
   );
 }
 
@@ -72,27 +82,26 @@ function SelectField({
   label: string;
 }) {
   return (
-    <FieldRoot>
+    <Field>
       <FieldLabel htmlFor={fieldId}>{label}</FieldLabel>
-      <select
-        id={fieldId}
-        name={fieldId}
-        autoComplete={field.autoComplete}
-        required={field.required}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-sm transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+      <Select
+        items={field.options}
+        defaultValue={field.options ? field.options[0] : undefined}
       >
-        <option value="" disabled>
-          {label}
-        </option>
-        {field.options?.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
-          </option>
-        ))}
-      </select>
-    </FieldRoot>
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder={label} />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            {field.options?.map((item) => (
+              <SelectItem key={item.value} value={item.value}>
+                {item.label}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+    </Field>
   );
 }
 

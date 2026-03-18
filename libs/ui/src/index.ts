@@ -41,7 +41,7 @@ export {
   CardTitle,
   type CardProps,
 } from "./components/card";
-export { Checkbox, type CheckboxProps } from "./components/checkbox";
+export { Checkbox } from "./components/checkbox";
 export {
   CollapsiblePanel,
   CollapsibleRoot,
@@ -101,11 +101,16 @@ export {
   DropdownMenuTrigger,
 } from "./components/dropdown-menu";
 export {
-  FieldControl,
+  Field,
+  FieldContent,
   FieldDescription,
   FieldError,
+  FieldGroup,
   FieldLabel,
-  FieldRoot,
+  FieldLegend,
+  FieldSeparator,
+  FieldSet,
+  FieldTitle,
 } from "./components/field";
 export {
   Grid,
@@ -119,7 +124,7 @@ export {
   type IconButtonProps,
 } from "./components/icon-button";
 export { Input, type InputProps } from "./components/input";
-export { Label, type LabelProps } from "./components/label";
+export { Label } from "./components/label";
 export { LoadingDots, type LoadingDotsProps } from "./components/loading-dots";
 export { MeterIndicator, MeterRoot, MeterTrack } from "./components/meter";
 export {
@@ -177,7 +182,7 @@ export {
   type RadioCardGroupProps,
   type RadioCardProps,
 } from "./components/radio-card";
-export { RadioGroupItem, RadioGroupRoot } from "./components/radio-group";
+export { RadioGroup, RadioGroupItem } from "./components/radio-group";
 export {
   ScrollAreaCorner,
   ScrollAreaRoot,
@@ -187,13 +192,12 @@ export {
   type ScrollAreaScrollbarProps,
 } from "./components/scroll-area";
 export {
+  Select,
+  SelectContent,
   SelectGroup,
-  SelectGroupLabel,
   SelectItem,
-  SelectPopup,
-  SelectPortal,
-  SelectPositioner,
-  SelectRoot,
+  SelectLabel,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from "./components/select";
