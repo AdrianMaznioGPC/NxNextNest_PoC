@@ -1,5 +1,6 @@
 "use client";
 
+import { Button, Checkbox } from "@commerce/ui";
 import type {
   AddressFormSchema,
   Cart,
@@ -131,12 +132,10 @@ export default function CheckoutForm({ cart, config }: CheckoutFormProps) {
           }
         />
 
-        <label className="flex cursor-pointer items-center gap-3 text-sm font-medium text-neutral-700 dark:text-neutral-300">
-          <input
-            type="checkbox"
+        <label className="flex cursor-pointer items-center gap-3 text-sm font-medium text-foreground">
+          <Checkbox
             checked={useDifferentBilling}
-            onChange={(e) => setUseDifferentBilling(e.target.checked)}
-            className="h-4 w-4 rounded border-neutral-300 text-blue-600"
+            onCheckedChange={(val) => setUseDifferentBilling(val as boolean)}
           />
           {t("useDifferentBillingAddress")}
         </label>
@@ -172,12 +171,9 @@ export default function CheckoutForm({ cart, config }: CheckoutFormProps) {
           onSelect={setSelectedPayment}
         />
 
-        <button
-          type="submit"
-          className="w-full rounded-full bg-blue-600 p-4 text-center text-sm font-medium text-white opacity-90 hover:opacity-100"
-        >
+        <Button type="submit" className="w-full rounded-full p-4">
           {t("placeOrder")}
-        </button>
+        </Button>
       </form>
 
       <div className="mt-8 lg:col-span-5 lg:mt-0">

@@ -1,5 +1,6 @@
 "use client";
 
+import { IconButton } from "@commerce/ui";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { removeItem } from "components/cart/actions";
 import type { CartItem } from "lib/types";
@@ -25,13 +26,14 @@ export function DeleteItemButton({
         removeItemAction();
       }}
     >
-      <button
+      <IconButton
         type="submit"
+        size="sm"
         aria-label={t("removeItem")}
-        className="flex h-[24px] w-[24px] items-center justify-center rounded-full bg-neutral-500"
+        className="h-6 w-6 rounded-full bg-neutral-500 text-white hover:bg-neutral-600 dark:text-black"
       >
-        <XMarkIcon className="mx-[1px] h-4 w-4 text-white dark:text-black" />
-      </button>
+        <XMarkIcon className="h-4 w-4" />
+      </IconButton>
       <p aria-live="polite" className="sr-only" role="status">
         {message}
       </p>

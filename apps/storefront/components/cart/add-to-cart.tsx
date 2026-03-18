@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@commerce/ui";
+import { Button } from "@commerce/ui";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { addItem } from "components/cart/actions";
 import { Product, ProductVariant } from "lib/types";
@@ -19,43 +19,26 @@ function SubmitButton({
   selectedVariantId: string | undefined;
 }) {
   const t = useTranslations("cart");
-  const buttonClasses =
-    "relative flex w-full items-center justify-center rounded-full bg-blue-600 p-4 tracking-wide text-white";
-  const disabledClasses = "cursor-not-allowed opacity-60 hover:opacity-60";
 
   if (!purchasable) {
     return (
-      <button disabled className={cn(buttonClasses, disabledClasses)}>
+      <Button className="w-full rounded-full p-4" disabled>
         {stockMessage}
-      </button>
-    );
-  }
-
-  if (!selectedVariantId) {
-    return (
-      <button
-        aria-label={t("addToCart")}
-        disabled
-        className={cn(buttonClasses, disabledClasses)}
-      >
-        <div className="absolute left-0 ml-4">
-          <PlusIcon className="h-5" />
-        </div>
-        {t("addToCart")}
-      </button>
+      </Button>
     );
   }
 
   return (
-    <button
+    <Button
+      className="relative w-full rounded-full p-4"
       aria-label={t("addToCart")}
-      className={cn(buttonClasses, "hover:opacity-90")}
+      disabled={!selectedVariantId}
     >
       <div className="absolute left-0 ml-4">
         <PlusIcon className="h-5" />
       </div>
       {t("addToCart")}
-    </button>
+    </Button>
   );
 }
 

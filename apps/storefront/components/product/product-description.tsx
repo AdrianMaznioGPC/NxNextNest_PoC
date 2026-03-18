@@ -1,4 +1,4 @@
-import { Price, Prose } from "@commerce/ui";
+import { Badge, Price, Prose, Separator } from "@commerce/ui";
 import { AddToCart } from "components/cart/add-to-cart";
 import { Product } from "lib/types";
 import { VariantSelector } from "./variant-selector";
@@ -6,16 +6,17 @@ import { VariantSelector } from "./variant-selector";
 export function ProductDescription({ product }: { product: Product }) {
   return (
     <>
-      <div className="mb-6 flex flex-col border-b pb-6 dark:border-neutral-700">
+      <div className="mb-6 flex flex-col pb-6">
         <h1 className="mb-2 text-5xl font-medium">{product.title}</h1>
         {product.priceRange.maxVariantPrice ? (
-          <div className="mr-auto w-auto rounded-full bg-blue-600 p-2 text-sm text-white">
+          <Badge className="mr-auto rounded-full px-3 py-1.5">
             <Price
               amount={product.priceRange.maxVariantPrice.amount}
               currencyCode={product.priceRange.maxVariantPrice.currencyCode}
             />
-          </div>
+          </Badge>
         ) : null}
+        <Separator className="mt-6" />
       </div>
       <VariantSelector options={product.options} variants={product.variants} />
       {product.descriptionHtml ? (

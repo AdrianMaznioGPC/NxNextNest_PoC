@@ -1,6 +1,13 @@
 "use client";
 
-import { Price } from "@commerce/ui";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Price,
+  Separator,
+} from "@commerce/ui";
 import type { Cart, Money } from "lib/types";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -62,57 +69,62 @@ export function OrderSummary({ cart, shippingCost }: OrderSummaryProps) {
 
   return (
     <div className="lg:sticky lg:top-8">
-      <div className="rounded-lg border border-neutral-200 bg-white p-6 dark:border-neutral-800 dark:bg-black">
-        <h2 className="mb-4 text-lg font-semibold">{t("orderSummary")}</h2>
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("orderSummary")}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ul className="divide-y divide-border">
+            {cart.lines
+              .sort((a, b) =>
+                a.merchandise.product.title.localeCompare(
+                  b.merchandise.product.title,
+                ),
+              )
+              .map((item, i) => (
+                <OrderSummaryLineItem key={i} item={item} />
+              ))}
+          </ul>
 
-        <ul className="divide-y divide-neutral-200 dark:divide-neutral-800">
-          {cart.lines
-            .sort((a, b) =>
-              a.merchandise.product.title.localeCompare(
-                b.merchandise.product.title,
-              ),
-            )
-            .map((item, i) => (
-              <OrderSummaryLineItem key={i} item={item} />
-            ))}
-        </ul>
+          <Separator className="my-4" />
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between text-neutral-600 dark:text-neutral-400">
+              <span>{t("subtotal")}</span>
+              <Price
+                amount={cart.cost.subtotalAmount.amount}
+                currencyCode={cart.cost.subtotalAmount.currencyCode}
+                className="text-black dark:text-white"
+              />
+            </div>
+            <div className="flex justify-between text-neutral-600 dark:text-neutral-400">
+              <span>{t("taxes")}</span>
+              <Price
+                amount={cart.cost.totalTaxAmount.amount}
+                currencyCode={cart.cost.totalTaxAmount.currencyCode}
+                className="text-black dark:text-white"
+              />
+            </div>
+            <div className="flex justify-between text-neutral-600 dark:text-neutral-400">
+              <span>{t("shipping")}</span>
+              <Price
+                amount={shippingCost.amount}
+                currencyCode={shippingCost.currencyCode}
+                className="text-black dark:text-white"
+              />
+            </div>
+          </div>
 
-        <div className="mt-4 space-y-2 border-t border-neutral-200 pt-4 text-sm dark:border-neutral-800">
-          <div className="flex justify-between text-neutral-600 dark:text-neutral-400">
-            <span>{t("subtotal")}</span>
+          <Separator className="my-4" />
+          <div className="flex justify-between">
+            <span className="text-base font-semibold">{t("total")}</span>
             <Price
-              amount={cart.cost.subtotalAmount.amount}
-              currencyCode={cart.cost.subtotalAmount.currencyCode}
-              className="text-black dark:text-white"
+              className="text-base font-semibold text-black dark:text-white"
+              amount={totalAmount}
+              currencyCode={currencyCode}
             />
           </div>
-          <div className="flex justify-between text-neutral-600 dark:text-neutral-400">
-            <span>{t("taxes")}</span>
-            <Price
-              amount={cart.cost.totalTaxAmount.amount}
-              currencyCode={cart.cost.totalTaxAmount.currencyCode}
-              className="text-black dark:text-white"
-            />
-          </div>
-          <div className="flex justify-between text-neutral-600 dark:text-neutral-400">
-            <span>{t("shipping")}</span>
-            <Price
-              amount={shippingCost.amount}
-              currencyCode={shippingCost.currencyCode}
-              className="text-black dark:text-white"
-            />
-          </div>
-        </div>
-
-        <div className="mt-4 flex justify-between border-t border-neutral-200 pt-4 dark:border-neutral-800">
-          <span className="text-base font-semibold">{t("total")}</span>
-          <Price
-            className="text-base font-semibold text-black dark:text-white"
-            amount={totalAmount}
-            currencyCode={currencyCode}
-          />
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
