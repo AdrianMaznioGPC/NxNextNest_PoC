@@ -96,7 +96,22 @@
     "taxes": "Taxes",
     "shipping": "Livraison",
     "total": "Total",
-    "placeOrder": "Passer la commande"
+    "placeOrder": "Passer la commande",
+    "placingOrder": "Commande en cours...",
+    "orderError": "Une erreur est survenue lors de la commande. Veuillez r\u00e9essayer."
+  },
+  "orderConfirmation": {
+    "title": "Commande confirm\u00e9e",
+    "thankYou": "Merci pour votre achat !",
+    "orderNumber": "Num\u00e9ro de commande : {orderNumber}",
+    "items": "Articles command\u00e9s",
+    "subtotal": "Sous-total",
+    "shipping": "Livraison",
+    "taxes": "Taxes",
+    "total": "Total",
+    "deliveryMethod": "Mode de livraison",
+    "paymentMethod": "Mode de paiement",
+    "continueShopping": "Continuer vos achats"
   },
   "pagination": {
     "ariaLabel": "Pagination",

@@ -9,8 +9,9 @@ import type {
   SavedAddress,
 } from "lib/types";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
-import { saveNewAddress } from "./actions";
+import { placeOrderAction, saveNewAddress } from "./actions";
 import { OrderSummary } from "./order-summary";
 import { AddressSection } from "./sections/address-section";
 import { DeliverySection } from "./sections/delivery-section";
@@ -115,22 +116,46 @@ export default function CheckoutForm({ cart, config }: CheckoutFormProps) {
     setBillingValues((prev) => ({ ...prev, [fieldName]: value }));
   }
 
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [orderError, setOrderError] = useState<string | null>(null);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setIsSubmitting(true);
+    setOrderError(null);
 
-    // Save new addresses if the user opted in
-    if (saveShippingAddress && selectedShippingAddressId === null) {
-      await saveNewAddress(addressValues, t("savedShippingLabel"));
-    }
-    if (
-      saveBillingAddress &&
-      useDifferentBilling &&
-      selectedBillingAddressId === null
-    ) {
-      await saveNewAddress(billingValues, t("savedBillingLabel"));
-    }
+    try {
+      // Save new addresses if the user opted in
+      if (saveShippingAddress && selectedShippingAddressId === null) {
+        await saveNewAddress(addressValues, t("savedShippingLabel"));
+      }
+      if (
+        saveBillingAddress &&
+        useDifferentBilling &&
+        selectedBillingAddressId === null
+      ) {
+        await saveNewAddress(billingValues, t("savedBillingLabel"));
+      }
 
-    // TODO: integrate with order placement API
+      const billingAddr = useDifferentBilling
+        ? { ...billingValues }
+        : { ...addressValues };
+
+      const confirmation = await placeOrderAction({
+        cartId: cart.id!,
+        shippingAddress: { ...addressValues },
+        billingAddress: billingAddr,
+        deliveryOptionId: selectedDelivery,
+        paymentOptionId: selectedPayment,
+      });
+
+      router.push(`/checkout/confirmation?orderId=${confirmation.orderId}`);
+    } catch {
+      setOrderError(t("orderError"));
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -202,8 +227,18 @@ export default function CheckoutForm({ cart, config }: CheckoutFormProps) {
 
         <Separator />
 
-        <Button type="submit" className="w-full rounded-full p-4">
-          {t("placeOrder")}
+        {orderError && (
+          <p className="text-sm font-medium text-red-600 dark:text-red-400">
+            {orderError}
+          </p>
+        )}
+
+        <Button
+          type="submit"
+          className="w-full rounded-full p-4"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? t("placingOrder") : t("placeOrder")}
         </Button>
       </form>
 

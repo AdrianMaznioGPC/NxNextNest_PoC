@@ -343,6 +343,43 @@ export type CheckoutConfig = {
   savedAddresses: SavedAddress[];
 };
 
+// -- Order types -------------------------------------------------------------
+
+export type PlaceOrderRequest = {
+  cartId: string;
+  shippingAddress: Record<string, string>;
+  billingAddress: Record<string, string>;
+  deliveryOptionId: string;
+  paymentOptionId: string;
+};
+
+export type OrderLineItem = {
+  title: string;
+  variantTitle: string;
+  quantity: number;
+  image: Image;
+  unitPrice: Money;
+  totalPrice: Money;
+};
+
+export type OrderConfirmation = {
+  orderId: string;
+  orderNumber: string;
+  status: "confirmed" | "processing" | "failed";
+  createdAt: string;
+  shippingAddress: Record<string, string>;
+  billingAddress: Record<string, string>;
+  deliveryOption: DeliveryOption;
+  paymentOption: PaymentOption;
+  lines: OrderLineItem[];
+  cost: {
+    subtotalAmount: Money;
+    shippingAmount: Money;
+    taxAmount: Money;
+    totalAmount: Money;
+  };
+};
+
 // -- Sitemap types -----------------------------------------------------------
 
 export type SitemapEntry = {

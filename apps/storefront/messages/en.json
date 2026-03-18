@@ -96,7 +96,22 @@
     "taxes": "Taxes",
     "shipping": "Shipping",
     "total": "Total",
-    "placeOrder": "Place Order"
+    "placeOrder": "Place Order",
+    "placingOrder": "Placing Order...",
+    "orderError": "Something went wrong placing your order. Please try again."
+  },
+  "orderConfirmation": {
+    "title": "Order Confirmed",
+    "thankYou": "Thank you for your purchase!",
+    "orderNumber": "Order number: {orderNumber}",
+    "items": "Order Items",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "taxes": "Taxes",
+    "total": "Total",
+    "deliveryMethod": "Delivery Method",
+    "paymentMethod": "Payment Method",
+    "continueShopping": "Continue Shopping"
   },
   "pagination": {
     "ariaLabel": "Pagination",

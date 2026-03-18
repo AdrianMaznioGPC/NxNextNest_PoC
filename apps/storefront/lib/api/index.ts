@@ -9,7 +9,9 @@ import type {
   GlobalLayoutData,
   HomePageData,
   Menu,
+  OrderConfirmation,
   Page,
+  PlaceOrderRequest,
   ProductPageData,
   SavedAddress,
   SearchPageData,
@@ -260,6 +262,37 @@ export async function getCheckoutRedirectUrl(): Promise<string> {
     { method: "POST" },
   );
   return redirectUrl;
+}
+
+/**
+ * Places an order through the BFF. Clears the cart cookie on success.
+ */
+export async function placeOrder(
+  request: PlaceOrderRequest,
+): Promise<OrderConfirmation> {
+  const storeCode = await getStoreCode();
+  const confirmation = await bffFetch<OrderConfirmation>(
+    storeCode,
+    "/checkout/orders",
+    {
+      method: "POST",
+      body: JSON.stringify(request),
+      headers: await customerHeaders(),
+    },
+  );
+  // Clear the cart cookie after successful order placement
+  (await cookies()).delete("cartId");
+  return confirmation;
+}
+
+/**
+ * Fetches an order confirmation by ID from the BFF.
+ */
+export async function getOrderConfirmation(
+  storeCode: string,
+  orderId: string,
+): Promise<OrderConfirmation> {
+  return bffFetch(storeCode, `/checkout/orders/${orderId}`);
 }
 
 // -- Addresses ---------------------------------------------------------------

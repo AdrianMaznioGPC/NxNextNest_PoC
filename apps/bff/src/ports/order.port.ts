@@ -1,5 +1,11 @@
+import type {
+  OrderConfirmation,
+  PlaceOrderRequest,
+} from "@commerce/shared-types";
+
 export interface OrderPort {
-  // Stub — will be expanded when order domain is implemented
+  placeOrder(request: PlaceOrderRequest): Promise<OrderConfirmation>;
+  getOrder(orderId: string): Promise<OrderConfirmation | undefined>;
 }
 
 export const ORDER_PORT = Symbol("ORDER_PORT");
