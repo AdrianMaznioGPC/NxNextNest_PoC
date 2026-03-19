@@ -4,6 +4,7 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from "@nestjs/platform-fastify";
+import "dotenv/config";
 import { AppModule } from "./app.module";
 import { BffErrorFilter } from "./filters/bff-error.filter";
 

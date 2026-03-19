@@ -44,3 +44,9 @@ next-env.d.ts
 
 # k6 test results
 results/
+
+# Java / Gradle
+.gradle/
+*.class
+*.jar
+!gradle/wrapper/gradle-wrapper.jar

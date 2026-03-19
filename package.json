@@ -9,6 +9,7 @@
     "dev": "nx run-many -t dev",
     "dev:storefront": "nx dev storefront",
     "dev:bff": "nx dev bff",
+    "dev:api": "nx dev api",
     "build": "nx run-many -t build",
     "prettier": "prettier --write --ignore-unknown .",
     "prettier:check": "prettier --check --ignore-unknown ."

@@ -2,6 +2,7 @@ import { Logger, Module } from "@nestjs/common";
 import { APP_INTERCEPTOR } from "@nestjs/core";
 import { ChaosBackendModule } from "./adapters/chaos/chaos-backend.module";
 import { MockBackendModule } from "./adapters/mock/mock-backend.module";
+import { SpringBackendModule } from "./adapters/spring/spring-backend.module";
 import { CartController } from "./modules/cart/cart.controller";
 import { CheckoutController } from "./modules/checkout/checkout.controller";
 import { CatalogDomainService } from "./modules/collection/catalog-domain.service";
@@ -14,11 +15,19 @@ import { ProductDomainService } from "./modules/product/product-domain.service";
 import { SystemModule } from "./modules/system/system.module";
 import { StoreInterceptor } from "./store";
 
-const isChaos = process.env.BFF_BACKEND === "chaos";
-const backendModule = isChaos ? ChaosBackendModule : MockBackendModule;
+const logger = new Logger("AppModule");
+const backendMode = process.env.BFF_BACKEND ?? "mock";
+const backendModule =
+  backendMode === "spring"
+    ? SpringBackendModule
+    : backendMode === "chaos"
+      ? ChaosBackendModule
+      : MockBackendModule;
 
-if (isChaos) {
-  new Logger("AppModule").warn("CHAOS BACKEND ACTIVE — not for production use");
+if (backendMode === "chaos") {
+  logger.warn("CHAOS BACKEND ACTIVE — not for production use");
+} else if (backendMode === "spring") {
+  logger.log("Using Spring Boot backend for products");
 }
 
 @Module({

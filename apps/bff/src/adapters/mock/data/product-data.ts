@@ -29,7 +29,7 @@ function record(
       },
     ],
     variants: variants.map((v) => ({
-      id: v.id,
+      id: `${id}-${v.id}`,
       title: v.label,
       selectedOptions: [{ name: optionName, value: v.label }],
     })),
