@@ -788,6 +788,9 @@ const messageCatalogByLocale: Record<
       next: "Continue",
       back: "Back",
       edit: "Edit",
+      expressTitle: "Express Checkout",
+      shippingTo: "Shipping to",
+      change: "Change",
     },
     orderConfirmation: {
       title: "Order Confirmed",
@@ -877,6 +880,9 @@ const messageCatalogByLocale: Record<
       next: "Continuar",
       back: "Volver",
       edit: "Editar",
+      expressTitle: "Pago rapido",
+      shippingTo: "Enviar a",
+      change: "Cambiar",
     },
     orderConfirmation: {
       title: "Pedido confirmado",
@@ -967,6 +973,9 @@ const messageCatalogByLocale: Record<
       next: "Doorgaan",
       back: "Terug",
       edit: "Bewerken",
+      expressTitle: "Snel afrekenen",
+      shippingTo: "Verzenden naar",
+      change: "Wijzigen",
     },
     orderConfirmation: {
       title: "Bestelling bevestigd",
@@ -1059,6 +1068,9 @@ const messageCatalogByLocale: Record<
       next: "Continuer",
       back: "Retour",
       edit: "Modifier",
+      expressTitle: "Paiement express",
+      shippingTo: "Livrer a",
+      change: "Modifier",
     },
     orderConfirmation: {
       title: "Commande confirmee",

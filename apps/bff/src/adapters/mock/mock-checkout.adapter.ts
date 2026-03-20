@@ -189,7 +189,7 @@ export class MockCheckoutAdapter implements CheckoutPort {
       case "store-b":
         return "multi-step";
       case "store-c":
-        return "multi-step";
+        return "express";
       default:
         return "single-page";
     }
@@ -197,7 +197,12 @@ export class MockCheckoutAdapter implements CheckoutPort {
 
   async getCheckoutConfig(storeKey?: string): Promise<CheckoutConfig> {
     const savedAddresses = await this.customer.getAddresses("mock-customer");
-    const flowType = this.resolveFlowType(storeKey);
+    let flowType = this.resolveFlowType(storeKey);
+
+    // Express requires saved addresses — fall back to single-page
+    if (flowType === "express" && savedAddresses.length === 0) {
+      flowType = "single-page";
+    }
 
     return {
       flowType,

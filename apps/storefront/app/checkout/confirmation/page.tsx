@@ -126,14 +126,14 @@ export default async function ConfirmationPage({
 
       {/* Delivery & Payment */}
       <div className="grid gap-6 sm:grid-cols-2">
-        <div className="rounded-control border border-card-border p-4">
+        <div className="rounded-lg border border-card-border p-4">
           <ConfirmationMessages section="deliveryMethodLabel" />
           <p className="mt-1 font-medium">{order.deliveryOption.label}</p>
           <p className="text-sm text-muted">
             {order.deliveryOption.description}
           </p>
         </div>
-        <div className="rounded-control border border-card-border p-4">
+        <div className="rounded-lg border border-card-border p-4">
           <ConfirmationMessages section="paymentMethodLabel" />
           <p className="mt-1 font-medium">{order.paymentOption.label}</p>
           <p className="text-sm text-muted">

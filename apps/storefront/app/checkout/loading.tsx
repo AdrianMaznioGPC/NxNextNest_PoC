@@ -7,12 +7,12 @@ export default function CheckoutLoading() {
           {[...Array(3)].map((_, i) => (
             <div
               key={i}
-              className="h-64 animate-pulse rounded-control bg-muted-surface"
+              className="h-64 animate-pulse rounded-lg bg-muted-surface"
             />
           ))}
         </div>
         <div className="mt-8 lg:col-span-5 lg:mt-0">
-          <div className="h-96 animate-pulse rounded-control bg-muted-surface" />
+          <div className="h-96 animate-pulse rounded-lg bg-muted-surface" />
         </div>
       </div>
     </div>

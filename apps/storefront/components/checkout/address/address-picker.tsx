@@ -39,7 +39,7 @@ export function AddressPicker({
             type="button"
             onClick={() => onSelect(address)}
             className={clsx(
-              "flex min-w-[160px] max-w-[220px] shrink-0 flex-col rounded-control border p-3 text-left transition-colors",
+              "flex min-w-[160px] max-w-[220px] shrink-0 flex-col rounded-lg border p-3 text-left transition-colors",
               selectedId === address.id
                 ? "border-primary bg-primary/10"
                 : "border-card-border hover:border-card-border-hover",

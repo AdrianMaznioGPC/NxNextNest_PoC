@@ -53,7 +53,7 @@ function ChoiceCardItemWrapper({
   return (
     <label
       className={clsx(
-        "flex cursor-pointer items-center gap-3 rounded-control border p-4 transition-colors",
+        "flex cursor-pointer items-center gap-3 rounded-lg border p-4 transition-colors",
         isSelected
           ? "border-primary bg-primary/10"
           : "border-card-border hover:border-card-border-hover",
