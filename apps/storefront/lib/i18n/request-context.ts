@@ -7,7 +7,7 @@ export const DEFAULT_LOCALE_CONTEXT: LocaleContext = {
   region: "US",
   currency: "USD",
   market: "US",
-  domain: "storefront.example.com",
+  domain: "winparts.ie.localhost",
 };
 
 export const DEFAULT_STORE_CONTEXT: StoreContext = {
@@ -117,13 +117,10 @@ export async function getRequestStoreContext(): Promise<StoreContext> {
   return DEFAULT_STORE_CONTEXT;
 }
 
-function normalizeLanguage(input?: string): LocaleContext["language"] | undefined {
-  if (
-    input === "en" ||
-    input === "es" ||
-    input === "nl" ||
-    input === "fr"
-  ) {
+function normalizeLanguage(
+  input?: string,
+): LocaleContext["language"] | undefined {
+  if (input === "en" || input === "es" || input === "nl" || input === "fr") {
     return input;
   }
   return undefined;

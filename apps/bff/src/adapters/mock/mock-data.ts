@@ -663,7 +663,7 @@ export const defaultLocaleContext: LocaleContext = {
   region: "US",
   currency: "USD",
   market: "US",
-  domain: "storefront.example.com",
+  domain: "winparts.ie.localhost",
 };
 
 export const domainConfig: DomainConfigModel = {
@@ -673,7 +673,7 @@ export const domainConfig: DomainConfigModel = {
   defaultDomain: defaultLocaleContext.domain,
   domains: [
     {
-      host: "storefront.example.com",
+      host: "winparts.ie.localhost",
       canonical: true,
       storeKey: "store-a",
       experienceProfileId: "exp-store-a-v1",
@@ -691,7 +691,7 @@ export const domainConfig: DomainConfigModel = {
       ...defaultLocaleContext,
     },
     {
-      host: "storefront.es.example.com",
+      host: "winparts.es.localhost",
       canonical: true,
       storeKey: "store-b",
       experienceProfileId: "exp-store-b-v1",
@@ -711,10 +711,10 @@ export const domainConfig: DomainConfigModel = {
       region: "ES",
       currency: "EUR",
       market: "ES",
-      domain: "storefront.es.example.com",
+      domain: "winparts.es.localhost",
     },
     {
-      host: "storefront.nl.example.com",
+      host: "winparts.nl.localhost",
       canonical: true,
       storeKey: "store-c",
       experienceProfileId: "exp-store-c-v1",
@@ -734,21 +734,21 @@ export const domainConfig: DomainConfigModel = {
       region: "NL",
       currency: "EUR",
       market: "NL",
-      domain: "storefront.nl.example.com",
+      domain: "winparts.nl.localhost",
     },
   ],
   aliases: [
     {
-      host: "www.storefront.example.com",
-      canonicalHost: "storefront.example.com",
+      host: "www.winparts.ie.localhost",
+      canonicalHost: "winparts.ie.localhost",
     },
     {
-      host: "www.storefront.nl.example.com",
-      canonicalHost: "storefront.nl.example.com",
+      host: "www.winparts.nl.localhost",
+      canonicalHost: "winparts.nl.localhost",
     },
     {
-      host: "www.storefront.es.example.com",
-      canonicalHost: "storefront.es.example.com",
+      host: "www.winparts.es.localhost",
+      canonicalHost: "winparts.es.localhost",
     },
   ],
 };

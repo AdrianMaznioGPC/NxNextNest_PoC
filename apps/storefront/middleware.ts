@@ -31,10 +31,7 @@ const LOCALE_BY_LANGUAGE: Record<LanguageCode, string> = {
   fr: "fr-FR",
 };
 
-const STATIC_SEGMENT_BY_LANGUAGE: Record<
-  LanguageCode,
-  { cart: string }
-> = {
+const STATIC_SEGMENT_BY_LANGUAGE: Record<LanguageCode, { cart: string }> = {
   en: { cart: "cart" },
   es: { cart: "carrito" },
   nl: { cart: "winkelwagen" },
@@ -52,7 +49,8 @@ export async function middleware(request: NextRequest) {
   if (host.startsWith("localhost") || host.startsWith("127.0.0.1")) {
     const localPrefix = extractLanguagePrefix(request.nextUrl.pathname);
     const language =
-      localPrefix.languagePrefix && SUPPORTED_LANGUAGES.includes(localPrefix.languagePrefix)
+      localPrefix.languagePrefix &&
+      SUPPORTED_LANGUAGES.includes(localPrefix.languagePrefix)
         ? localPrefix.languagePrefix
         : "en";
     const localRegion = "US";
@@ -107,7 +105,8 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname,
   );
   const language =
-    languagePrefix && resolved.storeContext.supportedLanguages.includes(languagePrefix)
+    languagePrefix &&
+    resolved.storeContext.supportedLanguages.includes(languagePrefix)
       ? languagePrefix
       : resolved.storeContext.defaultLanguage;
   const languageSource = languagePrefix ? "prefix" : "default";
@@ -120,10 +119,16 @@ export async function middleware(request: NextRequest) {
   const storeContext: StoreContext = {
     ...resolved.storeContext,
     language,
-    cartPath: buildLocalizedCartPath(language, resolved.storeContext.defaultLanguage),
+    cartPath: buildLocalizedCartPath(
+      language,
+      resolved.storeContext.defaultLanguage,
+    ),
   };
 
-  if (languagePrefix && languagePrefix === resolved.storeContext.defaultLanguage) {
+  if (
+    languagePrefix &&
+    languagePrefix === resolved.storeContext.defaultLanguage
+  ) {
     const url = request.nextUrl.clone();
     url.pathname = strippedPath;
     return NextResponse.redirect(url, 301);
@@ -203,10 +208,10 @@ async function getDomainConfig() {
     version: "fallback",
     updatedAt: new Date().toISOString(),
     maxAgeSeconds: 60,
-    defaultDomain: "storefront.example.com",
+    defaultDomain: "winparts.ie.localhost",
     domains: [
       {
-        host: "storefront.example.com",
+        host: "winparts.ie.localhost",
         locale: "en-US",
         language: "en",
         region: "US",
@@ -215,7 +220,7 @@ async function getDomainConfig() {
         supportedLanguages: SUPPORTED_LANGUAGES,
         currency: "USD",
         market: "US",
-        domain: "storefront.example.com",
+        domain: "winparts.ie.localhost",
         canonical: true,
         storeKey: "store-a",
         experienceProfileId: "exp-store-a-v1",
@@ -237,7 +242,7 @@ async function refreshDomainConfig() {
   if (configCache.etag) {
     headers["If-None-Match"] = configCache.etag;
   }
-  
+
   const response = await fetch(`${BFF_URL}/i18n/domain-config`, {
     headers,
   });

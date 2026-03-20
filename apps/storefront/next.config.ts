@@ -1,10 +1,11 @@
 export default {
   allowedDevOrigins: [
-    "storefront.example.com",
-    "storefront.es.example.com",
-    "storefront.nl.example.com",
-    "www.storefront.example.com",
-    "www.storefront.nl.example.com",
+    "winparts.ie.localhost",
+    "winparts.es.localhost",
+    "winparts.nl.localhost",
+    "www.winparts.ie.localhost",
+    "www.winparts.es.localhost",
+    "www.winparts.nl.localhost",
   ],
 
   experimental: {
