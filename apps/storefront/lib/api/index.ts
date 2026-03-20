@@ -470,9 +470,9 @@ export async function updateCart(
 // -- Checkout ----------------------------------------------------------------
 
 export async function getCheckoutConfig(
-  storeKey?: string,
+  localeContext?: Partial<LocaleContext>,
 ): Promise<CheckoutConfig> {
-  return bffFetch(`/checkout/config${qs({ storeKey })}`, {
+  return bffFetch(`/checkout/config${qs(localeQuery(localeContext))}`, {
     cache: "no-store",
     headers: await cookieHeader(),
   });
