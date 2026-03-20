@@ -143,6 +143,7 @@ export async function getCategoryPageData(
   sort?: string,
   page?: number,
   pageSize?: number,
+  filters?: Record<string, string[]>,
 ): Promise<CategoryPageData> {
   "use cache";
   cacheTag(TAGS.collections, TAGS.products);
@@ -154,6 +155,10 @@ export async function getCategoryPageData(
       sort,
       page: page?.toString(),
       pageSize: pageSize?.toString(),
+      filters:
+        filters && Object.keys(filters).length > 0
+          ? JSON.stringify(filters)
+          : undefined,
     })}`,
   );
 }
@@ -176,11 +181,13 @@ export async function getSearchPageData(
     sort,
     page,
     pageSize,
+    filters,
   }: {
     query?: string;
     sort?: string;
     page?: number;
     pageSize?: number;
+    filters?: Record<string, string[]>;
   },
 ): Promise<SearchPageData> {
   "use cache";
@@ -194,6 +201,10 @@ export async function getSearchPageData(
       sort,
       page: page?.toString(),
       pageSize: pageSize?.toString(),
+      filters:
+        filters && Object.keys(filters).length > 0
+          ? JSON.stringify(filters)
+          : undefined,
     })}`,
   );
 }

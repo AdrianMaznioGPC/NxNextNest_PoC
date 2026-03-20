@@ -47,8 +47,15 @@ export class PageDataService {
     sort?: string,
     page?: number,
     pageSize?: number,
+    filters?: Record<string, string[]>,
   ): Promise<CategoryPageData | undefined> {
-    return this.catalogDomain.getCategoryPage(categoryId, sort, page, pageSize);
+    return this.catalogDomain.getCategoryPage(
+      categoryId,
+      sort,
+      page,
+      pageSize,
+      filters,
+    );
   }
 
   getProductPage(productId: string): Promise<ProductPageData | undefined> {
@@ -58,6 +65,7 @@ export class PageDataService {
   async getSearchPage(params: {
     query?: string;
     sort?: string;
+    filters?: Record<string, string[]>;
     page?: number;
     pageSize?: number;
   }): Promise<SearchPageData> {
@@ -67,6 +75,8 @@ export class PageDataService {
       products: result.products,
       sortOptions: result.sortOptions,
       pagination: result.pagination,
+      filters: result.filters,
+      activeFilters: params.filters,
     };
   }
 

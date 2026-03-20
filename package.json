@@ -7,6 +7,7 @@
   ],
   "scripts": {
     "dev": "nx run-many -t dev",
+    "dev:frontend": "nx run-many -t dev -p storefront bff",
     "dev:storefront": "nx dev storefront",
     "dev:bff": "nx dev bff",
     "dev:api": "nx dev api",

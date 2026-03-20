@@ -1,6 +1,7 @@
 import type {
   BaseProduct,
   Breadcrumb,
+  ListingProduct,
   Product,
   ProductPageData,
   SitemapEntry,
@@ -12,6 +13,7 @@ import {
 } from "../../ports/availability.port";
 import { PRICING_PORT, type PricingPort } from "../../ports/pricing.port";
 import { PRODUCT_PORT, type ProductPort } from "../../ports/product.port";
+import { flattenToListingProducts } from "./listing-product.mapper";
 import { mapToProduct } from "./product-enrichment";
 
 @Injectable()
@@ -50,9 +52,10 @@ export class ProductDomainService {
     return this.enrichBatch(bases);
   }
 
-  async getRecommendations(productId: string): Promise<Product[]> {
+  async getRecommendations(productId: string): Promise<ListingProduct[]> {
     const bases = await this.products.getProductRecommendations(productId);
-    return this.enrichBatch(bases);
+    const enriched = await this.enrichBatch(bases);
+    return flattenToListingProducts(enriched);
   }
 
   async getProductPage(

@@ -1,3 +1,4 @@
+import type { ListingProduct } from "lib/types";
 import { ReadonlyURLSearchParams } from "next/navigation";
 
 export const baseUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
@@ -6,6 +7,21 @@ export const baseUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
 
 export function productUrl(product: { handle: string; id: string }): string {
   return `/product/${product.handle}/p/${product.id}`;
+}
+
+/**
+ * Builds a PDP URL for a listing product with the variant pre-selected
+ * via query params (e.g. `/product/brake-pads/p/p-1?axle=Front`).
+ */
+export function listingProductUrl(item: ListingProduct): string {
+  const base = `/product/${item.productHandle}/p/${item.productId}`;
+  if (!item.selectedOptions?.length) return base;
+  const params = new URLSearchParams();
+  for (const opt of item.selectedOptions) {
+    params.set(opt.name.toLowerCase(), opt.value);
+  }
+  const qs = params.toString();
+  return qs ? `${base}?${qs}` : base;
 }
 
 export function categoryUrl(collection: {

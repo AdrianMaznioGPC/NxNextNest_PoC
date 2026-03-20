@@ -1,9 +1,10 @@
-import Grid from "components/grid";
 import Breadcrumbs from "components/layout/breadcrumbs";
 import CategoryCard from "components/layout/category-card";
+import CategoryHeader from "components/layout/category-header";
+import FilterSidebar from "components/layout/filter-sidebar";
 import Pagination from "components/layout/pagination";
-import ProductGridItems from "components/layout/product-grid-items";
-import FilterList from "components/layout/search/filter";
+import type { ViewMode } from "components/layout/view-toggle";
+import ProductListing from "components/product/product-listing";
 import { getCategoryPageData, getStoreCode } from "lib/api";
 import { categoryUrl } from "lib/utils";
 import type { Metadata } from "next";
@@ -55,16 +56,40 @@ export default async function CategoryPage(props: Props) {
   if (!parsed) return notFound();
 
   const searchParams = await props.searchParams;
-  const { sort, page: pageParam } = (searchParams ?? {}) as {
+  const {
+    sort,
+    page: pageParam,
+    filters: filtersParam,
+    view: viewParam,
+  } = (searchParams ?? {}) as {
     [key: string]: string;
   };
+
+  const view: ViewMode = viewParam === "list" ? "list" : "grid";
 
   const storeCode = await getStoreCode();
   const page = pageParam ? parseInt(pageParam, 10) : undefined;
 
+  // Parse filters from URL
+  let activeFilters: Record<string, string[]> | undefined;
+  if (filtersParam) {
+    try {
+      activeFilters = JSON.parse(filtersParam);
+    } catch {
+      /* ignore malformed */
+    }
+  }
+
   let data;
   try {
-    data = await getCategoryPageData(storeCode, parsed.categoryId, sort, page);
+    data = await getCategoryPageData(
+      storeCode,
+      parsed.categoryId,
+      sort,
+      page,
+      undefined,
+      activeFilters,
+    );
   } catch {
     return notFound();
   }
@@ -77,11 +102,13 @@ export default async function CategoryPage(props: Props) {
     products,
     sortOptions,
     pagination,
+    filters,
   } = data;
 
   const tBreadcrumbs = await getTranslations("breadcrumbs");
   const tCategories = await getTranslations("categories");
   const tSearch = await getTranslations("search");
+  const tFilters = await getTranslations("filters");
   const allBreadcrumbs = [
     { title: tBreadcrumbs("home"), path: "/" },
     { title: tBreadcrumbs("categories"), path: "/categories" },
@@ -111,36 +138,53 @@ export default async function CategoryPage(props: Props) {
     );
   }
 
+  const productCountLabel = tCategories("productCount", {
+    count: pagination?.totalResults ?? products?.length ?? 0,
+  });
+
   return (
     <>
       <Breadcrumbs items={allBreadcrumbs} />
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-black dark:text-white">
-          {collection.title}
-        </h1>
-        <div className="w-[200px]">
-          {sortOptions && (
-            <FilterList list={sortOptions} title={tSearch("sortBy")} />
+
+      <CategoryHeader
+        title={collection.title}
+        description={collection.description}
+        pagination={pagination}
+        sortOptions={sortOptions}
+        filters={filters}
+        activeFilters={activeFilters}
+        sortLabel={tSearch("sortBy")}
+        filterLabel={tFilters("title")}
+        productCountLabel={productCountLabel}
+        view={view}
+      />
+
+      <div className="flex gap-8">
+        {/* Sidebar — desktop only */}
+        {filters && filters.length > 0 && (
+          <div className="hidden w-[240px] shrink-0 lg:block">
+            <Suspense fallback={null}>
+              <FilterSidebar filters={filters} activeFilters={activeFilters} />
+            </Suspense>
+          </div>
+        )}
+
+        {/* Product grid */}
+        <div className="min-w-0 flex-1">
+          {!products || products.length === 0 ? (
+            <p className="py-3 text-lg">{tCategories("noProducts")}</p>
+          ) : (
+            <>
+              <ProductListing products={products} view={view} />
+              {pagination && (
+                <Suspense fallback={null}>
+                  <Pagination pagination={pagination} />
+                </Suspense>
+              )}
+            </>
           )}
         </div>
       </div>
-      <p className="mt-2 mb-8 text-neutral-500 dark:text-neutral-400">
-        {collection.description}
-      </p>
-      {!products || products.length === 0 ? (
-        <p className="py-3 text-lg">{tCategories("noProducts")}</p>
-      ) : (
-        <>
-          <Grid className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-            <ProductGridItems products={products} />
-          </Grid>
-          {pagination && (
-            <Suspense fallback={null}>
-              <Pagination pagination={pagination} />
-            </Suspense>
-          )}
-        </>
-      )}
     </>
   );
 }

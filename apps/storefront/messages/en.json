@@ -33,7 +33,13 @@
     "allCategories": "All Categories",
     "allCategoriesDescription": "Browse all product categories.",
     "noProducts": "No products found in this category",
+    "productCount": "{count} {count, plural, one {product} other {products}}",
     "subcategoryCount": "{count} {count, plural, one {subcategory} other {subcategories}}"
+  },
+  "filters": {
+    "title": "Filters",
+    "clear": "Clear all",
+    "apply": "Apply"
   },
   "product": {
     "relatedProducts": "Related Products",

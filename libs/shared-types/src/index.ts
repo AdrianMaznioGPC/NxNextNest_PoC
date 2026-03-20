@@ -125,6 +125,33 @@ export type ProductOption = {
   values: string[];
 };
 
+/**
+ * A flattened, variant-level product item for listing pages.
+ * Each listing item represents a single buyable SKU. Clicking it
+ * links to the parent product's PDP with the variant pre-selected.
+ */
+export type ListingProduct = {
+  /** The variant ID (merchandiseId for add-to-cart). */
+  variantId: string;
+  /** The variant display title, e.g. "Front" or "15mm". */
+  variantTitle: string;
+  /** The selected option values for this variant (used to build PDP query params). */
+  selectedOptions: { name: string; value: string }[];
+  /** Variant-level price. */
+  price?: Money;
+  /** Variant-level stock / purchasability. */
+  purchasable: boolean;
+  stockStatus: string;
+  stockMessage: string;
+  /** Parent product fields for display and linking. */
+  productId: string;
+  productHandle: string;
+  productTitle: string;
+  description: string;
+  featuredImage: Image;
+  updatedAt: string;
+};
+
 export type SEO = {
   title: string;
   description: string;
@@ -152,12 +179,12 @@ export type HeroBannerBlock = CmsBlockBase<"hero-banner"> & {
 
 export type FeaturedProductsBlock = CmsBlockBase<"featured-products"> & {
   heading: string;
-  products: Product[];
+  products: ListingProduct[];
 };
 
 export type ProductCarouselBlock = CmsBlockBase<"product-carousel"> & {
   heading: string;
-  products: Product[];
+  products: ListingProduct[];
 };
 
 export type RichTextBlock = CmsBlockBase<"rich-text"> & {
@@ -243,21 +270,36 @@ export type CategoryListPageData = {
   collections: Collection[];
 };
 
+export type FilterValue = {
+  value: string;
+  label: string;
+  count: number;
+};
+
+export type FilterDefinition = {
+  key: string;
+  label: string;
+  type: "checkbox" | "range";
+  values: FilterValue[];
+};
+
 export type CategoryPageData = {
   collection: Collection;
   canonicalSlug: string;
   breadcrumbs: Breadcrumb[];
   subcollections?: Collection[];
-  products?: Product[];
+  products?: ListingProduct[];
   sortOptions?: SortOption[];
   pagination?: PaginationMeta;
+  filters?: FilterDefinition[];
+  activeFilters?: Record<string, string[]>;
 };
 
 export type ProductPageData = {
   product: Product;
   canonicalSlug: string;
   breadcrumbs: Breadcrumb[];
-  recommendations: Product[];
+  recommendations: ListingProduct[];
 };
 
 export type PaginationMeta = {
@@ -275,9 +317,11 @@ export type SortOption = {
 
 export type SearchPageData = {
   query: string;
-  products: Product[];
+  products: ListingProduct[];
   sortOptions: SortOption[];
   pagination: PaginationMeta;
+  filters?: FilterDefinition[];
+  activeFilters?: Record<string, string[]>;
 };
 
 export type GlobalLayoutData = {

@@ -159,6 +159,18 @@ const frPages: CmsRawPage[] = [
         collectionHandle: "hidden-homepage-carousel",
       },
       {
+        type: "featured-category",
+        id: "block-6",
+        heading: "Acheter par cat\u00e9gorie",
+        collectionHandles: [
+          "cat-brakes",
+          "cat-engine",
+          "cat-suspension",
+          "cat-lighting",
+          "cat-exhaust",
+        ],
+      },
+      {
         type: "cms-banner",
         id: "block-4",
         heading: "Livraison gratuite d\u00e8s 99\u20ac",
@@ -185,18 +197,6 @@ const frPages: CmsRawPage[] = [
             ctaUrl: "/categories/echappement/c/cat-exhaust",
             image: sharedImages.exhaustGrid,
           },
-        ],
-      },
-      {
-        type: "featured-category",
-        id: "block-6",
-        heading: "Acheter par cat\u00e9gorie",
-        collectionHandles: [
-          "cat-brakes",
-          "cat-engine",
-          "cat-suspension",
-          "cat-lighting",
-          "cat-exhaust",
         ],
       },
       {
@@ -281,6 +281,18 @@ const iePages: CmsRawPage[] = [
         collectionHandle: "hidden-homepage-carousel",
       },
       {
+        type: "featured-category",
+        id: "block-6",
+        heading: "Shop by Category",
+        collectionHandles: [
+          "cat-brakes",
+          "cat-engine",
+          "cat-suspension",
+          "cat-lighting",
+          "cat-exhaust",
+        ],
+      },
+      {
         type: "cms-banner",
         id: "block-4",
         heading: "Free Shipping on Orders Over \u20ac99",
@@ -306,18 +318,6 @@ const iePages: CmsRawPage[] = [
             ctaUrl: "/categories/exhaust/c/cat-exhaust",
             image: sharedImages.exhaustGrid,
           },
-        ],
-      },
-      {
-        type: "featured-category",
-        id: "block-6",
-        heading: "Shop by Category",
-        collectionHandles: [
-          "cat-brakes",
-          "cat-engine",
-          "cat-suspension",
-          "cat-lighting",
-          "cat-exhaust",
         ],
       },
       {

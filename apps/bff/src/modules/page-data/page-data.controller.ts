@@ -51,12 +51,24 @@ export class PageDataController {
     @Query("sort") sort?: string,
     @Query("page") page?: string,
     @Query("pageSize") pageSize?: string,
+    @Query("filters") filtersParam?: string,
   ): Promise<CategoryPageData> {
+    // Filters arrive as a JSON-encoded string: {"axle":["Front"],"stock":["in_stock"]}
+    let filters: Record<string, string[]> | undefined;
+    if (filtersParam) {
+      try {
+        filters = JSON.parse(filtersParam);
+      } catch {
+        // ignore malformed filter param
+      }
+    }
+
     const data = await this.pageData.getCategoryPage(
       id,
       sort,
       page ? parseInt(page, 10) : undefined,
       pageSize ? parseInt(pageSize, 10) : undefined,
+      filters,
     );
     if (!data) throw new NotFoundException();
     return data;
@@ -78,10 +90,21 @@ export class PageDataController {
     @Query("sort") sort?: string,
     @Query("page") page?: string,
     @Query("pageSize") pageSize?: string,
+    @Query("filters") filtersParam?: string,
   ): Promise<SearchPageData> {
+    let filters: Record<string, string[]> | undefined;
+    if (filtersParam) {
+      try {
+        filters = JSON.parse(filtersParam);
+      } catch {
+        // ignore malformed
+      }
+    }
+
     return this.pageData.getSearchPage({
       query,
       sort,
+      filters,
       page: page ? parseInt(page, 10) : undefined,
       pageSize: pageSize ? parseInt(pageSize, 10) : undefined,
     });

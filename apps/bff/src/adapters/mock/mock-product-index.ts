@@ -1,12 +1,13 @@
-import type { Product } from "@commerce/shared-types";
+import type { ListingProduct, Product } from "@commerce/shared-types";
+import { flattenToListingProducts } from "../../modules/product/listing-product.mapper";
 import { mapToProduct } from "../../modules/product/product-enrichment";
 import type {
   MockAvailabilityRecord,
   MockVariantStockInfo,
 } from "./data/availability-data";
 import { availabilityByStore } from "./data/availability-data";
-import { pricingByStore } from "./data/pricing-data";
 import type { MockPricingRecord } from "./data/pricing-data";
+import { pricingByStore } from "./data/pricing-data";
 import { productsByStore } from "./data/product-data";
 
 /**
@@ -17,6 +18,7 @@ import { productsByStore } from "./data/product-data";
  * module load — no runtime port calls needed.
  */
 const indexByStore = new Map<string, Product[]>();
+const listingIndexByStore = new Map<string, ListingProduct[]>();
 
 function buildIndex(storeCode: string): Product[] {
   const bases = productsByStore[storeCode] ?? [];
@@ -50,9 +52,10 @@ function buildIndex(storeCode: string): Product[] {
             stockStatus: avail.stockStatus,
             stockMessage: avail.stockMessage,
             variantAvailability: new Map(
-              Object.entries(avail.variantAvailability).map(
-                ([k, v]) => [k, v as MockVariantStockInfo],
-              ),
+              Object.entries(avail.variantAvailability).map(([k, v]) => [
+                k,
+                v as MockVariantStockInfo,
+              ]),
             ),
           }
         : undefined,
@@ -67,6 +70,21 @@ export function getProductIndex(storeCode: string): Product[] {
   if (!index) {
     index = buildIndex(storeCode);
     indexByStore.set(storeCode, index);
+  }
+  return index;
+}
+
+/**
+ * Returns a variant-level listing index for a store.
+ * Each product is flattened so every variant is a separate ListingProduct.
+ * Lazy-built on first access.
+ */
+export function getListingIndex(storeCode: string): ListingProduct[] {
+  let index = listingIndexByStore.get(storeCode);
+  if (!index) {
+    const products = getProductIndex(storeCode);
+    index = flattenToListingProducts(products);
+    listingIndexByStore.set(storeCode, index);
   }
   return index;
 }

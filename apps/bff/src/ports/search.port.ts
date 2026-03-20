@@ -1,6 +1,7 @@
 import type {
+  FilterDefinition,
+  ListingProduct,
   PaginationMeta,
-  Product,
   SortOption,
 } from "@commerce/shared-types";
 
@@ -10,15 +11,17 @@ export type PaginationParams = {
 };
 
 export type SearchResult = {
-  products: Product[];
+  products: ListingProduct[];
   sortOptions: SortOption[];
   pagination: PaginationMeta;
+  filters: FilterDefinition[];
 };
 
 export interface SearchPort {
   search(params: {
     query?: string;
     sort?: string;
+    filters?: Record<string, string[]>;
     page?: number;
     pageSize?: number;
   }): Promise<SearchResult>;

@@ -39,6 +39,7 @@ export class CatalogDomainService {
     sort?: string,
     page?: number,
     pageSize?: number,
+    filters?: Record<string, string[]>,
   ): Promise<CategoryPageData | undefined> {
     const collection = await this.collections.getCollectionById(categoryId);
     if (!collection) return undefined;
@@ -60,6 +61,7 @@ export class CatalogDomainService {
     const result = await this.collections.getCollectionProducts({
       collectionId: collection.id,
       sort,
+      filters,
       page,
       pageSize,
     });
@@ -71,6 +73,8 @@ export class CatalogDomainService {
       products: result.products,
       sortOptions: result.sortOptions,
       pagination: result.pagination,
+      filters: result.filters,
+      activeFilters: filters,
     };
   }
 

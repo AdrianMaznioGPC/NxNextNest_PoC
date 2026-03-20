@@ -1,3 +1,4 @@
+import { flattenToListingProducts } from "../../../modules/product/listing-product.mapper";
 import type { CmsRawFeaturedProducts } from "../../../ports/cms.types";
 import type { BlockResolver } from "../block-resolver-registry";
 
@@ -12,6 +13,6 @@ export const featuredProductsResolver: BlockResolver<
     type: "featured-products" as const,
     id: raw.id,
     heading: raw.heading,
-    products,
+    products: flattenToListingProducts(products),
   };
 };

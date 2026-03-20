@@ -1,15 +1,14 @@
 import { Container } from "@commerce/ui";
-import { GridTileImage } from "components/grid/tile";
 import Breadcrumbs from "components/layout/breadcrumbs";
 import { Gallery } from "components/product/gallery";
 import { ProductDescription } from "components/product/product-description";
+import ProductRecommendations from "components/product/product-recommendations";
 import { getProductPageData, getStoreCode } from "lib/api";
 import { HIDDEN_PRODUCT_TAG } from "lib/constants";
-import type { Image, Product } from "lib/types";
+import type { Image } from "lib/types";
 import { productUrl } from "lib/utils";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 
@@ -130,54 +129,11 @@ export default async function ProductPage(props: Props) {
             </Suspense>
           </div>
         </div>
-        <RelatedProducts
+        <ProductRecommendations
           products={recommendations}
           heading={tProduct("relatedProducts")}
         />
       </Container>
     </>
-  );
-}
-
-function RelatedProducts({
-  products,
-  heading,
-}: {
-  products: Product[];
-  heading: string;
-}) {
-  if (!products.length) return null;
-
-  return (
-    <div className="py-8">
-      <h2 className="mb-4 text-2xl font-bold">{heading}</h2>
-      <ul className="flex w-full gap-4 overflow-x-auto pt-1">
-        {products.map((product) => (
-          <li
-            key={product.handle}
-            className="aspect-square w-full flex-none min-[475px]:w-1/2 sm:w-1/3 md:w-1/4 lg:w-1/5"
-          >
-            <Link
-              className="relative h-full w-full"
-              href={productUrl(product)}
-              prefetch={true}
-            >
-              <GridTileImage
-                alt={product.title}
-                label={{
-                  title: product.title,
-                  amount: product.priceRange.maxVariantPrice?.amount,
-                  currencyCode:
-                    product.priceRange.maxVariantPrice?.currencyCode,
-                }}
-                src={product.featuredImage?.url}
-                fill
-                sizes="(min-width: 1024px) 20vw, (min-width: 768px) 25vw, (min-width: 640px) 33vw, (min-width: 475px) 50vw, 100vw"
-              />
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </div>
   );
 }

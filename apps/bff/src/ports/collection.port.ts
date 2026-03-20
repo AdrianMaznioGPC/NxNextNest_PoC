@@ -1,15 +1,17 @@
 import type {
   Collection,
+  FilterDefinition,
+  ListingProduct,
   PaginationMeta,
-  Product,
   SortOption,
 } from "@commerce/shared-types";
 import type { PaginationParams } from "./search.port";
 
 export type CollectionProductsResult = {
-  products: Product[];
+  products: ListingProduct[];
   sortOptions: SortOption[];
   pagination: PaginationMeta;
+  filters: FilterDefinition[];
 };
 
 export interface CollectionPort {
@@ -27,6 +29,7 @@ export interface CollectionPort {
     params: {
       collectionId: string;
       sort?: string;
+      filters?: Record<string, string[]>;
     } & PaginationParams,
   ): Promise<CollectionProductsResult>;
 }

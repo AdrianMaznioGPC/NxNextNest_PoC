@@ -1,8 +1,12 @@
-import type { Product, SortOption } from "@commerce/shared-types";
+import type {
+  FilterDefinition,
+  ListingProduct,
+  SortOption,
+} from "@commerce/shared-types";
 import { Injectable } from "@nestjs/common";
 import type { SearchPort, SearchResult } from "../../ports/search.port";
 import { StoreContext } from "../../store";
-import { getProductIndex } from "./mock-product-index";
+import { getListingIndex } from "./mock-product-index";
 
 const DEFAULT_PAGE_SIZE = 20;
 
@@ -10,7 +14,7 @@ type SortDef = {
   slug: string;
   labels: Record<string, string>;
   isDefault?: boolean;
-  compare: (a: Product, b: Product) => number;
+  compare: (a: ListingProduct, b: ListingProduct) => number;
 };
 
 const SORT_DEFS: SortDef[] = [
@@ -35,22 +39,21 @@ const SORT_DEFS: SortDef[] = [
     slug: "price-asc",
     labels: { en: "Price: Low to high", fr: "Prix : croissant" },
     compare: (a, b) =>
-      parseFloat(a.priceRange.minVariantPrice?.amount ?? "0") -
-      parseFloat(b.priceRange.minVariantPrice?.amount ?? "0"),
+      parseFloat(a.price?.amount ?? "0") - parseFloat(b.price?.amount ?? "0"),
   },
   {
     slug: "price-desc",
     labels: { en: "Price: High to low", fr: "Prix : d\u00e9croissant" },
     compare: (a, b) =>
-      parseFloat(b.priceRange.minVariantPrice?.amount ?? "0") -
-      parseFloat(a.priceRange.minVariantPrice?.amount ?? "0"),
+      parseFloat(b.price?.amount ?? "0") - parseFloat(a.price?.amount ?? "0"),
   },
 ];
 
 /**
- * Mock search adapter that reads from a pre-enriched product index.
+ * Mock search adapter that reads from a pre-enriched listing index.
+ * Each product variant is a separate ListingProduct.
  * Simulates how a real search backend (e.g. Elasticsearch) would work:
- * products are indexed with pricing and availability baked in.
+ * variants are indexed with pricing and availability baked in.
  * No runtime calls to pricing or availability ports.
  */
 @Injectable()
@@ -64,19 +67,29 @@ export class MockSearchAdapter implements SearchPort {
   async search(params: {
     query?: string;
     sort?: string;
+    filters?: Record<string, string[]>;
     page?: number;
     pageSize?: number;
   }): Promise<SearchResult> {
-    let products = [...getProductIndex(this.storeCtx.storeCode)];
+    let products = [...getListingIndex(this.storeCtx.storeCode)];
 
     // Filter by query
     if (params.query) {
       const q = params.query.toLowerCase();
       products = products.filter(
         (p) =>
-          p.title.toLowerCase().includes(q) ||
-          p.description.toLowerCase().includes(q),
+          p.productTitle.toLowerCase().includes(q) ||
+          p.description.toLowerCase().includes(q) ||
+          p.variantTitle.toLowerCase().includes(q),
       );
+    }
+
+    // Build filters from the query-matched set (before facet filtering)
+    const filters = this.buildFilters(products);
+
+    // Apply active filters
+    if (params.filters && Object.keys(params.filters).length > 0) {
+      products = this.applyFilters(products, params.filters);
     }
 
     // Sort
@@ -104,6 +117,93 @@ export class MockSearchAdapter implements SearchPort {
       products: paginated,
       sortOptions,
       pagination: { page, pageSize, totalResults, totalPages },
+      filters,
     };
+  }
+
+  private buildFilters(products: ListingProduct[]): FilterDefinition[] {
+    const filters: FilterDefinition[] = [];
+
+    // Option-based filters (from variant selectedOptions)
+    const optionMap = new Map<string, Map<string, number>>();
+    for (const product of products) {
+      for (const option of product.selectedOptions) {
+        if (!optionMap.has(option.name)) {
+          optionMap.set(option.name, new Map());
+        }
+        const valueCounts = optionMap.get(option.name)!;
+        valueCounts.set(option.value, (valueCounts.get(option.value) ?? 0) + 1);
+      }
+    }
+
+    for (const [optionName, valueCounts] of optionMap) {
+      filters.push({
+        key: optionName.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+        label: optionName,
+        type: "checkbox",
+        values: [...valueCounts.entries()].map(([value, count]) => ({
+          value,
+          label: value,
+          count,
+        })),
+      });
+    }
+
+    // Stock status filter
+    const isFr = this.storeCtx.locale.startsWith("fr");
+    const stockCounts = new Map<string, number>();
+    for (const product of products) {
+      stockCounts.set(
+        product.stockStatus,
+        (stockCounts.get(product.stockStatus) ?? 0) + 1,
+      );
+    }
+    if (stockCounts.size > 1) {
+      const stockLabels: Record<string, string> = {
+        in_stock: isFr ? "En stock" : "In Stock",
+        low_stock: isFr ? "Stock faible" : "Low Stock",
+        out_of_stock: isFr ? "Rupture de stock" : "Out of Stock",
+        preorder: isFr ? "Pr\u00e9commande" : "Pre-order",
+      };
+      filters.push({
+        key: "stock",
+        label: isFr ? "Disponibilit\u00e9" : "Availability",
+        type: "checkbox",
+        values: [...stockCounts.entries()].map(([status, count]) => ({
+          value: status,
+          label: stockLabels[status] ?? status,
+          count,
+        })),
+      });
+    }
+
+    return filters;
+  }
+
+  private applyFilters(
+    products: ListingProduct[],
+    activeFilters: Record<string, string[]>,
+  ): ListingProduct[] {
+    return products.filter((product) => {
+      for (const [filterKey, selectedValues] of Object.entries(activeFilters)) {
+        if (!selectedValues || selectedValues.length === 0) continue;
+
+        if (filterKey === "stock") {
+          if (!selectedValues.includes(product.stockStatus)) return false;
+          continue;
+        }
+
+        // Match against variant selectedOptions
+        const matchesOption = product.selectedOptions.some((option) => {
+          const optionKey = option.name
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-");
+          if (optionKey !== filterKey) return false;
+          return selectedValues.includes(option.value);
+        });
+        if (!matchesOption) return false;
+      }
+      return true;
+    });
   }
 }

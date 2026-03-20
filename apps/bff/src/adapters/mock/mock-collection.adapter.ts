@@ -1,4 +1,9 @@
-import type { Collection, Product, SortOption } from "@commerce/shared-types";
+import type {
+  Collection,
+  FilterDefinition,
+  ListingProduct,
+  SortOption,
+} from "@commerce/shared-types";
 import { Injectable } from "@nestjs/common";
 import type {
   CollectionPort,
@@ -11,7 +16,7 @@ import {
   getAllCollectionsFlat,
 } from "./data/catalog-data";
 import { getStoreData } from "./data/store-data";
-import { getProductIndex } from "./mock-product-index";
+import { getListingIndex } from "./mock-product-index";
 
 const DEFAULT_PAGE_SIZE = 20;
 
@@ -19,7 +24,7 @@ type SortDef = {
   slug: string;
   labels: Record<string, string>;
   isDefault?: boolean;
-  compare: (a: Product, b: Product) => number;
+  compare: (a: ListingProduct, b: ListingProduct) => number;
 };
 
 const SORT_DEFS: SortDef[] = [
@@ -33,15 +38,13 @@ const SORT_DEFS: SortDef[] = [
     slug: "price-asc",
     labels: { en: "Price: Low to high", fr: "Prix : croissant" },
     compare: (a, b) =>
-      parseFloat(a.priceRange.minVariantPrice?.amount ?? "0") -
-      parseFloat(b.priceRange.minVariantPrice?.amount ?? "0"),
+      parseFloat(a.price?.amount ?? "0") - parseFloat(b.price?.amount ?? "0"),
   },
   {
     slug: "price-desc",
     labels: { en: "Price: High to low", fr: "Prix : d\u00e9croissant" },
     compare: (a, b) =>
-      parseFloat(b.priceRange.minVariantPrice?.amount ?? "0") -
-      parseFloat(a.priceRange.minVariantPrice?.amount ?? "0"),
+      parseFloat(b.price?.amount ?? "0") - parseFloat(a.price?.amount ?? "0"),
   },
   {
     slug: "latest-desc",
@@ -52,10 +55,10 @@ const SORT_DEFS: SortDef[] = [
 ];
 
 /**
- * Mock collection adapter that reads from a pre-enriched product index
- * for product listings. Simulates how a real catalog backend would work:
- * products in a collection are pre-indexed with pricing and availability.
- * No runtime calls to pricing or availability ports.
+ * Mock collection adapter that reads from a pre-enriched listing index
+ * for product listings. Each product variant is a separate ListingProduct.
+ * Simulates how a real catalog backend would work: variants are pre-indexed
+ * with pricing and availability. No runtime calls to pricing or availability ports.
  */
 @Injectable()
 export class MockCollectionAdapter implements CollectionPort {
@@ -102,14 +105,23 @@ export class MockCollectionAdapter implements CollectionPort {
   async getCollectionProducts(params: {
     collectionId: string;
     sort?: string;
+    filters?: Record<string, string[]>;
     page?: number;
     pageSize?: number;
   }): Promise<CollectionProductsResult> {
     const productIds = new Set(collectionProductMap[params.collectionId] ?? []);
-    const index = getProductIndex(this.storeCtx.storeCode);
+    const index = getListingIndex(this.storeCtx.storeCode);
 
-    // Look up pre-enriched products from the index
-    let products = index.filter((p) => productIds.has(p.id));
+    // Look up pre-enriched listing products (variant-level) from the index
+    let products = index.filter((p) => productIds.has(p.productId));
+
+    // Build filters from the full (pre-filter) product set
+    const filters = this.buildFilters(products);
+
+    // Apply active filters
+    if (params.filters && Object.keys(params.filters).length > 0) {
+      products = this.applyFilters(products, params.filters);
+    }
 
     // Sort
     const sortDef = SORT_DEFS.find((d) => d.slug === params.sort);
@@ -137,6 +149,112 @@ export class MockCollectionAdapter implements CollectionPort {
       products: paginated,
       sortOptions,
       pagination: { page, pageSize, totalResults, totalPages },
+      filters,
     };
+  }
+
+  /**
+   * Build filter definitions from the listing product set.
+   * Generates a checkbox filter for each variant option (e.g. "Axle", "Size")
+   * and one for stock status.
+   */
+  private buildFilters(products: ListingProduct[]): FilterDefinition[] {
+    const filters: FilterDefinition[] = [];
+
+    // Option-based filters (from variant selectedOptions)
+    const optionMap = new Map<string, Map<string, number>>();
+    for (const product of products) {
+      for (const option of product.selectedOptions) {
+        if (!optionMap.has(option.name)) {
+          optionMap.set(option.name, new Map());
+        }
+        const valueCounts = optionMap.get(option.name)!;
+        valueCounts.set(option.value, (valueCounts.get(option.value) ?? 0) + 1);
+      }
+    }
+
+    for (const [optionName, valueCounts] of optionMap) {
+      filters.push({
+        key: optionName.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+        label: optionName,
+        type: "checkbox",
+        values: [...valueCounts.entries()].map(([value, count]) => ({
+          value,
+          label: value,
+          count,
+        })),
+      });
+    }
+
+    // Stock status filter
+    const stockCounts = new Map<string, number>();
+    for (const product of products) {
+      const status = product.stockStatus;
+      stockCounts.set(status, (stockCounts.get(status) ?? 0) + 1);
+    }
+    if (stockCounts.size > 1) {
+      filters.push({
+        key: "stock",
+        label: this.storeCtx.locale.startsWith("fr")
+          ? "Disponibilit\u00e9"
+          : "Availability",
+        type: "checkbox",
+        values: [...stockCounts.entries()].map(([status, count]) => ({
+          value: status,
+          label: this.formatStockLabel(status),
+          count,
+        })),
+      });
+    }
+
+    return filters;
+  }
+
+  private formatStockLabel(status: string): string {
+    const isFr = this.storeCtx.locale.startsWith("fr");
+    switch (status) {
+      case "in_stock":
+        return isFr ? "En stock" : "In Stock";
+      case "low_stock":
+        return isFr ? "Stock faible" : "Low Stock";
+      case "out_of_stock":
+        return isFr ? "Rupture de stock" : "Out of Stock";
+      case "preorder":
+        return isFr ? "Pr\u00e9commande" : "Pre-order";
+      default:
+        return status;
+    }
+  }
+
+  /**
+   * Apply filter selections to listing products.
+   * Each filter key maps to an option name — listing product must have
+   * a matching selectedOption value to pass.
+   */
+  private applyFilters(
+    products: ListingProduct[],
+    activeFilters: Record<string, string[]>,
+  ): ListingProduct[] {
+    return products.filter((product) => {
+      for (const [filterKey, selectedValues] of Object.entries(activeFilters)) {
+        if (!selectedValues || selectedValues.length === 0) continue;
+
+        if (filterKey === "stock") {
+          if (!selectedValues.includes(product.stockStatus)) return false;
+          continue;
+        }
+
+        // Match against variant selectedOptions
+        const matchesOption = product.selectedOptions.some((option) => {
+          const optionKey = option.name
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-");
+          if (optionKey !== filterKey) return false;
+          return selectedValues.includes(option.value);
+        });
+        if (!matchesOption) return false;
+      }
+      return true;
+    });
   }
 }
