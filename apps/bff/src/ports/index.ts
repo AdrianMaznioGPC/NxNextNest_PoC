@@ -1,11 +1,17 @@
 export { CART_PORT } from "./cart.port";
 export type { CartPort } from "./cart.port";
+export { CHECKOUT_PORT } from "./checkout.port";
+export type { CheckoutPort } from "./checkout.port";
 export { CMS_PORT } from "./cms.port";
 export type { CmsPort } from "./cms.port";
 export { COLLECTION_PORT } from "./collection.port";
 export type { CollectionPort } from "./collection.port";
+export { CUSTOMER_PORT } from "./customer.port";
+export type { CustomerPort } from "./customer.port";
 export { MENU_PORT } from "./menu.port";
 export type { MenuPort } from "./menu.port";
+export { ORDER_PORT } from "./order.port";
+export type { OrderPort } from "./order.port";
 export { PAGE_PORT } from "./page.port";
 export type { PagePort } from "./page.port";
 export { PRODUCT_PORT } from "./product.port";

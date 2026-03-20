@@ -1,18 +1,23 @@
 import { TAGS } from "lib/constants";
 import type {
   Cart,
+  CheckoutConfig,
   Collection,
   DomainConfigModel,
   GlobalLayoutData,
+  I18nMessagesModel,
   LocaleContext,
   Menu,
+  OrderConfirmation,
   Page,
   PageBootstrapModel,
+  PlaceOrderRequest,
   Product,
-  SwitchUrlRequest,
-  SwitchUrlResponse,
+  SavedAddress,
   SlotPayloadModel,
   SlotReference,
+  SwitchUrlRequest,
+  SwitchUrlResponse,
 } from "lib/types";
 import {
   unstable_cacheLife as cacheLife,
@@ -87,15 +92,18 @@ function languageScopedTag(
 
 // -- Products ----------------------------------------------------------------
 
-export async function getProducts({
-  query,
-  reverse,
-  sortKey,
-}: {
-  query?: string;
-  reverse?: boolean;
-  sortKey?: string;
-}, localeContext?: Partial<LocaleContext>): Promise<Product[]> {
+export async function getProducts(
+  {
+    query,
+    reverse,
+    sortKey,
+  }: {
+    query?: string;
+    reverse?: boolean;
+    sortKey?: string;
+  },
+  localeContext?: Partial<LocaleContext>,
+): Promise<Product[]> {
   "use cache";
   cacheTag(TAGS.products);
   const productsLanguageTag = languageScopedTag("products", localeContext);
@@ -148,7 +156,10 @@ export async function getCollections(
 ): Promise<Collection[]> {
   "use cache";
   cacheTag(TAGS.collections);
-  const collectionsLanguageTag = languageScopedTag("collections", localeContext);
+  const collectionsLanguageTag = languageScopedTag(
+    "collections",
+    localeContext,
+  );
   if (collectionsLanguageTag) {
     cacheTag(collectionsLanguageTag);
   }
@@ -163,7 +174,10 @@ export async function getCollection(
 ): Promise<Collection | undefined> {
   "use cache";
   cacheTag(TAGS.collections);
-  const collectionsLanguageTag = languageScopedTag("collections", localeContext);
+  const collectionsLanguageTag = languageScopedTag(
+    "collections",
+    localeContext,
+  );
   if (collectionsLanguageTag) {
     cacheTag(collectionsLanguageTag);
   }
@@ -178,7 +192,10 @@ export async function getCollectionByPath(
 ): Promise<Collection | undefined> {
   "use cache";
   cacheTag(TAGS.collections);
-  const collectionsLanguageTag = languageScopedTag("collections", localeContext);
+  const collectionsLanguageTag = languageScopedTag(
+    "collections",
+    localeContext,
+  );
   if (collectionsLanguageTag) {
     cacheTag(collectionsLanguageTag);
   }
@@ -189,18 +206,24 @@ export async function getCollectionByPath(
   );
 }
 
-export async function getCollectionProducts({
-  collection,
-  reverse,
-  sortKey,
-}: {
-  collection: string;
-  reverse?: boolean;
-  sortKey?: string;
-}, localeContext?: Partial<LocaleContext>): Promise<Product[]> {
+export async function getCollectionProducts(
+  {
+    collection,
+    reverse,
+    sortKey,
+  }: {
+    collection: string;
+    reverse?: boolean;
+    sortKey?: string;
+  },
+  localeContext?: Partial<LocaleContext>,
+): Promise<Product[]> {
   "use cache";
   cacheTag(TAGS.collections, TAGS.products);
-  const collectionsLanguageTag = languageScopedTag("collections", localeContext);
+  const collectionsLanguageTag = languageScopedTag(
+    "collections",
+    localeContext,
+  );
   const productsLanguageTag = languageScopedTag("products", localeContext);
   if (collectionsLanguageTag && productsLanguageTag) {
     cacheTag(collectionsLanguageTag, productsLanguageTag);
@@ -276,7 +299,10 @@ export async function getLayoutData(
 ): Promise<GlobalLayoutData> {
   "use cache";
   cacheTag(TAGS.collections);
-  const collectionsLanguageTag = languageScopedTag("collections", localeContext);
+  const collectionsLanguageTag = languageScopedTag(
+    "collections",
+    localeContext,
+  );
   const menusLanguageTag = languageScopedTag("menus", localeContext);
   if (collectionsLanguageTag && menusLanguageTag) {
     cacheTag(collectionsLanguageTag, menusLanguageTag);
@@ -372,6 +398,17 @@ export async function resolveSwitchUrl(
   });
 }
 
+// -- I18n (direct) -----------------------------------------------------------
+
+export async function getMessages(
+  locale: string,
+  namespaces: string[],
+): Promise<I18nMessagesModel> {
+  return bffFetch(
+    `/i18n/messages${qs({ locale, namespaces: namespaces.join(",") })}`,
+  );
+}
+
 // -- Cart --------------------------------------------------------------------
 
 export async function createCart(): Promise<Cart> {
@@ -385,9 +422,12 @@ export async function getCart(
   localeContext?: Partial<LocaleContext>,
 ): Promise<Cart | undefined> {
   try {
-    const cart = await bffFetch<Cart | undefined>(`/cart/current${qs(localeQuery(localeContext))}`, {
-      headers: await cookieHeader(),
-    });
+    const cart = await bffFetch<Cart | undefined>(
+      `/cart/current${qs(localeQuery(localeContext))}`,
+      {
+        headers: await cookieHeader(),
+      },
+    );
     return cart || undefined;
   } catch {
     return undefined;
@@ -426,6 +466,48 @@ export async function updateCart(
     body: JSON.stringify({ lines }),
   });
 }
+
+// -- Checkout ----------------------------------------------------------------
+
+export async function getCheckoutConfig(): Promise<CheckoutConfig> {
+  return bffFetch("/checkout/config", {
+    cache: "no-store",
+    headers: await cookieHeader(),
+  });
+}
+
+export async function placeOrder(
+  request: PlaceOrderRequest,
+): Promise<OrderConfirmation> {
+  return bffFetch("/checkout/orders", {
+    method: "POST",
+    cache: "no-store",
+    headers: await cookieHeader(),
+    body: JSON.stringify(request),
+  });
+}
+
+export async function getOrderConfirmation(
+  orderId: string,
+): Promise<OrderConfirmation> {
+  return bffFetch(`/checkout/orders/${orderId}`, {
+    cache: "no-store",
+    headers: await cookieHeader(),
+  });
+}
+
+export async function createAddress(
+  address: Omit<SavedAddress, "id">,
+): Promise<SavedAddress> {
+  return bffFetch("/customer/addresses", {
+    method: "POST",
+    cache: "no-store",
+    headers: await cookieHeader(),
+    body: JSON.stringify(address),
+  });
+}
+
+// -- Internal helpers --------------------------------------------------------
 
 async function cookieHeader(): Promise<Record<string, string> | undefined> {
   const cookieStore = await cookies();

@@ -504,12 +504,7 @@ export const localeByLanguage: Record<LanguageCode, string> = {
   fr: "fr-FR",
 };
 
-export const supportedLanguageCodes: LanguageCode[] = [
-  "en",
-  "es",
-  "nl",
-  "fr",
-];
+export const supportedLanguageCodes: LanguageCode[] = ["en", "es", "nl", "fr"];
 
 export const productSlugCatalog: Record<string, Record<string, string>> = {
   "en-US": {
@@ -758,8 +753,49 @@ export const domainConfig: DomainConfigModel = {
   ],
 };
 
-const messageCatalogByLocale: Record<string, Record<string, Record<string, string>>> = {
+const messageCatalogByLocale: Record<
+  string,
+  Record<string, Record<string, string>>
+> = {
   "en-US": {
+    checkout: {
+      title: "Checkout",
+      shippingAddress: "Shipping Address",
+      billingAddress: "Billing Address",
+      useDifferentBillingAddress: "Use a different billing address",
+      deliveryMethod: "Delivery Method",
+      paymentMethod: "Payment Method",
+      orderSummary: "Order Summary",
+      subtotal: "Subtotal",
+      taxes: "Taxes",
+      shipping: "Shipping",
+      total: "Total",
+      placeOrder: "Place Order",
+      placingOrder: "Placing Order...",
+      orderError: "Something went wrong placing your order. Please try again.",
+      savedAddresses: "Saved Addresses",
+      useSavedAddress: "Use a saved address",
+      useADifferentAddress: "Use a different address",
+      saveThisAddress: "Save this address for future use",
+      savedShippingLabel: "Shipping Address",
+      savedBillingLabel: "Billing Address",
+      defaultShipping: "Default Shipping",
+      defaultBilling: "Default Billing",
+      defaultShippingAndBilling: "Default Shipping & Billing",
+    },
+    orderConfirmation: {
+      title: "Order Confirmed",
+      thankYou: "Thank you for your order!",
+      orderNumber: "Order #{orderNumber}",
+      items: "Items",
+      subtotal: "Subtotal",
+      shipping: "Shipping",
+      taxes: "Taxes",
+      total: "Total",
+      deliveryMethod: "Delivery Method",
+      paymentMethod: "Payment Method",
+      continueShopping: "Continue Shopping",
+    },
     common: {
       searchPlaceholder: "Search for products...",
     },
@@ -805,6 +841,44 @@ const messageCatalogByLocale: Record<string, Record<string, Record<string, strin
     },
   },
   "es-ES": {
+    checkout: {
+      title: "Pago",
+      shippingAddress: "Direccion de envio",
+      billingAddress: "Direccion de facturacion",
+      useDifferentBillingAddress: "Usar una direccion de facturacion diferente",
+      deliveryMethod: "Metodo de envio",
+      paymentMethod: "Metodo de pago",
+      orderSummary: "Resumen del pedido",
+      subtotal: "Subtotal",
+      taxes: "Impuestos",
+      shipping: "Envio",
+      total: "Total",
+      placeOrder: "Realizar pedido",
+      placingOrder: "Procesando pedido...",
+      orderError: "Algo salio mal al realizar tu pedido. Intentalo de nuevo.",
+      savedAddresses: "Direcciones guardadas",
+      useSavedAddress: "Usar una direccion guardada",
+      useADifferentAddress: "Usar una direccion diferente",
+      saveThisAddress: "Guardar esta direccion para uso futuro",
+      savedShippingLabel: "Direccion de envio",
+      savedBillingLabel: "Direccion de facturacion",
+      defaultShipping: "Envio predeterminado",
+      defaultBilling: "Facturacion predeterminada",
+      defaultShippingAndBilling: "Envio y facturacion predeterminados",
+    },
+    orderConfirmation: {
+      title: "Pedido confirmado",
+      thankYou: "Gracias por tu pedido!",
+      orderNumber: "Pedido #{orderNumber}",
+      items: "Articulos",
+      subtotal: "Subtotal",
+      shipping: "Envio",
+      taxes: "Impuestos",
+      total: "Total",
+      deliveryMethod: "Metodo de envio",
+      paymentMethod: "Metodo de pago",
+      continueShopping: "Seguir comprando",
+    },
     common: {
       searchPlaceholder: "Buscar productos...",
     },
@@ -850,6 +924,45 @@ const messageCatalogByLocale: Record<string, Record<string, Record<string, strin
     },
   },
   "nl-NL": {
+    checkout: {
+      title: "Afrekenen",
+      shippingAddress: "Verzendadres",
+      billingAddress: "Factuuradres",
+      useDifferentBillingAddress: "Gebruik een ander factuuradres",
+      deliveryMethod: "Verzendmethode",
+      paymentMethod: "Betaalmethode",
+      orderSummary: "Besteloverzicht",
+      subtotal: "Subtotaal",
+      taxes: "Belastingen",
+      shipping: "Verzending",
+      total: "Totaal",
+      placeOrder: "Bestelling plaatsen",
+      placingOrder: "Bestelling plaatsen...",
+      orderError:
+        "Er is iets misgegaan bij het plaatsen van je bestelling. Probeer het opnieuw.",
+      savedAddresses: "Opgeslagen adressen",
+      useSavedAddress: "Gebruik een opgeslagen adres",
+      useADifferentAddress: "Gebruik een ander adres",
+      saveThisAddress: "Bewaar dit adres voor toekomstig gebruik",
+      savedShippingLabel: "Verzendadres",
+      savedBillingLabel: "Factuuradres",
+      defaultShipping: "Standaard verzending",
+      defaultBilling: "Standaard facturering",
+      defaultShippingAndBilling: "Standaard verzending en facturering",
+    },
+    orderConfirmation: {
+      title: "Bestelling bevestigd",
+      thankYou: "Bedankt voor je bestelling!",
+      orderNumber: "Bestelling #{orderNumber}",
+      items: "Artikelen",
+      subtotal: "Subtotaal",
+      shipping: "Verzending",
+      taxes: "Belastingen",
+      total: "Totaal",
+      deliveryMethod: "Verzendmethode",
+      paymentMethod: "Betaalmethode",
+      continueShopping: "Verder winkelen",
+    },
     common: {
       searchPlaceholder: "Zoek naar producten...",
     },
@@ -869,7 +982,8 @@ const messageCatalogByLocale: Record<string, Record<string, Record<string, strin
     },
     page: {
       homeTitle: "Home",
-      homeDescription: "High-performance ecommerce storefront gebouwd met Next.js.",
+      homeDescription:
+        "High-performance ecommerce storefront gebouwd met Next.js.",
       searchTitle: "Zoeken",
       searchDescription: "Zoek producten in de winkel.",
       cartTitle: "Winkelwagen",
@@ -895,6 +1009,46 @@ const messageCatalogByLocale: Record<string, Record<string, Record<string, strin
     },
   },
   "fr-FR": {
+    checkout: {
+      title: "Paiement",
+      shippingAddress: "Adresse de livraison",
+      billingAddress: "Adresse de facturation",
+      useDifferentBillingAddress:
+        "Utiliser une adresse de facturation differente",
+      deliveryMethod: "Mode de livraison",
+      paymentMethod: "Mode de paiement",
+      orderSummary: "Recapitulatif de la commande",
+      subtotal: "Sous-total",
+      taxes: "Taxes",
+      shipping: "Livraison",
+      total: "Total",
+      placeOrder: "Passer la commande",
+      placingOrder: "Commande en cours...",
+      orderError:
+        "Une erreur est survenue lors de la commande. Veuillez reessayer.",
+      savedAddresses: "Adresses enregistrees",
+      useSavedAddress: "Utiliser une adresse enregistree",
+      useADifferentAddress: "Utiliser une autre adresse",
+      saveThisAddress: "Enregistrer cette adresse pour une utilisation future",
+      savedShippingLabel: "Adresse de livraison",
+      savedBillingLabel: "Adresse de facturation",
+      defaultShipping: "Livraison par defaut",
+      defaultBilling: "Facturation par defaut",
+      defaultShippingAndBilling: "Livraison et facturation par defaut",
+    },
+    orderConfirmation: {
+      title: "Commande confirmee",
+      thankYou: "Merci pour votre commande !",
+      orderNumber: "Commande #{orderNumber}",
+      items: "Articles",
+      subtotal: "Sous-total",
+      shipping: "Livraison",
+      taxes: "Taxes",
+      total: "Total",
+      deliveryMethod: "Mode de livraison",
+      paymentMethod: "Mode de paiement",
+      continueShopping: "Continuer vos achats",
+    },
     common: {
       searchPlaceholder: "Rechercher des produits...",
     },
@@ -1017,9 +1171,7 @@ export function resolveCatalogLocale(localeOrLanguage?: string): string {
 
 export function normalizeLanguage(input?: string): LanguageCode | undefined {
   if (!input) return undefined;
-  const candidate = input.includes("-")
-    ? input.split("-")[0]
-    : input;
+  const candidate = input.includes("-") ? input.split("-")[0] : input;
   if (
     candidate === "en" ||
     candidate === "es" ||
