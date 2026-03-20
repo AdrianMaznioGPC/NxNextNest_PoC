@@ -26,7 +26,7 @@ export function PaymentSection({
         {options.map((option) => (
           <ChoiceCardItem key={option.id} value={option.id}>
             <p className="text-sm font-medium">{option.label}</p>
-            <p className="text-xs text-neutral-500">{option.description}</p>
+            <p className="text-xs text-muted">{option.description}</p>
           </ChoiceCardItem>
         ))}
       </ChoiceCardGroup>

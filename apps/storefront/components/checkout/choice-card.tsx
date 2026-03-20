@@ -53,10 +53,10 @@ function ChoiceCardItemWrapper({
   return (
     <label
       className={clsx(
-        "flex cursor-pointer items-center gap-3 rounded-lg border p-4 transition-colors",
+        "flex cursor-pointer items-center gap-3 rounded-control border p-4 transition-colors",
         isSelected
-          ? "border-blue-600 bg-blue-50 dark:border-blue-500 dark:bg-blue-950"
-          : "border-neutral-200 hover:border-neutral-300 dark:border-neutral-800 dark:hover:border-neutral-700",
+          ? "border-primary bg-primary/10"
+          : "border-card-border hover:border-card-border-hover",
       )}
     >
       <input
@@ -65,7 +65,7 @@ function ChoiceCardItemWrapper({
         value={itemValue}
         checked={isSelected}
         onChange={() => onSelect(itemValue)}
-        className="h-4 w-4 accent-blue-600"
+        className="h-4 w-4 accent-primary"
       />
       <div className="flex-1">{children}</div>
     </label>

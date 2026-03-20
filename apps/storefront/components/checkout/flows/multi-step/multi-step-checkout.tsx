@@ -18,8 +18,13 @@ import {
   placeOrderAction,
   saveNewAddress,
 } from "../../../../app/checkout/actions";
+import { ReviewStep } from "./review-step";
+import { StepIndicator } from "./step-indicator";
+import { StepNavigation } from "./step-navigation";
 
-interface SinglePageCheckoutProps {
+const TOTAL_STEPS = 3;
+
+interface MultiStepCheckoutProps {
   cart: Cart;
   config: CheckoutConfig;
 }
@@ -34,12 +39,13 @@ function buildInitialValues(schema: AddressFormSchema): Record<string, string> {
   return values;
 }
 
-export function SinglePageCheckout({
-  cart,
-  config,
-}: SinglePageCheckoutProps) {
+export function MultiStepCheckout({ cart, config }: MultiStepCheckoutProps) {
   const t = useT("checkout");
   const router = useRouter();
+
+  // -- Step management -------------------------------------------------------
+
+  const [currentStep, setCurrentStep] = useState(0);
 
   const hasSavedAddresses = config.savedAddresses.length > 0;
 
@@ -132,13 +138,74 @@ export function SinglePageCheckout({
     setBillingValues((prev) => ({ ...prev, [fieldName]: value }));
   }
 
+  // -- Validation ------------------------------------------------------------
+
+  function validateAddressStep(): boolean {
+    // If a saved address is selected, it's valid
+    if (selectedShippingAddressId !== null) {
+      if (useDifferentBilling && selectedBillingAddressId === null) {
+        return validateSchemaValues(config.billingAddressSchema, billingValues);
+      }
+      return true;
+    }
+
+    // Validate manually entered shipping address
+    if (!validateSchemaValues(config.addressSchema, addressValues)) {
+      return false;
+    }
+
+    // Validate billing if different
+    if (useDifferentBilling && selectedBillingAddressId === null) {
+      return validateSchemaValues(config.billingAddressSchema, billingValues);
+    }
+
+    return true;
+  }
+
+  function validateSchemaValues(
+    schema: AddressFormSchema,
+    values: Record<string, string>,
+  ): boolean {
+    for (const row of schema.rows) {
+      for (const field of row) {
+        if (field.required && !values[field.name]?.trim()) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  // -- Navigation ------------------------------------------------------------
+
+  function handleNext() {
+    if (currentStep === 0 && !validateAddressStep()) {
+      return; // Stay on address step if invalid
+    }
+    if (currentStep < TOTAL_STEPS - 1) {
+      setCurrentStep((s) => s + 1);
+    }
+  }
+
+  function handleBack() {
+    if (currentStep > 0) {
+      setCurrentStep((s) => s - 1);
+    }
+  }
+
+  function handleStepClick(step: number) {
+    // Only allow clicking on completed steps
+    if (step < currentStep) {
+      setCurrentStep(step);
+    }
+  }
+
   // -- Submit ----------------------------------------------------------------
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderError, setOrderError] = useState<string | null>(null);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function handleSubmit() {
     setIsSubmitting(true);
     setOrderError(null);
 
@@ -178,98 +245,115 @@ export function SinglePageCheckout({
 
   return (
     <div className="lg:grid lg:grid-cols-12 lg:gap-x-8">
-      <form
-        onSubmit={handleSubmit}
-        className="min-w-0 space-y-8 lg:col-span-7"
-      >
-        {/* Shipping address */}
-        <div className="space-y-6">
-          <AddressSection
-            title={t("shippingAddress")}
-            idPrefix="shipping"
-            schema={config.addressSchema}
-            values={addressValues}
-            onChange={handleAddressChange}
-            savedAddresses={
-              hasSavedAddresses ? config.savedAddresses : undefined
-            }
-            selectedAddressId={selectedShippingAddressId}
-            onSelectSavedAddress={
-              hasSavedAddresses ? handleSelectShippingAddress : undefined
-            }
-            saveAddress={saveShippingAddress}
-            onSaveAddressChange={setSaveShippingAddress}
-          />
+      <div className="min-w-0 lg:col-span-7">
+        <StepIndicator
+          currentStep={currentStep}
+          onStepClick={handleStepClick}
+        />
 
-          {/* Different billing address toggle */}
-          <label className="flex cursor-pointer items-center gap-3 text-sm font-medium">
-            <input
-              type="checkbox"
-              checked={useDifferentBilling}
-              onChange={(e) => setUseDifferentBilling(e.target.checked)}
-              className="h-4 w-4 rounded border-border accent-primary"
-            />
-            {t("useDifferentBillingAddress")}
-          </label>
-
-          {useDifferentBilling && (
+        {/* Step 0: Address */}
+        {currentStep === 0 && (
+          <div className="space-y-6">
             <AddressSection
-              title={t("billingAddress")}
-              idPrefix="billing"
-              schema={config.billingAddressSchema}
-              values={billingValues}
-              onChange={handleBillingChange}
+              title={t("shippingAddress")}
+              idPrefix="shipping"
+              schema={config.addressSchema}
+              values={addressValues}
+              onChange={handleAddressChange}
               savedAddresses={
                 hasSavedAddresses ? config.savedAddresses : undefined
               }
-              selectedAddressId={selectedBillingAddressId}
+              selectedAddressId={selectedShippingAddressId}
               onSelectSavedAddress={
-                hasSavedAddresses ? handleSelectBillingAddress : undefined
+                hasSavedAddresses ? handleSelectShippingAddress : undefined
               }
-              saveAddress={saveBillingAddress}
-              onSaveAddressChange={setSaveBillingAddress}
+              saveAddress={saveShippingAddress}
+              onSaveAddressChange={setSaveShippingAddress}
             />
-          )}
-        </div>
 
-        <hr className="border-border" />
+            <label className="flex cursor-pointer items-center gap-3 text-sm font-medium">
+              <input
+                type="checkbox"
+                checked={useDifferentBilling}
+                onChange={(e) => setUseDifferentBilling(e.target.checked)}
+                className="h-4 w-4 rounded border-border accent-primary"
+              />
+              {t("useDifferentBillingAddress")}
+            </label>
 
-        {/* Delivery */}
-        <DeliverySection
-          title={t("deliveryMethod")}
-          options={config.deliveryOptions}
-          selected={selectedDelivery}
-          onSelect={setSelectedDelivery}
-        />
-
-        <hr className="border-border" />
-
-        {/* Payment */}
-        <PaymentSection
-          title={t("paymentMethod")}
-          options={config.paymentOptions}
-          selected={selectedPayment}
-          onSelect={setSelectedPayment}
-        />
-
-        <hr className="border-border" />
-
-        {/* Error message */}
-        {orderError && (
-          <p className="text-sm font-medium text-red-600">
-            {orderError}
-          </p>
+            {useDifferentBilling && (
+              <AddressSection
+                title={t("billingAddress")}
+                idPrefix="billing"
+                schema={config.billingAddressSchema}
+                values={billingValues}
+                onChange={handleBillingChange}
+                savedAddresses={
+                  hasSavedAddresses ? config.savedAddresses : undefined
+                }
+                selectedAddressId={selectedBillingAddressId}
+                onSelectSavedAddress={
+                  hasSavedAddresses ? handleSelectBillingAddress : undefined
+                }
+                saveAddress={saveBillingAddress}
+                onSaveAddressChange={setSaveBillingAddress}
+              />
+            )}
+          </div>
         )}
 
-        {/* Submit */}
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="w-full rounded-control bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {isSubmitting ? t("placingOrder") : t("placeOrder")}
-        </button>
-      </form>
+        {/* Step 1: Shipping & Payment */}
+        {currentStep === 1 && (
+          <div className="space-y-8">
+            <DeliverySection
+              title={t("deliveryMethod")}
+              options={config.deliveryOptions}
+              selected={selectedDelivery}
+              onSelect={setSelectedDelivery}
+            />
+
+            <hr className="border-border" />
+
+            <PaymentSection
+              title={t("paymentMethod")}
+              options={config.paymentOptions}
+              selected={selectedPayment}
+              onSelect={setSelectedPayment}
+            />
+          </div>
+        )}
+
+        {/* Step 2: Review */}
+        {currentStep === 2 && (
+          <div>
+            <ReviewStep
+              addressValues={addressValues}
+              billingValues={billingValues}
+              useDifferentBilling={useDifferentBilling}
+              selectedDeliveryId={selectedDelivery}
+              selectedPaymentId={selectedPayment}
+              config={config}
+              shippingCost={shippingCost}
+              onEditStep={setCurrentStep}
+            />
+
+            {orderError && (
+              <p className="mt-4 text-sm font-medium text-red-600">
+                {orderError}
+              </p>
+            )}
+          </div>
+        )}
+
+        <StepNavigation
+          currentStep={currentStep}
+          totalSteps={TOTAL_STEPS}
+          onBack={handleBack}
+          onNext={handleNext}
+          onSubmit={handleSubmit}
+          isSubmitting={isSubmitting}
+        />
+      </div>
 
       {/* Order summary sidebar */}
       <div className="mt-8 lg:col-span-5 lg:mt-0">

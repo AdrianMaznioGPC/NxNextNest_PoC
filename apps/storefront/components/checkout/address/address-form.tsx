@@ -27,11 +27,11 @@ function TextField({
     <div>
       <label
         htmlFor={fieldId}
-        className="mb-1 block text-sm font-medium text-neutral-700 dark:text-neutral-300"
+        className="mb-1 block text-sm font-medium text-foreground"
       >
         {field.label}
         {!field.required && (
-          <span className="ml-1 font-normal text-neutral-400">(optional)</span>
+          <span className="ml-1 font-normal text-muted">(optional)</span>
         )}
       </label>
       <input
@@ -45,7 +45,7 @@ function TextField({
         pattern={field.validation?.pattern}
         minLength={field.validation?.minLength}
         maxLength={field.validation?.maxLength}
-        className="w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm shadow-sm outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
+        className="w-full rounded-control border border-border bg-surface px-3 py-2 text-sm text-foreground shadow-sm outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary"
       />
     </div>
   );
@@ -66,7 +66,7 @@ function SelectField({
     <div>
       <label
         htmlFor={fieldId}
-        className="mb-1 block text-sm font-medium text-neutral-700 dark:text-neutral-300"
+        className="mb-1 block text-sm font-medium text-foreground"
       >
         {field.label}
       </label>
@@ -77,7 +77,7 @@ function SelectField({
         required={field.required}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm shadow-sm outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
+        className="w-full rounded-control border border-border bg-surface px-3 py-2 text-sm text-foreground shadow-sm outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary"
       >
         <option value="">{field.label}</option>
         {field.options?.map((opt) => (
@@ -167,7 +167,7 @@ export function AddressForm({
             type="checkbox"
             checked={saveAddress}
             onChange={(e) => onSaveAddressChange(e.target.checked)}
-            className="h-4 w-4 rounded border-neutral-300 accent-blue-600"
+            className="h-4 w-4 rounded border-border accent-primary"
           />
           {t("saveThisAddress")}
         </label>

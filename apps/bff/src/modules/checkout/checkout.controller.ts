@@ -1,7 +1,4 @@
-import type {
-  CheckoutConfig,
-  OrderConfirmation,
-} from "@commerce/shared-types";
+import type { CheckoutConfig, OrderConfirmation } from "@commerce/shared-types";
 import {
   Body,
   Controller,
@@ -10,11 +7,12 @@ import {
   NotFoundException,
   Param,
   Post,
+  Query,
 } from "@nestjs/common";
-import { CHECKOUT_PORT } from "../../ports/checkout.port";
 import type { CheckoutPort } from "../../ports/checkout.port";
-import { ORDER_PORT } from "../../ports/order.port";
+import { CHECKOUT_PORT } from "../../ports/checkout.port";
 import type { OrderPort } from "../../ports/order.port";
+import { ORDER_PORT } from "../../ports/order.port";
 import { PlaceOrderDto } from "./checkout.dto";
 
 @Controller("checkout")
@@ -25,8 +23,8 @@ export class CheckoutController {
   ) {}
 
   @Get("config")
-  getConfig(): Promise<CheckoutConfig> {
-    return this.checkout.getCheckoutConfig();
+  getConfig(@Query("storeKey") storeKey?: string): Promise<CheckoutConfig> {
+    return this.checkout.getCheckoutConfig(storeKey);
   }
 
   @Post("orders")

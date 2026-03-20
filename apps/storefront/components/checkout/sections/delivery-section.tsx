@@ -29,7 +29,7 @@ export function DeliverySection({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium">{option.label}</p>
-                <p className="text-xs text-neutral-500">
+                <p className="text-xs text-muted">
                   {option.description}
                 </p>
               </div>

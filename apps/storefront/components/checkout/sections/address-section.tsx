@@ -61,7 +61,7 @@ export function AddressSection({
             <button
               type="button"
               onClick={handleUseSavedAddress}
-              className="mb-4 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+              className="mb-4 text-sm font-medium text-link hover:text-link-hover"
             >
               {t("useSavedAddress")}
             </button>

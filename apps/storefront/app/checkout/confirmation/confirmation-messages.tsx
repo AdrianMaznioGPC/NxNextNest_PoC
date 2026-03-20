@@ -18,10 +18,10 @@ export function ConfirmationMessages({
     return (
       <>
         <h1 className="text-3xl font-bold">{t("title")}</h1>
-        <p className="mt-2 text-neutral-600 dark:text-neutral-400">
+        <p className="mt-2 text-muted">
           {t("thankYou")}
         </p>
-        <p className="mt-1 text-sm text-neutral-500">
+        <p className="mt-1 text-sm text-muted">
           {t("orderNumber").replace("{orderNumber}", orderNumber)}
         </p>
       </>
@@ -41,9 +41,9 @@ export function ConfirmationMessages({
     case "totalLabel":
       return <span>{t("total")}</span>;
     case "deliveryMethodLabel":
-      return <p className="text-sm text-neutral-500">{t("deliveryMethod")}</p>;
+      return <p className="text-sm text-muted">{t("deliveryMethod")}</p>;
     case "paymentMethodLabel":
-      return <p className="text-sm text-neutral-500">{t("paymentMethod")}</p>;
+      return <p className="text-sm text-muted">{t("paymentMethod")}</p>;
     case "continueShopping":
       return <>{t("continueShopping")}</>;
     default:

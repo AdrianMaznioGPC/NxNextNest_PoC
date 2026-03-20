@@ -469,8 +469,10 @@ export async function updateCart(
 
 // -- Checkout ----------------------------------------------------------------
 
-export async function getCheckoutConfig(): Promise<CheckoutConfig> {
-  return bffFetch("/checkout/config", {
+export async function getCheckoutConfig(
+  storeKey?: string,
+): Promise<CheckoutConfig> {
+  return bffFetch(`/checkout/config${qs({ storeKey })}`, {
     cache: "no-store",
     headers: await cookieHeader(),
   });

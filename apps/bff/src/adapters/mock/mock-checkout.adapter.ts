@@ -1,4 +1,8 @@
-import type { AddressFormSchema, CheckoutConfig } from "@commerce/shared-types";
+import type {
+  AddressFormSchema,
+  CheckoutConfig,
+  CheckoutFlowType,
+} from "@commerce/shared-types";
 import { Inject, Injectable } from "@nestjs/common";
 import type { CheckoutPort } from "../../ports/checkout.port";
 import type { CustomerPort } from "../../ports/customer.port";
@@ -174,11 +178,29 @@ const billingAddressSchema: AddressFormSchema = {
 export class MockCheckoutAdapter implements CheckoutPort {
   constructor(@Inject(CUSTOMER_PORT) private readonly customer: CustomerPort) {}
 
-  async getCheckoutConfig(): Promise<CheckoutConfig> {
+  /**
+   * Flow type is resolved per store. This allows different stores/regions
+   * to use different checkout experiences without any frontend changes.
+   */
+  private resolveFlowType(storeKey?: string): CheckoutFlowType {
+    switch (storeKey) {
+      case "store-a":
+        return "single-page";
+      case "store-b":
+        return "multi-step";
+      case "store-c":
+        return "multi-step";
+      default:
+        return "single-page";
+    }
+  }
+
+  async getCheckoutConfig(storeKey?: string): Promise<CheckoutConfig> {
     const savedAddresses = await this.customer.getAddresses("mock-customer");
+    const flowType = this.resolveFlowType(storeKey);
 
     return {
-      flowType: "single-page",
+      flowType,
       addressSchema: shippingAddressSchema,
       billingAddressSchema,
       savedAddresses,
