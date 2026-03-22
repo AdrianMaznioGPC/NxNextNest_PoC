@@ -5,6 +5,7 @@ import type {
 } from "@commerce/shared-types";
 import type { ResolvedRouteDescriptor, RouteKind } from "../routing/route-rule.types";
 import type { ResolvedMerchandisingProfile } from "../../merchandising/merchandising-profile.types";
+import type { ResolvedExperienceProfile } from "../../experience/experience-profile.types";
 
 export type PageAssemblyContext = {
   route: ResolvedRouteDescriptor;
@@ -13,6 +14,10 @@ export type PageAssemblyContext = {
   merchandising: Pick<
     ResolvedMerchandisingProfile,
     "mode" | "profileId" | "defaultSortSlug"
+  >;
+  experience: Pick<
+    ResolvedExperienceProfile,
+    "experienceProfileId" | "homeHero" | "signals" | "slotRules"
   >;
   cookieHeader?: string;
 };

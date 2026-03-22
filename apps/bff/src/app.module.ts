@@ -5,8 +5,10 @@ import { CartController } from "./modules/cart/cart.controller";
 import { CheckoutController } from "./modules/checkout/checkout.controller";
 import { CollectionController } from "./modules/collection/collection.controller";
 import { AddressBookController } from "./modules/customer/address-book.controller";
+import { MarketingOverlayService } from "./modules/experience/marketing-overlay.service";
 import { ExperienceProfileService } from "./modules/experience/experience-profile.service";
 import { ExperienceResolverService } from "./modules/experience/experience-resolver.service";
+import { ExperienceSignalsService } from "./modules/experience/experience-signals.service";
 import { ExperienceValidatorService } from "./modules/experience/experience-validator.service";
 import { I18nController } from "./modules/i18n/i18n.controller";
 import { I18nService } from "./modules/i18n/i18n.service";
@@ -55,8 +57,10 @@ import { ScalabilityMetricsService } from "./modules/system/scalability-metrics.
   providers: [
     I18nService,
     SwitchUrlService,
+    MarketingOverlayService,
     ExperienceProfileService,
     ExperienceResolverService,
+    ExperienceSignalsService,
     ExperienceValidatorService,
     PageDataService,
     BootstrapOrchestratorService,
@@ -81,3 +85,4 @@ import { ScalabilityMetricsService } from "./modules/system/scalability-metrics.
   ],
 })
 export class AppModule {}
+

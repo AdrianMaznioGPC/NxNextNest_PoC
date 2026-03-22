@@ -4,6 +4,7 @@ import { CHECKOUT_PORT } from "../../ports/checkout.port";
 import { CMS_PORT } from "../../ports/cms.port";
 import { COLLECTION_PORT } from "../../ports/collection.port";
 import { CUSTOMER_PORT } from "../../ports/customer.port";
+import { MARKETING_DIRECTIVE_PORT } from "../../ports/marketing-directive.port";
 import { MENU_PORT } from "../../ports/menu.port";
 import { NAVIGATION_PORT } from "../../ports/navigation.port";
 import { ORDER_PORT } from "../../ports/order.port";
@@ -14,6 +15,7 @@ import { MockCheckoutAdapter } from "./mock-checkout.adapter";
 import { MockCmsAdapter } from "./mock-cms.adapter";
 import { MockCollectionAdapter } from "./mock-collection.adapter";
 import { MockCustomerAdapter } from "./mock-customer.adapter";
+import { MockMarketingDirectiveAdapter } from "./mock-marketing-directive.adapter";
 import { MockMenuAdapter } from "./mock-menu.adapter";
 import { MockNavigationAdapter } from "./mock-navigation.adapter";
 import { MockOrderAdapter } from "./mock-order.adapter";
@@ -31,6 +33,7 @@ const providers = [
   { provide: CUSTOMER_PORT, useClass: MockCustomerAdapter },
   { provide: CHECKOUT_PORT, useClass: MockCheckoutAdapter },
   { provide: ORDER_PORT, useClass: MockOrderAdapter },
+  { provide: MARKETING_DIRECTIVE_PORT, useClass: MockMarketingDirectiveAdapter },
 ];
 
 @Module({

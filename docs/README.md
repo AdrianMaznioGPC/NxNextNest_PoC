@@ -4,6 +4,10 @@ This folder contains architecture and domain documentation for the repo.
 
 ## Overview
 
+- Monorepo shape:
+  - `apps/storefront`: Next.js storefront that renders the bootstrap contract returned by the BFF
+  - `apps/bff`: NestJS backend-for-frontend that recognizes routes, resolves experience, assembles pages, and returns slot manifests
+  - `libs/shared-types`: shared bootstrap, slot, page, and commerce contracts used on both sides
 - [`page-pipeline.md`](./page-pipeline.md): end-to-end page and slot rendering diagrams
 
 ## BFF Domains

@@ -5,8 +5,9 @@ import { EXPERIENCE_PROFILES } from "./experience-profile.catalog";
 import type {
   ExperienceProfile,
   ExperienceStoreContext,
-  StoreThemeBinding,
   ResolvedExperienceProfile,
+  ResolvedExperienceSignals,
+  StoreThemeBinding,
 } from "./experience-profile.types";
 import { ExperienceValidatorService } from "./experience-validator.service";
 
@@ -73,40 +74,22 @@ export class ExperienceProfileService {
   resolveProfile(params: {
     storeContext: ExperienceStoreContext;
     routeKind?: string;
+    signals: ResolvedExperienceSignals;
   }): ResolvedExperienceProfile {
-    const { storeContext, routeKind } = params;
+    const { storeContext, routeKind, signals } = params;
     const resolvedRouteKind = routeKind ?? "*";
 
-    const selectorOrder: Array<{
-      storeKey: string | "*";
-      routeKind: string | "*";
-      locale: string | "*";
-    }> = [
-      {
-        storeKey: storeContext.storeKey,
-        routeKind: resolvedRouteKind,
-        locale: "*",
-      },
-      {
-        storeKey: storeContext.storeKey,
-        routeKind: "*",
-        locale: "*",
-      },
-      {
-        storeKey: "*",
-        routeKind: "*",
-        locale: "*",
-      },
-    ];
+    const matchingProfiles = EXPERIENCE_PROFILES.filter((profile) =>
+      matchesProfile(profile, storeContext.storeKey, resolvedRouteKind, signals),
+    );
 
-    const profile =
-      pickFirstMatchingProfile(selectorOrder) ??
+    const baseProfile =
       EXPERIENCE_PROFILES.find(
         (item) => item.id === storeContext.experienceProfileId,
-      ) ??
-      EXPERIENCE_PROFILES[0];
+      ) ?? EXPERIENCE_PROFILES[0];
+    const profile = matchingProfiles.sort(compareSpecificity)[0] ?? baseProfile;
 
-    if (!profile) {
+    if (!profile || !baseProfile) {
       throw new Error("No experience profile available");
     }
 
@@ -124,8 +107,10 @@ export class ExperienceProfileService {
       cartUxMode: storeContext.cartUxMode,
       cartPath: storeContext.cartPath,
       openCartOnAdd: storeContext.openCartOnAdd,
-      layoutKey: profile.layoutKey,
-      slotRules: profile.slotRules,
+      layoutKey: profile.layoutKey ?? baseProfile.layoutKey,
+      slotRules: dedupeSlotRules(baseProfile.slotRules, profile.slotRules),
+      signals,
+      homeHero: profile.homeHero ?? baseProfile.homeHero,
     };
   }
 
@@ -162,20 +147,43 @@ function resolveCanonicalHost(
   return alias?.canonicalHost ?? normalized;
 }
 
-function pickFirstMatchingProfile(
-  selectors: Array<{ storeKey: string | "*"; routeKind: string | "*"; locale: string | "*" }>,
-): ExperienceProfile | undefined {
-  for (const selector of selectors) {
-    const match = EXPERIENCE_PROFILES.find(
-      (profile) =>
-        profile.storeKey === selector.storeKey &&
-        profile.routeKind === selector.routeKind &&
-        profile.locale === selector.locale,
-    );
-    if (match) {
-      return match;
+function matchesProfile(
+  profile: ExperienceProfile,
+  storeKey: string,
+  routeKind: string,
+  signals: ResolvedExperienceSignals,
+) {
+  return (
+    (profile.storeKey === "*" || profile.storeKey === storeKey) &&
+    (profile.routeKind === "*" || profile.routeKind === routeKind) &&
+    profile.locale === "*" &&
+    ((profile.customerProfile ?? "*") === "*" ||
+      profile.customerProfile === signals.customerProfile) &&
+    ((profile.campaignKey ?? "*") === "*" ||
+      profile.campaignKey === signals.campaignKey)
+  );
+}
+
+function compareSpecificity(a: ExperienceProfile, b: ExperienceProfile) {
+  return scoreProfile(b) - scoreProfile(a);
+}
+
+function scoreProfile(profile: ExperienceProfile) {
+  return [
+    profile.routeKind !== "*" ? 32 : 0,
+    (profile.customerProfile ?? "*") !== "*" ? 16 : 0,
+    (profile.campaignKey ?? "*") !== "*" ? 8 : 0,
+    profile.storeKey !== "*" ? 4 : 0,
+    profile.locale !== "*" ? 2 : 0,
+  ].reduce((sum, value) => sum + value, 0);
+}
+
+function dedupeSlotRules(...ruleSets: ExperienceProfile["slotRules"][]) {
+  const result = new Map<string, ExperienceProfile["slotRules"][number]>();
+  for (const rules of ruleSets) {
+    for (const rule of rules) {
+      result.set(rule.rendererKey, rule);
     }
   }
-
-  return undefined;
+  return [...result.values()];
 }

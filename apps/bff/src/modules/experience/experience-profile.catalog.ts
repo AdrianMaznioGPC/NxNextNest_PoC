@@ -32,14 +32,49 @@ export const EXPERIENCE_PROFILES: ExperienceProfile[] = [
     storeKey: "*",
     routeKind: "*",
     locale: "*",
+    customerProfile: "*",
+    campaignKey: "*",
     layoutKey: "layout-default",
     slotRules: [],
+  },
+  {
+    id: "exp-home-returning-v1",
+    storeKey: "*",
+    routeKind: "home",
+    locale: "*",
+    customerProfile: "returning",
+    campaignKey: "*",
+    layoutKey: "layout-default",
+    slotRules: [],
+    homeHero: {
+      heading: "Welcome back to your garage",
+      subheading: "Jump back into the parts and categories you shop most.",
+      ctaLabel: "Shop best sellers",
+      ctaUrl: "/categories",
+    },
+  },
+  {
+    id: "exp-checkout-returning-v1",
+    storeKey: "*",
+    routeKind: "checkout",
+    locale: "*",
+    customerProfile: "returning",
+    campaignKey: "*",
+    layoutKey: "layout-default",
+    slotRules: [
+      {
+        rendererKey: "page.checkout-main",
+        variantKey: "express",
+      },
+    ],
   },
   {
     id: "exp-store-a-v1",
     storeKey: "store-a",
     routeKind: "*",
     locale: "*",
+    customerProfile: "*",
+    campaignKey: "*",
     layoutKey: "layout-default",
     slotRules: [],
   },
@@ -48,6 +83,8 @@ export const EXPERIENCE_PROFILES: ExperienceProfile[] = [
     storeKey: "store-b",
     routeKind: "*",
     locale: "*",
+    customerProfile: "*",
+    campaignKey: "*",
     layoutKey: "layout-list-first",
     slotRules: [],
   },
@@ -56,6 +93,8 @@ export const EXPERIENCE_PROFILES: ExperienceProfile[] = [
     storeKey: "store-c",
     routeKind: "*",
     locale: "*",
+    customerProfile: "*",
+    campaignKey: "*",
     layoutKey: "layout-default",
     slotRules: [],
   },
@@ -64,6 +103,8 @@ export const EXPERIENCE_PROFILES: ExperienceProfile[] = [
     storeKey: "store-b",
     routeKind: "category-detail",
     locale: "*",
+    customerProfile: "*",
+    campaignKey: "*",
     layoutKey: "layout-list-first",
     slotRules: [
       {
@@ -79,6 +120,8 @@ export const EXPERIENCE_PROFILES: ExperienceProfile[] = [
     storeKey: "store-b",
     routeKind: "search",
     locale: "*",
+    customerProfile: "*",
+    campaignKey: "*",
     layoutKey: "layout-list-first",
     slotRules: [
       {
@@ -94,6 +137,8 @@ export const EXPERIENCE_PROFILES: ExperienceProfile[] = [
     storeKey: "store-b",
     routeKind: "product-detail",
     locale: "*",
+    customerProfile: "*",
+    campaignKey: "*",
     layoutKey: "layout-list-first",
     slotRules: [
       {
@@ -115,6 +160,8 @@ export const EXPERIENCE_PROFILES: ExperienceProfile[] = [
     storeKey: "store-c",
     routeKind: "category-detail",
     locale: "*",
+    customerProfile: "*",
+    campaignKey: "*",
     layoutKey: "layout-list-first",
     slotRules: [
       {

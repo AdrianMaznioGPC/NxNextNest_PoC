@@ -8,6 +8,8 @@ export { COLLECTION_PORT } from "./collection.port";
 export type { CollectionPort } from "./collection.port";
 export { CUSTOMER_PORT } from "./customer.port";
 export type { CustomerPort } from "./customer.port";
+export { MARKETING_DIRECTIVE_PORT } from "./marketing-directive.port";
+export type { MarketingDirectiveProvider } from "./marketing-directive.port";
 export { MENU_PORT } from "./menu.port";
 export type { MenuPort } from "./menu.port";
 export { ORDER_PORT } from "./order.port";

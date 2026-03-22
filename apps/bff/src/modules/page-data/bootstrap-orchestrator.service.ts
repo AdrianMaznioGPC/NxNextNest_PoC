@@ -94,9 +94,11 @@ export class BootstrapOrchestratorService {
         const localeContext = route.localeContext;
         const routeKindForExperience =
           route.routeKind === "unknown" ? undefined : route.routeKind;
-        const experience = this.experience.resolve({
+        const experience = await this.experience.resolve({
           localeContext,
           routeKind: routeKindForExperience,
+          query,
+          cookieHeader,
         });
         const merchandising = this.merchandising.resolve({
           storeKey: experience.storeKey,
@@ -283,7 +285,7 @@ export class BootstrapOrchestratorService {
     route: ResolvedRouteDescriptor;
     query: Record<string, string | undefined>;
     localeContext: LocaleContext;
-    experience: Pick<ResolvedExperienceProfile, "cartUxMode">;
+    experience: ResolvedExperienceProfile;
     merchandising: Pick<
       ResolvedMerchandisingProfile,
       "mode" | "profileId" | "defaultSortSlug"
@@ -334,6 +336,7 @@ export class BootstrapOrchestratorService {
             query,
             localeContext,
             merchandising,
+            experience,
             cookieHeader,
           }),
         {
@@ -596,6 +599,7 @@ function rendererKeyForNode(type: PageContentNode["type"]): ExperienceRendererKe
       return "page.checkout-main";
   }
 }
+
 
 
 

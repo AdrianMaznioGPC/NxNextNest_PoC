@@ -33,9 +33,14 @@ export class CheckoutPageAssembler implements PageAssembler {
     }
 
     const storeContext = this.experienceProfiles.resolveStoreContext(ctx.localeContext);
-    const config = await this.checkout.getCheckoutConfig(storeContext.storeKey);
+    const baseConfig = await this.checkout.getCheckoutConfig(storeContext.storeKey);
+    const flowType = resolveCheckoutFlowType(ctx, baseConfig.flowType);
+    const config =
+      flowType === baseConfig.flowType
+        ? baseConfig
+        : { ...baseConfig, flowType };
     const title =
-      config.flowType === "express"
+      flowType === "express"
         ? this.i18n.t(ctx.localeContext.locale, "checkout.expressTitle")
         : this.i18n.t(ctx.localeContext.locale, "checkout.title");
     const initialShippingCost =
@@ -64,7 +69,15 @@ export class CheckoutPageAssembler implements PageAssembler {
           initialShippingCost,
         },
       ],
-      revalidateTags: ["cart", `checkout:${storeContext.storeKey}`],
+      revalidateTags: [
+        "cart",
+        `checkout:${storeContext.storeKey}`,
+        `customer-profile:${ctx.experience.signals.customerProfile}`,
+        `campaign:${ctx.experience.signals.campaignKey}`,
+        ...ctx.experience.signals.activeMarketingDirectiveIds.map(
+          (directiveId) => `marketing:${directiveId}`,
+        ),
+      ],
     };
   }
 
@@ -84,6 +97,17 @@ export class CheckoutPageAssembler implements PageAssembler {
 
     return localizeCart(cart, localeContext, this.slug);
   }
+}
+
+function resolveCheckoutFlowType(
+  ctx: PageAssemblyContext,
+  fallback: "single-page" | "multi-step" | "express",
+) {
+  return (
+    ctx.experience.slotRules.find(
+      (rule) => rule.rendererKey === "page.checkout-main" && rule.variantKey,
+    )?.variantKey as typeof fallback | undefined
+  ) ?? fallback;
 }
 
 function localizeCart(cart: Cart, localeContext: LocaleContext, slug: SlugService): Cart {

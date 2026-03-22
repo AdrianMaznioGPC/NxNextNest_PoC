@@ -19,7 +19,7 @@ This app is the backend-for-frontend for the storefront. It exposes commerce API
 - `src/modules/system`: cache policy, resilience, load shedding, metrics
 
 ### Experience and commercial logic
-- `src/modules/experience`: store/route experience profiles and slot overrides
+- `src/modules/experience`: store/route experience profiles, marketing-driven overlays, and slot overrides
 - `src/modules/merchandising`: commercial variants, merchandising mode, default sort behavior
 
 ### Commerce-facing domains
@@ -37,7 +37,7 @@ This app is the backend-for-frontend for the storefront. It exposes commerce API
 - `src/modules/page-data/bootstrap-orchestrator.service.ts`: end-to-end bootstrap orchestration
 - `src/modules/page-data/slot-planner.service.ts`: slot planning rules
 - `src/modules/page-data/routing/route-recognition.service.ts`: route classification
-- `src/modules/experience/experience-resolver.service.ts`: applies experience rules to slots
+- `src/modules/experience/experience-resolver.service.ts`: resolves the final experience profile and applies slot rules
 - `src/modules/merchandising/merchandising-resolver.service.ts`: applies merchandising rules to slots
 
 ## Request Flow
@@ -59,7 +59,18 @@ Checkout now participates in the same bootstrap pipeline as the rest of the site
 - slot planner branch: `page.checkout-header`, `page.checkout-main`, `page.checkout-summary`
 - checkout flow selection is driven by the `page.checkout-main` slot `variantKey`
 
+## Mocked Experience Testing
+
+Use query params to test mocked campaign and customer-profile-driven experiences:
+
+- `/?customerProfile=returning`
+- `/?campaign=paid-social-discovery`
+- `/?customerProfile=returning&campaign=paid-social-discovery`
+- `/checkout?customerProfile=returning&campaign=email-reorder`
+- `/?customerProfile=vip&campaign=vip-reengagement`
+
 ## See Also
 
 - [`../../docs/page-pipeline.md`](../../docs/page-pipeline.md)
+- [`../../docs/bff/experience/README.md`](../../docs/bff/experience/README.md)
 - [`../../libs/shared-types/README.md`](../../libs/shared-types/README.md)

@@ -5,6 +5,10 @@ import {
   EXPERIENCE_PROFILES,
   EXPERIENCE_RENDERER_VARIANTS,
 } from "./experience-profile.catalog";
+import {
+  MOCK_CAMPAIGN_KEYS,
+  MOCK_CUSTOMER_PROFILES,
+} from "./experience-profile.types";
 const ALLOWED_CART_UX_MODES = ["drawer", "page"] as const;
 const ALLOWED_LANGUAGES = ["en", "es", "nl", "fr"] as const;
 
@@ -15,7 +19,9 @@ export class ExperienceValidatorService {
       (profile) =>
         profile.storeKey === "*" &&
         profile.routeKind === "*" &&
-        profile.locale === "*",
+        profile.locale === "*" &&
+        (profile.customerProfile ?? "*") === "*" &&
+        (profile.campaignKey ?? "*") === "*",
     );
     if (!hasGlobalDefault) {
       throw new Error("Missing global default experience profile");
@@ -23,11 +29,37 @@ export class ExperienceValidatorService {
 
     const profileKeys = new Set<string>();
     for (const profile of EXPERIENCE_PROFILES) {
-      const key = `${profile.storeKey}:${profile.routeKind}:${profile.locale}`;
+      const key = [
+        profile.storeKey,
+        profile.routeKind,
+        profile.locale,
+        profile.customerProfile ?? "*",
+        profile.campaignKey ?? "*",
+      ].join(":");
       if (profileKeys.has(key)) {
         throw new Error(`Duplicate experience profile selector "${key}"`);
       }
       profileKeys.add(key);
+
+      if (
+        profile.customerProfile &&
+        profile.customerProfile !== "*" &&
+        !MOCK_CUSTOMER_PROFILES.includes(profile.customerProfile)
+      ) {
+        throw new Error(
+          `Unknown customerProfile "${profile.customerProfile}" in profile "${profile.id}"`,
+        );
+      }
+
+      if (
+        profile.campaignKey &&
+        profile.campaignKey !== "*" &&
+        !MOCK_CAMPAIGN_KEYS.includes(profile.campaignKey)
+      ) {
+        throw new Error(
+          `Unknown campaignKey "${profile.campaignKey}" in profile "${profile.id}"`,
+        );
+      }
 
       const seenRendererRules = new Set<string>();
       for (const rule of profile.slotRules) {
