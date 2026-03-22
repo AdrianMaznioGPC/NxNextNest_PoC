@@ -93,6 +93,13 @@ export class RouteMatcherFactory {
       rules.push(buildRule("cart", "cart", `/${cartSegment}`));
     }
 
+    for (const checkoutSegment of unique([
+      segments.checkout,
+      canonicalSegments.checkout,
+    ])) {
+      rules.push(buildRule("checkout", "checkout", `/${checkoutSegment}`));
+    }
+
     rules.push(buildRule("content-page", "content-page", "/:pageSlug"));
 
     return rules;

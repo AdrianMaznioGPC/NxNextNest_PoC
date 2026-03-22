@@ -213,6 +213,7 @@ export type GlobalLayoutData = {
     search: string;
     categoryList: string;
     cart: string;
+    checkout: string;
   };
 };
 
@@ -349,6 +350,25 @@ export type SlotStreamMode = "blocking" | "deferred";
 
 export type SlotDataMode = "inline" | "reference";
 
+export type ExperienceRendererKey =
+  | "page.home"
+  | "page.category-list"
+  | "page.category-subcollections"
+  | "page.category-products"
+  | "page.product-detail"
+  | "page.pdp-main"
+  | "page.pdp-recommendations"
+  | "page.pdp-reviews"
+  | "page.pdp-faq"
+  | "page.search-summary"
+  | "page.search-products"
+  | "page.search-results"
+  | "page.content-page"
+  | "page.cart"
+  | "page.checkout-header"
+  | "page.checkout-main"
+  | "page.checkout-summary";
+
 export type SlotReference = {
   endpoint: string;
   query: Record<string, string>;
@@ -364,7 +384,7 @@ export type SlotPresentation = {
 
 export type ResolvedPageSlot = {
   id: string;
-  rendererKey: string;
+  rendererKey: ExperienceRendererKey;
   props: Record<string, unknown>;
   priority?: SlotPriority;
   cacheTags?: string[];
@@ -372,7 +392,7 @@ export type ResolvedPageSlot = {
 
 export type SlotManifest = {
   id: string;
-  rendererKey: string;
+  rendererKey: ExperienceRendererKey;
   priority: SlotPriority;
   stream: SlotStreamMode;
   dataMode: SlotDataMode;
@@ -386,7 +406,7 @@ export type SlotManifest = {
 
 export type SlotPayloadModel = {
   slotId: string;
-  rendererKey: string;
+  rendererKey: ExperienceRendererKey;
   props: Record<string, unknown>;
   presentation?: SlotPresentation;
   revalidateTags: string[];
@@ -396,6 +416,21 @@ export type SlotPayloadModel = {
   timings?: {
     totalMs: number;
   };
+};
+
+export type CheckoutHeaderSlotProps = {
+  title: string;
+  subtitle?: string;
+};
+
+export type CheckoutMainSlotProps = {
+  cart: Cart;
+  config: CheckoutConfig;
+};
+
+export type CheckoutSummarySlotProps = {
+  cart: Cart;
+  initialShippingCost: Money;
 };
 
 export type PageContentNode =
@@ -452,6 +487,15 @@ export type PageContentNode =
       title: string;
       description?: string;
       containerClassName?: string;
+    }
+  | {
+      type: "checkout-page";
+      title: string;
+      subtitle?: string;
+      cart: Cart;
+      config: CheckoutConfig;
+      initialShippingCost: Money;
+      containerClassName?: string;
     };
 
 export type ResolvedPageModel = {
@@ -465,7 +509,8 @@ export type ResolvedPageModel = {
     | "category-detail"
     | "product-detail"
     | "content-page"
-    | "cart";
+    | "cart"
+    | "checkout";
   requestedPath?: string;
   resolvedPath?: string;
   canonicalPath?: string;
@@ -637,7 +682,8 @@ export type SwitchUrlResponse = {
       | "category-detail"
       | "product-detail"
       | "content-page"
-      | "cart";
+      | "cart"
+      | "checkout";
     fallbackApplied: boolean;
     reason?:
       | "translated_slug_missing"
@@ -647,3 +693,4 @@ export type SwitchUrlResponse = {
       | "target_region_unresolved";
   };
 };
+

@@ -103,6 +103,10 @@ export class SwitchUrlService {
       return targetDomain.cartUxMode === "page" ? routes.cart : homePath;
     }
 
+    if (route.routeKind === "checkout") {
+      return routes.checkout;
+    }
+
     if (route.routeKind === "category-list") {
       return routes.categoryList;
     }
@@ -135,6 +139,7 @@ export class SwitchUrlService {
     if (route.routeKind === "home") return routes.home;
     if (route.routeKind === "search") return routes.search;
     if (route.routeKind === "cart") return routes.cart;
+    if (route.routeKind === "checkout") return routes.checkout;
     if (route.routeKind === "category-list") return routes.categoryList;
     if (route.routeKind === "category-detail" && route.refs.categoryKey) {
       return this.slug.buildCategoryPath(targetLocaleContext, route.refs.categoryKey);

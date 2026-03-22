@@ -14,6 +14,7 @@ import { SwitchUrlService } from "./modules/i18n/switch-url.service";
 import { MenuController } from "./modules/menu/menu.controller";
 import { MerchandisingModule } from "./modules/merchandising/merchandising.module";
 import { CartPageAssembler } from "./modules/page-data/assemblers/cart-page.assembler";
+import { CheckoutPageAssembler } from "./modules/page-data/assemblers/checkout-page.assembler";
 import { CategoryDetailPageAssembler } from "./modules/page-data/assemblers/category-detail-page.assembler";
 import { CategoryListPageAssembler } from "./modules/page-data/assemblers/category-list-page.assembler";
 import { ContentPageAssembler } from "./modules/page-data/assemblers/content-page.assembler";
@@ -67,6 +68,7 @@ import { ScalabilityMetricsService } from "./modules/system/scalability-metrics.
     CategoryListPageAssembler,
     CategoryDetailPageAssembler,
     CartPageAssembler,
+    CheckoutPageAssembler,
     ProductDetailPageAssembler,
     SearchPageAssembler,
     ContentPageAssembler,

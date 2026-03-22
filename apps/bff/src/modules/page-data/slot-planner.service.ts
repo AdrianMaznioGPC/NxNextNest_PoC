@@ -1,4 +1,5 @@
 import type {
+  ExperienceRendererKey,
   LocaleContext,
   PageContentNode,
   ResolvedPageModel,
@@ -40,6 +41,10 @@ export class SlotPlannerService {
 
     if (node?.type === "search-results") {
       return this.planSearch(node, path, query, localeContext, resolved);
+    }
+
+    if (node?.type === "checkout-page") {
+      return this.planCheckout(node, resolved);
     }
 
     const defaultSlots = resolved.slots ?? toSlotsFromContent(resolved.content ?? []);
@@ -151,6 +156,64 @@ export class SlotPlannerService {
     return manifests;
   }
 
+  private planCheckout(
+    node: Extract<PageContentNode, { type: "checkout-page" }>,
+    resolved: ResolvedPageModel,
+  ): SlotManifest[] {
+    const manifests: SlotManifest[] = [
+      {
+        id: "slot:checkout-header",
+        rendererKey: "page.checkout-header",
+        priority: "critical",
+        stream: "blocking",
+        dataMode: "inline",
+        presentation: {
+          variantKey: "default",
+        },
+        inlineProps: {
+          title: node.title,
+          subtitle: node.subtitle,
+        },
+        revalidateTags: resolved.revalidateTags,
+        staleAfterSeconds: 0,
+      },
+      {
+        id: "slot:checkout-main",
+        rendererKey: "page.checkout-main",
+        priority: "critical",
+        stream: "blocking",
+        dataMode: "inline",
+        presentation: {
+          variantKey: node.config.flowType,
+        },
+        inlineProps: {
+          cart: node.cart,
+          config: node.config,
+        },
+        revalidateTags: resolved.revalidateTags,
+        staleAfterSeconds: 0,
+      },
+      {
+        id: "slot:checkout-summary",
+        rendererKey: "page.checkout-summary",
+        priority: "critical",
+        stream: "blocking",
+        dataMode: "inline",
+        presentation: {
+          variantKey: "default",
+        },
+        inlineProps: {
+          cart: node.cart,
+          initialShippingCost: node.initialShippingCost,
+        },
+        revalidateTags: resolved.revalidateTags,
+        staleAfterSeconds: 0,
+      },
+    ];
+    this.enforceCriticalInlineBudget(manifests);
+    return manifests;
+  }
+
   private planSearch(
     node: Extract<PageContentNode, { type: "search-results" }>,
     path: string,
@@ -256,7 +319,7 @@ function toSlotsFromContent(content: PageContentNode[]): ResolvedPageSlot[] {
   });
 }
 
-function rendererKeyForNode(type: PageContentNode["type"]): string {
+function rendererKeyForNode(type: PageContentNode["type"]): ExperienceRendererKey {
   switch (type) {
     case "home":
       return "page.home";
@@ -274,6 +337,8 @@ function rendererKeyForNode(type: PageContentNode["type"]): string {
       return "page.content-page";
     case "cart-page":
       return "page.cart";
+    case "checkout-page":
+      return "page.checkout-main";
   }
 }
 
@@ -303,3 +368,6 @@ function withLocaleContext(
 function byteSize(value: unknown): number {
   return Buffer.byteLength(JSON.stringify(value));
 }
+
+
+

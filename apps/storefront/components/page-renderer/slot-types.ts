@@ -1,21 +1,17 @@
-import type { Breadcrumb, Page, PageContentNode, Product, SortOption } from "lib/types";
+import type {
+  CheckoutHeaderSlotProps,
+  CheckoutMainSlotProps,
+  CheckoutSummarySlotProps,
+  ExperienceRendererKey,
+  Breadcrumb,
+  Page,
+  PageContentNode,
+  Product,
+  SortOption,
+} from "lib/types";
 import type { ReactNode } from "react";
 
-export type SlotRendererKey =
-  | "page.home"
-  | "page.category-list"
-  | "page.category-subcollections"
-  | "page.category-products"
-  | "page.product-detail"
-  | "page.pdp-main"
-  | "page.pdp-recommendations"
-  | "page.pdp-reviews"
-  | "page.pdp-faq"
-  | "page.search-summary"
-  | "page.search-products"
-  | "page.search-results"
-  | "page.content-page"
-  | "page.cart";
+export type SlotRendererKey = ExperienceRendererKey;
 
 export type SlotPropsMap = {
   "page.home": Omit<Extract<PageContentNode, { type: "home" }>, "type">;
@@ -76,6 +72,9 @@ export type SlotPropsMap = {
     "type"
   >;
   "page.cart": Omit<Extract<PageContentNode, { type: "cart-page" }>, "type">;
+  "page.checkout-header": CheckoutHeaderSlotProps;
+  "page.checkout-main": CheckoutMainSlotProps;
+  "page.checkout-summary": CheckoutSummarySlotProps;
 };
 
 export type SlotRenderer<K extends SlotRendererKey> = (

@@ -1,12 +1,12 @@
 import "server-only";
+import type { ExperienceRendererKey } from "lib/types";
 import type { ReactNode } from "react";
-import type { SlotRendererKey } from "./slot-types";
 
 type AnySlotComponent = (props: Record<string, unknown>) => ReactNode;
 
 type SlotLoader = () => Promise<AnySlotComponent>;
 
-const slotLoaders: Record<SlotRendererKey, Record<string, SlotLoader>> = {
+const slotLoaders: Record<ExperienceRendererKey, Record<string, SlotLoader>> = {
   "page.home": {
     default: async () =>
       (await import("./slots/home-slot")).default as AnySlotComponent,
@@ -79,12 +79,34 @@ const slotLoaders: Record<SlotRendererKey, Record<string, SlotLoader>> = {
     default: async () =>
       (await import("./slots/cart-slot")).default as AnySlotComponent,
   },
+  "page.checkout-header": {
+    default: async () =>
+      (await import("./slots/checkout-header-slot")).default as AnySlotComponent,
+  },
+  "page.checkout-main": {
+    default: async () =>
+      (await import("./slots/checkout-main-slot")).default as AnySlotComponent,
+    "single-page": async () =>
+      (await import("./slots/checkout-main-slot"))
+        .SinglePageCheckoutMainSlot as AnySlotComponent,
+    "multi-step": async () =>
+      (await import("./slots/checkout-main-slot"))
+        .MultiStepCheckoutMainSlot as AnySlotComponent,
+    express: async () =>
+      (await import("./slots/checkout-main-slot"))
+        .ExpressCheckoutMainSlot as AnySlotComponent,
+  },
+  "page.checkout-summary": {
+    default: async () =>
+      (await import("./slots/checkout-summary-slot")).default as AnySlotComponent,
+  },
 };
 
-export async function loadSlotRenderer(rendererKey: string, variantKey = "default") {
-  const variantLoaders = slotLoaders[rendererKey as SlotRendererKey];
-  if (!variantLoaders) return undefined;
-
+export async function loadSlotRenderer(
+  rendererKey: ExperienceRendererKey,
+  variantKey = "default",
+) {
+  const variantLoaders = slotLoaders[rendererKey];
   const exact = variantLoaders[variantKey];
   if (exact) {
     return exact();

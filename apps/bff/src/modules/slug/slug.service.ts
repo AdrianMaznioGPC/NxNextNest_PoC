@@ -65,6 +65,10 @@ export class SlugService {
         this.mapper.buildCartPath(localeContext.locale),
         localeContext,
       ),
+      checkout: this.mapper.withLanguagePrefix(
+        this.mapper.buildCheckoutPath(localeContext.locale),
+        localeContext,
+      ),
     };
   }
 

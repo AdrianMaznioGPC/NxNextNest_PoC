@@ -14,6 +14,7 @@ export type PageAssemblyContext = {
     ResolvedMerchandisingProfile,
     "mode" | "profileId" | "defaultSortSlug"
   >;
+  cookieHeader?: string;
 };
 
 export type PageAssemblyResult = {

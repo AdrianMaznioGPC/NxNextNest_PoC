@@ -1,4 +1,5 @@
 import type {
+  ExperienceRendererKey,
   LanguageCode,
   MerchandisingMode,
   MerchandisingSortSlug,
@@ -8,7 +9,7 @@ import type { RouteKind } from "../page-data/routing/route-rule.types";
 export type MerchandisingRouteKind = Exclude<RouteKind, "unknown"> | "*";
 
 export type MerchandisingSlotRule = {
-  rendererKey: string;
+  rendererKey: ExperienceRendererKey;
   include?: boolean;
   variantKey?: string;
   layoutKey?: string;
@@ -34,4 +35,3 @@ export type ResolvedMerchandisingProfile = {
   defaultSortSlug?: MerchandisingSortSlug;
   slotRules: MerchandisingSlotRule[];
 };
-

@@ -41,3 +41,18 @@ next-env.d.ts
 
 # nx
 .nx/
+
+.claude/worktrees
+.claude/settings.local.json
+# local agent / editor tooling
+.agents/
+.codex/
+.cursor/
+.opencode/
+opencode.json
+.github/agents/
+.github/prompts/
+.github/skills/
+
+# nx console temp artifacts
+Users*Tempnx-console-tmp*/

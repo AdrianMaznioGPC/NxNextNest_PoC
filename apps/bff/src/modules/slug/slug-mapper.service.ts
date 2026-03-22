@@ -64,6 +64,11 @@ export class SlugMapperService {
     return `/${this.getStaticSegments(locale).cart}`;
   }
 
+  buildCheckoutPath(locale: string): string {
+    return `/${this.getStaticSegments(locale).checkout}`;
+  }
+
+
   buildProductPath(locale: string, productHandle: string): string {
     const segment = this.getStaticSegments(locale).product;
     const slug = this.getLocalizedSlug(productSlugCatalog, locale, productHandle);
@@ -298,6 +303,22 @@ export class SlugMapperService {
       };
     }
 
+    if (
+      segments.length === 1 &&
+      (segments[0] === localizedStatic.checkout ||
+        segments[0] === canonicalStatic.checkout)
+    ) {
+      const canonicalPath = this.buildCheckoutPath(this.defaultLocale);
+      return {
+        kind: "checkout",
+        requestedPath: normalized,
+        resolvedPath: this.buildCheckoutPath(locale),
+        canonicalPath,
+        status: 200,
+        localeContext,
+      };
+    }
+
     const isProductRoute =
       segments[0] === localizedStatic.product ||
       segments[0] === canonicalStatic.product;
@@ -379,6 +400,8 @@ export class SlugMapperService {
         return this.buildSearchPath(locale);
       case "cart":
         return this.buildCartPath(locale);
+      case "checkout":
+        return this.buildCheckoutPath(locale);
       case "category-list":
         return this.buildCategoryListPath(locale);
       case "category-detail":

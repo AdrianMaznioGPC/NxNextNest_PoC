@@ -32,6 +32,7 @@ export class PageDataController {
     @Query("path") path?: string,
     @Query() query?: Record<string, string | string[] | undefined>,
     @Headers("if-none-match") ifNoneMatch?: string,
+    @Headers("cookie") cookieHeader?: string,
     @Headers("x-request-id") incomingRequestId?: string,
     @Res({ passthrough: true }) response?: FastifyReply,
   ): Promise<PageBootstrapModel> {
@@ -48,6 +49,7 @@ export class PageDataController {
       query: queryMap,
       requestedLocaleContext: localeContext,
       requestId,
+      cookieHeader,
     });
 
     const etag = weakEtag(bootstrap);

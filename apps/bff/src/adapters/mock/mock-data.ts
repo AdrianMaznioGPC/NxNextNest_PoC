@@ -469,6 +469,7 @@ export const staticRouteSegmentCatalog: Record<
     product: string;
     categories: string;
     cart: string;
+    checkout: string;
   }
 > = {
   "en-US": {
@@ -476,24 +477,28 @@ export const staticRouteSegmentCatalog: Record<
     product: "product",
     categories: "categories",
     cart: "cart",
+    checkout: "checkout",
   },
   "es-ES": {
     search: "buscar",
     product: "producto",
     categories: "categorias",
     cart: "carrito",
+    checkout: "pago",
   },
   "nl-NL": {
     search: "zoeken",
     product: "product",
     categories: "categorieen",
     cart: "winkelwagen",
+    checkout: "afrekenen",
   },
   "fr-FR": {
     search: "recherche",
     product: "produit",
     categories: "categories",
     cart: "panier",
+    checkout: "paiement",
   },
 };
 

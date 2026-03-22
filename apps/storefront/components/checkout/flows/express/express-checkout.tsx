@@ -1,16 +1,16 @@
 "use client";
 
 import { OrderSummary } from "components/checkout/order-summary";
+import { useCheckoutSlotState } from "components/checkout/checkout-slot-state";
 import { useT } from "lib/i18n/messages-context";
 import type {
   AddressFormSchema,
   Cart,
   CheckoutConfig,
-  Money,
   SavedAddress,
 } from "lib/types";
 import { useRouter } from "next/navigation";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   placeOrderAction,
   saveNewAddress,
@@ -22,6 +22,7 @@ import { ExpressPaymentCard } from "./express-payment-card";
 interface ExpressCheckoutProps {
   cart: Cart;
   config: CheckoutConfig;
+  renderSummary?: boolean;
 }
 
 function buildInitialValues(schema: AddressFormSchema): Record<string, string> {
@@ -34,9 +35,15 @@ function buildInitialValues(schema: AddressFormSchema): Record<string, string> {
   return values;
 }
 
-export function ExpressCheckout({ cart, config }: ExpressCheckoutProps) {
+export function ExpressCheckout({
+  cart,
+  config,
+  renderSummary = true,
+}: ExpressCheckoutProps) {
   const t = useT("checkout");
   const router = useRouter();
+  const { shippingCost, syncSelectedDelivery } = useCheckoutSlotState();
+  const fallbackCurrency = cart.cost.totalAmount.currencyCode;
 
   // -- Shipping address state (pre-filled from default) --------------------
 
@@ -74,12 +81,13 @@ export function ExpressCheckout({ cart, config }: ExpressCheckoutProps) {
     config.paymentOptions[0]!.id,
   );
 
-  const shippingCost: Money = useMemo(() => {
-    const option = config.deliveryOptions.find(
-      (o) => o.id === selectedDelivery,
+  useEffect(() => {
+    const option = config.deliveryOptions.find((o) => o.id === selectedDelivery);
+    syncSelectedDelivery(
+      selectedDelivery,
+      option?.price ?? { amount: "0.00", currencyCode: fallbackCurrency },
     );
-    return option?.price ?? { amount: "0", currencyCode: "USD" };
-  }, [config.deliveryOptions, selectedDelivery]);
+  }, [config.deliveryOptions, fallbackCurrency, selectedDelivery, syncSelectedDelivery]);
 
   // -- Field change handler (for manual address entry) ---------------------
 
@@ -160,10 +168,11 @@ export function ExpressCheckout({ cart, config }: ExpressCheckoutProps) {
         </button>
       </div>
 
-      {/* Order summary sidebar */}
-      <div className="mt-8 lg:col-span-5 lg:mt-0">
-        <OrderSummary cart={cart} shippingCost={shippingCost} />
-      </div>
+      {renderSummary ? (
+        <div className="mt-8 lg:col-span-5 lg:mt-0">
+          <OrderSummary cart={cart} shippingCost={shippingCost} />
+        </div>
+      ) : null}
     </div>
   );
 }

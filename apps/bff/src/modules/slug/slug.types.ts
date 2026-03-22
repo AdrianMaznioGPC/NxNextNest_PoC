@@ -4,6 +4,7 @@ export type RouteKind =
   | "home"
   | "search"
   | "cart"
+  | "checkout"
   | "category-list"
   | "category-detail"
   | "product-detail"
@@ -27,6 +28,7 @@ export type StaticRoutes = {
   search: string;
   categoryList: string;
   cart: string;
+  checkout: string;
 };
 
 export type StaticRouteSegments = {
@@ -34,4 +36,5 @@ export type StaticRouteSegments = {
   product: string;
   categories: string;
   cart: string;
+  checkout: string;
 };

@@ -1,6 +1,6 @@
-import { getSlotPayload } from "lib/api";
-import type { SlotManifest } from "lib/types";
+import type { ExperienceRendererKey, SlotManifest } from "lib/types";
 import { Suspense } from "react";
+import { getSlotPayload } from "lib/api";
 import { SlotFallback } from "./slot-fallback";
 import { loadSlotRenderer } from "./slot-renderer-registry";
 
@@ -10,7 +10,7 @@ export function SlotBoundary({ slot }: { slot: SlotManifest }) {
   }
 
   if (!slot.slotRef) {
-    console.error(`[SlotBoundary] Missing slotRef for slot \"${slot.id}\"`);
+    console.error(`[SlotBoundary] Missing slotRef for slot "${slot.id}"`);
     return <SlotFallback fallbackKey={slot.fallbackKey} />;
   }
 
@@ -45,7 +45,7 @@ async function DeferredSlotContent({ slot }: { slot: SlotManifest }) {
 
     if (rendererKey !== slot.rendererKey) {
       console.warn(
-        `[SlotBoundary] Renderer key mismatch for slot \"${slot.id}\": expected \"${slot.rendererKey}\", got \"${rendererKey}\"`,
+        `[SlotBoundary] Renderer key mismatch for slot "${slot.id}": expected "${slot.rendererKey}", got "${rendererKey}"`,
       );
     }
 
@@ -56,7 +56,7 @@ async function DeferredSlotContent({ slot }: { slot: SlotManifest }) {
     return renderSlot(rendererKey, variantKey, payload.props ?? {}, slot.id);
   } catch (error) {
     console.error(
-      `[SlotBoundary] Failed to resolve deferred slot \"${slot.id}\"`,
+      `[SlotBoundary] Failed to resolve deferred slot "${slot.id}"`,
       error,
     );
     return <SlotFallback fallbackKey={slot.fallbackKey} />;
@@ -64,14 +64,14 @@ async function DeferredSlotContent({ slot }: { slot: SlotManifest }) {
 }
 
 async function renderSlot(
-  rendererKey: string,
+  rendererKey: ExperienceRendererKey,
   variantKey: string,
   props: Record<string, unknown>,
   slotId: string,
 ) {
   const SlotRenderer = await loadSlotRenderer(rendererKey, variantKey);
   if (!SlotRenderer) {
-    console.warn(`[SlotBoundary] Unknown renderer key \"${rendererKey}\"`);
+    console.warn(`[SlotBoundary] Unknown renderer key "${rendererKey}"`);
     return null;
   }
 

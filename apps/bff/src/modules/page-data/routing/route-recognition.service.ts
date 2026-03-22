@@ -130,6 +130,22 @@ export class RouteRecognitionService {
         });
       }
 
+      if (rule.routeKind === "checkout") {
+        return this.finalize({
+          routeKind: "checkout",
+          requestedPath,
+          resolvedPath: this.slugIndex.withLanguagePrefix(
+            this.slugIndex.buildCheckoutPath(locale),
+            localeContext,
+          ),
+          canonicalPath: this.slugIndex.buildCheckoutPath(defaultLocale),
+          refs: {},
+          matchedRuleId: rule.id,
+          localeContext,
+          latencyMs: performance.now() - start,
+        });
+      }
+
       if (rule.routeKind === "product-detail") {
         const rawSlug = pickString(result.params.productSlug);
         if (!rawSlug) {

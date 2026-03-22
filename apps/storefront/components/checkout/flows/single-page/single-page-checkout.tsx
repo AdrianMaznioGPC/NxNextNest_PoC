@@ -1,6 +1,7 @@
 "use client";
 
 import { OrderSummary } from "components/checkout/order-summary";
+import { useCheckoutSlotState } from "components/checkout/checkout-slot-state";
 import { AddressSection } from "components/checkout/sections/address-section";
 import { DeliverySection } from "components/checkout/sections/delivery-section";
 import { PaymentSection } from "components/checkout/sections/payment-section";
@@ -9,11 +10,10 @@ import type {
   AddressFormSchema,
   Cart,
   CheckoutConfig,
-  Money,
   SavedAddress,
 } from "lib/types";
 import { useRouter } from "next/navigation";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   placeOrderAction,
   saveNewAddress,
@@ -22,6 +22,7 @@ import {
 interface SinglePageCheckoutProps {
   cart: Cart;
   config: CheckoutConfig;
+  renderSummary?: boolean;
 }
 
 function buildInitialValues(schema: AddressFormSchema): Record<string, string> {
@@ -37,9 +38,12 @@ function buildInitialValues(schema: AddressFormSchema): Record<string, string> {
 export function SinglePageCheckout({
   cart,
   config,
+  renderSummary = true,
 }: SinglePageCheckoutProps) {
   const t = useT("checkout");
   const router = useRouter();
+  const { shippingCost, syncSelectedDelivery } = useCheckoutSlotState();
+  const fallbackCurrency = cart.cost.totalAmount.currencyCode;
 
   const hasSavedAddresses = config.savedAddresses.length > 0;
 
@@ -113,12 +117,13 @@ export function SinglePageCheckout({
     config.paymentOptions[0]!.id,
   );
 
-  const shippingCost: Money = useMemo(() => {
-    const option = config.deliveryOptions.find(
-      (o) => o.id === selectedDelivery,
+  useEffect(() => {
+    const option = config.deliveryOptions.find((o) => o.id === selectedDelivery);
+    syncSelectedDelivery(
+      selectedDelivery,
+      option?.price ?? { amount: "0.00", currencyCode: fallbackCurrency },
     );
-    return option?.price ?? { amount: "0", currencyCode: "USD" };
-  }, [config.deliveryOptions, selectedDelivery]);
+  }, [config.deliveryOptions, fallbackCurrency, selectedDelivery, syncSelectedDelivery]);
 
   // -- Field change handlers -------------------------------------------------
 
@@ -271,10 +276,11 @@ export function SinglePageCheckout({
         </button>
       </form>
 
-      {/* Order summary sidebar */}
-      <div className="mt-8 lg:col-span-5 lg:mt-0">
-        <OrderSummary cart={cart} shippingCost={shippingCost} />
-      </div>
+      {renderSummary ? (
+        <div className="mt-8 lg:col-span-5 lg:mt-0">
+          <OrderSummary cart={cart} shippingCost={shippingCost} />
+        </div>
+      ) : null}
     </div>
   );
 }

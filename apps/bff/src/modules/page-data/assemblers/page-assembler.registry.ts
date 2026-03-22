@@ -3,6 +3,7 @@ import type { RouteKind } from "../routing/route-rule.types";
 import { CategoryDetailPageAssembler } from "./category-detail-page.assembler";
 import { CategoryListPageAssembler } from "./category-list-page.assembler";
 import { CartPageAssembler } from "./cart-page.assembler";
+import { CheckoutPageAssembler } from "./checkout-page.assembler";
 import { ContentPageAssembler } from "./content-page.assembler";
 import { HomePageAssembler } from "./home-page.assembler";
 import type { PageAssembler } from "./page-assembler.interface";
@@ -18,6 +19,7 @@ export class PageAssemblerRegistry {
     categoryList: CategoryListPageAssembler,
     categoryDetail: CategoryDetailPageAssembler,
     cart: CartPageAssembler,
+    checkout: CheckoutPageAssembler,
     productDetail: ProductDetailPageAssembler,
     search: SearchPageAssembler,
     content: ContentPageAssembler,
@@ -27,6 +29,7 @@ export class PageAssemblerRegistry {
       [categoryList.routeKind]: categoryList,
       [categoryDetail.routeKind]: categoryDetail,
       [cart.routeKind]: cart,
+      [checkout.routeKind]: checkout,
       [productDetail.routeKind]: productDetail,
       [search.routeKind]: search,
       [content.routeKind]: content,

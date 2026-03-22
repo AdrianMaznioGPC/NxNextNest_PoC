@@ -51,6 +51,7 @@ export class PageDataService {
           search: "/search",
           categoryList: "/categories",
           cart: "/cart",
+          checkout: "/checkout",
         },
       };
     }

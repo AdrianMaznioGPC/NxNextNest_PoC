@@ -19,6 +19,8 @@ const nodeRenderers: Record<NodeType, () => Promise<NodeRenderer<any>>> = {
   "content-page": async () =>
     (await import("./nodes/content-page-node")).ContentPageNode,
   "cart-page": async () => (await import("./nodes/cart-page-node")).CartPageNode,
+  "checkout-page": async () =>
+    (await import("./nodes/checkout-page-node")).CheckoutPageNode,
 };
 
 export async function ResolvedPageRenderer({

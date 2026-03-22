@@ -1,10 +1,10 @@
 import type { RouteKind } from "../page-data/routing/route-rule.types";
-import type { LanguageCode } from "@commerce/shared-types";
+import type { ExperienceRendererKey, LanguageCode } from "@commerce/shared-types";
 
 export type ExperienceRouteKind = Exclude<RouteKind, "unknown"> | "*";
 
 export type ExperienceSlotRule = {
-  rendererKey: string;
+  rendererKey: ExperienceRendererKey;
   include?: boolean;
   variantKey?: string;
   layoutKey?: string;
@@ -61,3 +61,4 @@ export type ResolvedExperienceProfile = {
   layoutKey: string;
   slotRules: ExperienceSlotRule[];
 };
+

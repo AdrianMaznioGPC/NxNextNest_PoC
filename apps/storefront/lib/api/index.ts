@@ -325,9 +325,6 @@ export async function getPageBootstrap(
   query: Record<string, string | undefined> = {},
   localeContext?: Partial<LocaleContext>,
 ): Promise<PageBootstrapModel> {
-  "use cache";
-  cacheLife("days");
-
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
   const finalQuery = normalizeQuery(query);
   const bootstrap = await bffFetch<PageBootstrapModel>(
@@ -336,25 +333,10 @@ export async function getPageBootstrap(
       ...finalQuery,
       ...localeQuery(localeContext),
     })}`,
-  );
-
-  const allTags = new Set<string>();
-  for (const slot of bootstrap.slots) {
-    for (const tag of slot.revalidateTags) {
-      allTags.add(tag);
-    }
-  }
-  if (allTags.size > 0) {
-    cacheTag(...allTags);
-  }
-  const locale = bootstrap.page.localeContext?.locale;
-  if (locale) {
-    cacheTag(`i18n:${locale}`);
-  }
-  cacheTag(
-    `experience:${bootstrap.shell.experience.experienceProfileId}`,
-    `theme:${bootstrap.shell.experience.themeKey}:${bootstrap.shell.experience.themeRevision}`,
-    `theme-pack:${bootstrap.shell.experience.themeTokenPack ?? bootstrap.shell.experience.themeKey}`,
+    {
+      cache: "no-store",
+      headers: await cookieHeader(),
+    },
   );
   return bootstrap;
 }

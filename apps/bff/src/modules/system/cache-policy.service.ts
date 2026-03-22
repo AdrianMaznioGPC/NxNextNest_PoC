@@ -20,6 +20,7 @@ export class CachePolicyService {
       case "search":
         return { maxAgeSeconds: 15, staleWhileRevalidateSeconds: 60 };
       case "cart":
+      case "checkout":
         return {
           maxAgeSeconds: 0,
           staleWhileRevalidateSeconds: 0,

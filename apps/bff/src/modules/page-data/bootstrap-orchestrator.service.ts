@@ -1,4 +1,5 @@
 import type {
+  ExperienceRendererKey,
   LinkLocalizationAudit,
   LocaleContext,
   PageBootstrapModel,
@@ -47,6 +48,7 @@ const ASSEMBLER_BUDGET_MS: Record<string, number> = {
   "product-detail": 350,
   search: 300,
   cart: 150,
+  checkout: 250,
   "content-page": 200,
 };
 
@@ -73,8 +75,9 @@ export class BootstrapOrchestratorService {
     query: Record<string, string | undefined>;
     requestedLocaleContext?: Partial<LocaleContext>;
     requestId: string;
+    cookieHeader?: string;
   }): Promise<PageBootstrapModel> {
-    const { path, query, requestedLocaleContext, requestId } = params;
+    const { path, query, requestedLocaleContext, requestId, cookieHeader } = params;
     return this.loadShedding.run(
       "bootstrap",
       {
@@ -120,6 +123,7 @@ export class BootstrapOrchestratorService {
           experience,
           merchandising,
           requestId,
+          cookieHeader,
         });
         const assemblyMs = performance.now() - assemblyStart;
         const totalMs = performance.now() - totalStart;
@@ -285,8 +289,9 @@ export class BootstrapOrchestratorService {
       "mode" | "profileId" | "defaultSortSlug"
     >;
     requestId: string;
+    cookieHeader?: string;
   }): Promise<ResolvedPageModel> {
-    const { route, query, localeContext, experience, merchandising, requestId } =
+    const { route, query, localeContext, experience, merchandising, requestId, cookieHeader } =
       params;
 
     if (route.status === 404 || route.routeKind === "unknown") {
@@ -329,6 +334,7 @@ export class BootstrapOrchestratorService {
             query,
             localeContext,
             merchandising,
+            cookieHeader,
           }),
         {
           timeoutMs: budgetMs,
@@ -568,7 +574,7 @@ function toSlots(content: PageContentNode[]): ResolvedPageSlot[] {
   });
 }
 
-function rendererKeyForNode(type: PageContentNode["type"]): string {
+function rendererKeyForNode(type: PageContentNode["type"]): ExperienceRendererKey {
   switch (type) {
     case "home":
       return "page.home";
@@ -586,5 +592,10 @@ function rendererKeyForNode(type: PageContentNode["type"]): string {
       return "page.content-page";
     case "cart-page":
       return "page.cart";
+    case "checkout-page":
+      return "page.checkout-main";
   }
 }
+
+
+

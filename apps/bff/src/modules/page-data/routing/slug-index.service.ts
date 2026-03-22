@@ -72,6 +72,11 @@ export class SlugIndexService {
     return this.slugMapper.buildCartPath(locale);
   }
 
+  buildCheckoutPath(locale: string): string {
+    return this.slugMapper.buildCheckoutPath(locale);
+  }
+
+
   buildProductPath(locale: string, canonicalHandle: string): string {
     return this.slugMapper.buildProductPath(locale, canonicalHandle);
   }
@@ -179,6 +184,7 @@ export class SlugIndexService {
         segments.product,
         segments.categories,
         segments.cart,
+        segments.checkout,
       ].map((segment) => segment.trim().toLowerCase());
       if (new Set(values).size !== values.length) {
         throw new Error(
@@ -198,6 +204,7 @@ export class SlugIndexService {
           segments.product,
           segments.categories,
           segments.cart,
+          segments.checkout,
           ...supportedLanguageCodes,
         ].map((item) => normalizeSlugValue(item)),
       );

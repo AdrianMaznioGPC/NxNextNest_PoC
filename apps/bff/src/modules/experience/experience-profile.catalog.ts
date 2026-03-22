@@ -15,6 +15,9 @@ export const EXPERIENCE_RENDERER_VARIANTS: Record<string, string[]> = {
   "page.search-results": ["default"],
   "page.content-page": ["default"],
   "page.cart": ["default"],
+  "page.checkout-header": ["default"],
+  "page.checkout-main": ["single-page", "multi-step", "express"],
+  "page.checkout-summary": ["default"],
 };
 
 export const ALLOWED_THEME_KEYS = [
