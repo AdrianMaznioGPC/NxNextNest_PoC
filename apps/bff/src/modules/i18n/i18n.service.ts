@@ -6,18 +6,12 @@ import type {
   LocaleContext,
   ResolvedPageModel,
 } from "@commerce/shared-types";
+import { Inject, Injectable } from "@nestjs/common";
 import { IntlMessageFormat } from "intl-messageformat";
-import { Injectable } from "@nestjs/common";
 import {
-  defaultLocaleContext,
-  domainConfig,
-  getCatalogValue,
-  getMessagesForLocale,
-  localeByLanguage,
-  normalizeLanguage,
-  resolveCatalogLocale,
-  translationVersion,
-} from "../../adapters/mock/mock-data";
+  I18N_CONFIG_PORT,
+  type I18nConfigPort,
+} from "../../ports/i18n-config.port";
 import { SlugService } from "../slug/slug.service";
 
 const SHELL_NAMESPACES = ["common", "nav", "cart"] as const;
@@ -26,10 +20,13 @@ const SHELL_NAMESPACES = ["common", "nav", "cart"] as const;
 export class I18nService {
   private readonly formatterCache = new Map<string, IntlMessageFormat>();
 
-  constructor(private readonly slug: SlugService) {}
+  constructor(
+    private readonly slug: SlugService,
+    @Inject(I18N_CONFIG_PORT) private readonly config: I18nConfigPort,
+  ) {}
 
   getDomainConfig(): DomainConfigModel {
-    return domainConfig;
+    return this.config.getDomainConfig();
   }
 
   resolveLocaleContext(input?: Partial<LocaleContext>): LocaleContext {
@@ -42,8 +39,8 @@ export class I18nService {
         ? matched.supportedLanguages
         : [defaultLanguage];
       const preferredLanguage =
-        normalizeLanguage(input?.language) ??
-        normalizeLanguage(input?.locale) ??
+        this.config.normalizeLanguage(input?.language) ??
+        this.config.normalizeLanguage(input?.locale) ??
         defaultLanguage;
       const language = supportedLanguages.includes(preferredLanguage)
         ? preferredLanguage
@@ -51,7 +48,7 @@ export class I18nService {
       const region = matched.regionCode || matched.region;
 
       return {
-        locale: toLocaleTag(language, region),
+        locale: this.toLocaleTag(language, region),
         language,
         region,
         currency: matched.currency,
@@ -60,29 +57,31 @@ export class I18nService {
       };
     }
 
+    const defaultCtx = this.config.getDefaultLocaleContext();
+
     if (input?.locale) {
       const [rawLanguage = "en", region = "US"] = input.locale.split("-");
-      const language = normalizeLanguage(input.language ?? rawLanguage) ?? "en";
+      const language =
+        this.config.normalizeLanguage(input.language ?? rawLanguage) ?? "en";
       return {
-        locale: toLocaleTag(language, region),
+        locale: this.toLocaleTag(language, region),
         language,
         region,
-        currency: input.currency ?? defaultLocaleContext.currency,
+        currency: input.currency ?? defaultCtx.currency,
         market: input.market ?? region,
-        domain: host ?? defaultLocaleContext.domain,
+        domain: host ?? defaultCtx.domain,
       };
     }
 
-    return defaultLocaleContext;
+    return defaultCtx;
   }
 
   getMessages(locale: string, namespaces: string[]): I18nMessagesModel {
-    const resolvedLocale = resolveCatalogLocale(locale);
-    return getMessagesForLocale(resolvedLocale, namespaces);
+    return this.config.getMessages(locale, namespaces);
   }
 
   getTranslationVersion(): string {
-    return translationVersion;
+    return this.config.getTranslationVersion();
   }
 
   resolveNamespaces(model: ResolvedPageModel): string[] {
@@ -129,9 +128,10 @@ export class I18nService {
     key: string,
     values?: Record<string, string | number | boolean>,
   ): string {
-    const fallback = getCatalogValue(defaultLocaleContext.locale, key) ?? key;
-    const resolvedLocale = resolveCatalogLocale(locale);
-    const raw = getCatalogValue(resolvedLocale, key) ?? fallback;
+    const defaultLocale = this.config.getDefaultLocaleContext().locale;
+    const fallback = this.config.getCatalogValue(defaultLocale, key) ?? key;
+    const resolvedLocale = this.config.resolveCatalogLocale(locale);
+    const raw = this.config.getCatalogValue(resolvedLocale, key) ?? fallback;
     return this.formatMessage(raw, resolvedLocale, values);
   }
 
@@ -191,14 +191,13 @@ export class I18nService {
 
     return String(formatted);
   }
-}
+  private toLocaleTag(language: LanguageCode, region: string): string {
+    const locale = this.config.getLocaleByLanguage(language);
+    if (!locale) {
+      return `${language}-${region}`;
+    }
 
-function toLocaleTag(language: LanguageCode, region: string) {
-  const locale = localeByLanguage[language];
-  if (!locale) {
-    return `${language}-${region}`;
+    const [, fallbackRegion = region] = locale.split("-");
+    return `${language}-${fallbackRegion}`;
   }
-
-  const [, fallbackRegion = region] = locale.split("-");
-  return `${language}-${fallbackRegion}`;
 }

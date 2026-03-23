@@ -1,9 +1,13 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { match, MatchFunction } from "path-to-regexp";
 import {
-  defaultLocaleContext,
-  staticRouteSegmentCatalog,
-} from "../../../adapters/mock/mock-data";
+  I18N_CONFIG_PORT,
+  type I18nConfigPort,
+} from "../../../ports/i18n-config.port";
+import {
+  SLUG_CATALOG_PORT,
+  type SlugCatalogPort,
+} from "../../../ports/slug-catalog.port";
 import type { StaticRouteSegments } from "../../slug/slug.types";
 import type { RouteKind, RouteRuleId } from "./route-rule.types";
 
@@ -24,7 +28,10 @@ export type CompiledRouteRule = {
 export class RouteMatcherFactory {
   private readonly cache = new Map<string, CompiledRouteRule[]>();
 
-  constructor() {
+  constructor(
+    @Inject(I18N_CONFIG_PORT) private readonly i18nConfig: I18nConfigPort,
+    @Inject(SLUG_CATALOG_PORT) private readonly slugCatalog: SlugCatalogPort,
+  ) {
     this.warmup();
   }
 
@@ -119,15 +126,14 @@ export class RouteMatcherFactory {
   }
 
   private warmup() {
-    const defaultSegments =
-      staticRouteSegmentCatalog[defaultLocaleContext.locale];
+    const segmentCatalog = this.slugCatalog.getStaticRouteSegmentCatalog();
+    const defaultLocale = this.i18nConfig.getDefaultLocaleContext().locale;
+    const defaultSegments = segmentCatalog[defaultLocale];
     if (!defaultSegments) {
       throw new Error("Missing default locale static route segments");
     }
 
-    for (const [locale, segments] of Object.entries(
-      staticRouteSegmentCatalog,
-    )) {
+    for (const [locale, segments] of Object.entries(segmentCatalog)) {
       const rules = this.getMatchers({
         locale,
         staticSegments: segments,

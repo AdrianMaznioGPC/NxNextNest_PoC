@@ -1,5 +1,4 @@
 import type {
-  ExperienceRendererKey,
   LinkLocalizationAudit,
   LocaleContext,
   PageBootstrapModel,
@@ -8,26 +7,27 @@ import type {
   ResolvedPageModel,
   ResolvedPageSlot,
 } from "@commerce/shared-types";
+import { Injectable, Logger } from "@nestjs/common";
 import { performance } from "node:perf_hooks";
-import { Logger } from "@nestjs/common";
-import { Injectable } from "@nestjs/common";
+import type { ResolvedExperienceProfile } from "../experience/experience-profile.types";
+import { ExperienceResolverService } from "../experience/experience-resolver.service";
 import { I18nService } from "../i18n/i18n.service";
-import { PageAssemblerRegistry } from "./assemblers/page-assembler.registry";
-import { RouteRecognitionService } from "./routing/route-recognition.service";
-import type { ResolvedRouteDescriptor } from "./routing/route-rule.types";
-import { SlotPlannerService } from "./slot-planner.service";
+import type { ResolvedMerchandisingProfile } from "../merchandising/merchandising-profile.types";
+import { MerchandisingResolverService } from "../merchandising/merchandising-resolver.service";
+import { LinkLocalizationPolicyService } from "../slug/link-localization-policy.service";
 import { CachePolicyService } from "../system/cache-policy.service";
 import { LoadSheddingService } from "../system/load-shedding.service";
-import { ExperienceResolverService } from "../experience/experience-resolver.service";
 import {
   ResilienceService,
   TimeoutPolicyError,
 } from "../system/resilience.service";
 import { ScalabilityMetricsService } from "../system/scalability-metrics.service";
-import type { ResolvedExperienceProfile } from "../experience/experience-profile.types";
-import { LinkLocalizationPolicyService } from "../slug/link-localization-policy.service";
-import { MerchandisingResolverService } from "../merchandising/merchandising-resolver.service";
-import type { ResolvedMerchandisingProfile } from "../merchandising/merchandising-profile.types";
+import { PageAssemblerRegistry } from "./assemblers/page-assembler.registry";
+import { withLanguageScopedTags } from "./cache-tag.utils";
+import { rendererKeyForNode } from "./renderer-key.map";
+import { RouteRecognitionService } from "./routing/route-recognition.service";
+import type { ResolvedRouteDescriptor } from "./routing/route-rule.types";
+import { SlotPlannerService } from "./slot-planner.service";
 
 const ASSEMBLY_VERSION = "v1";
 const INCLUDE_TIMINGS_IN_RESPONSE =
@@ -484,25 +484,6 @@ function buildResolvedPage(params: {
   };
 }
 
-function withLanguageScopedTags(tags: string[], language: string): string[] {
-  const next = new Set(tags);
-  for (const tag of tags) {
-    if (tag === "products" || tag.startsWith("products:")) {
-      next.add(`products:lang:${language}`);
-    }
-    if (tag === "collections" || tag.startsWith("collections:")) {
-      next.add(`collections:lang:${language}`);
-    }
-    if (tag === "pages" || tag.startsWith("pages:")) {
-      next.add(`pages:lang:${language}`);
-    }
-    if (tag === "menus" || tag.startsWith("menus:")) {
-      next.add(`menus:lang:${language}`);
-    }
-  }
-  return [...next];
-}
-
 function mergeLocalizationAudit(
   ...audits: Array<LinkLocalizationAudit>
 ): LinkLocalizationAudit {
@@ -586,29 +567,4 @@ function toSlots(content: PageContentNode[]): ResolvedPageSlot[] {
       priority,
     };
   });
-}
-
-function rendererKeyForNode(
-  type: PageContentNode["type"],
-): ExperienceRendererKey {
-  switch (type) {
-    case "home":
-      return "page.home";
-    case "category-list":
-      return "page.category-list";
-    case "category-subcollections":
-      return "page.category-subcollections";
-    case "category-products":
-      return "page.category-products";
-    case "product-detail":
-      return "page.product-detail";
-    case "search-results":
-      return "page.search-results";
-    case "content-page":
-      return "page.content-page";
-    case "cart-page":
-      return "page.cart";
-    case "checkout-page":
-      return "page.checkout-main";
-  }
 }

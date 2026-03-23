@@ -1,12 +1,15 @@
 import type { Cart, LocaleContext, Money } from "@commerce/shared-types";
 import { Inject, Injectable } from "@nestjs/common";
-import { localizeCartLineMerchandise } from "../../../adapters/mock/mock-commerce-localization";
+import {
+  CART_LOCALIZATION_PORT,
+  type CartLocalizationPort,
+} from "../../../ports/cart-localization.port";
 import { CART_PORT, type CartPort } from "../../../ports/cart.port";
 import { CHECKOUT_PORT, type CheckoutPort } from "../../../ports/checkout.port";
+import { getCartCookieConfig, readCookie } from "../../cart/cart-cookie.config";
 import { ExperienceProfileService } from "../../experience/experience-profile.service";
 import { I18nService } from "../../i18n/i18n.service";
 import { SlugService } from "../../slug/slug.service";
-import { getCartCookieConfig, readCookie } from "../../cart/cart-cookie.config";
 import type {
   PageAssembler,
   PageAssemblyContext,
@@ -21,6 +24,8 @@ export class CheckoutPageAssembler implements PageAssembler {
   constructor(
     @Inject(CART_PORT) private readonly cart: CartPort,
     @Inject(CHECKOUT_PORT) private readonly checkout: CheckoutPort,
+    @Inject(CART_LOCALIZATION_PORT)
+    private readonly cartLocalization: CartLocalizationPort,
     private readonly i18n: I18nService,
     private readonly slug: SlugService,
     private readonly experienceProfiles: ExperienceProfileService,
@@ -100,7 +105,42 @@ export class CheckoutPageAssembler implements PageAssembler {
       return undefined;
     }
 
-    return localizeCart(cart, localeContext, this.slug);
+    return this.localizeCart(cart, localeContext);
+  }
+
+  private localizeCart(cart: Cart, localeContext: LocaleContext): Cart {
+    return {
+      ...cart,
+      lines: cart.lines.map((line) => {
+        const localized = this.cartLocalization.localizeCartLineMerchandise(
+          {
+            productHandle: line.merchandise.product.handle,
+            productTitle: line.merchandise.product.title,
+            merchandiseId: line.merchandise.id,
+            merchandiseTitle: line.merchandise.title,
+            selectedOptions: line.merchandise.selectedOptions,
+          },
+          localeContext,
+        );
+
+        return {
+          ...line,
+          merchandise: {
+            ...line.merchandise,
+            title: localized.merchandiseTitle,
+            selectedOptions: localized.selectedOptions,
+            product: {
+              ...line.merchandise.product,
+              title: localized.productTitle,
+              path: this.slug.buildProductPath(
+                localeContext,
+                line.merchandise.product.handle,
+              ),
+            },
+          },
+        };
+      }),
+    };
   }
 }
 
@@ -113,45 +153,6 @@ function resolveCheckoutFlowType(
       (rule) => rule.rendererKey === "page.checkout-main" && rule.variantKey,
     )?.variantKey as typeof fallback | undefined) ?? fallback
   );
-}
-
-function localizeCart(
-  cart: Cart,
-  localeContext: LocaleContext,
-  slug: SlugService,
-): Cart {
-  return {
-    ...cart,
-    lines: cart.lines.map((line) => {
-      const localized = localizeCartLineMerchandise(
-        {
-          productHandle: line.merchandise.product.handle,
-          productTitle: line.merchandise.product.title,
-          merchandiseId: line.merchandise.id,
-          merchandiseTitle: line.merchandise.title,
-          selectedOptions: line.merchandise.selectedOptions,
-        },
-        localeContext,
-      );
-
-      return {
-        ...line,
-        merchandise: {
-          ...line.merchandise,
-          title: localized.value.merchandiseTitle,
-          selectedOptions: localized.value.selectedOptions,
-          product: {
-            ...line.merchandise.product,
-            title: localized.value.productTitle,
-            path: slug.buildProductPath(
-              localeContext,
-              line.merchandise.product.handle,
-            ),
-          },
-        },
-      };
-    }),
-  };
 }
 
 function fallbackMoney(currencyCode: string | undefined): Money {

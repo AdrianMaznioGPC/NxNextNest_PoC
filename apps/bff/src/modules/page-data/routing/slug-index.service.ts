@@ -1,34 +1,41 @@
-import { Injectable } from "@nestjs/common";
+import type { LanguageCode, LocaleContext } from "@commerce/shared-types";
+import { Inject, Injectable } from "@nestjs/common";
 import {
-  categorySlugCatalog,
-  defaultLocaleContext,
-  pageSlugCatalog,
-  productSlugCatalog,
-  staticRouteSegmentCatalog,
-  supportedLanguageCodes,
-} from "../../../adapters/mock/mock-data";
+  I18N_CONFIG_PORT,
+  type I18nConfigPort,
+} from "../../../ports/i18n-config.port";
+import {
+  SLUG_CATALOG_PORT,
+  type SlugCatalogPort,
+} from "../../../ports/slug-catalog.port";
 import { SlugMapperService } from "../../slug/slug-mapper.service";
 import type { StaticRouteSegments } from "../../slug/slug.types";
-import type { LocaleContext } from "@commerce/shared-types";
-import type { LanguageCode } from "@commerce/shared-types";
 
 @Injectable()
 export class SlugIndexService {
-  private readonly defaultLocale = defaultLocaleContext.locale;
+  private readonly defaultLocale: string;
   private readonly productSlugIndex: Record<string, Record<string, string>>;
   private readonly pageSlugIndex: Record<string, Record<string, string>>;
   private readonly categoryPathIndex: Record<string, Record<string, string>>;
 
-  constructor(private readonly slugMapper: SlugMapperService) {
+  constructor(
+    private readonly slugMapper: SlugMapperService,
+    @Inject(I18N_CONFIG_PORT) private readonly i18nConfig: I18nConfigPort,
+    @Inject(SLUG_CATALOG_PORT) private readonly slugCatalog: SlugCatalogPort,
+  ) {
+    this.defaultLocale = this.i18nConfig.getDefaultLocaleContext().locale;
     this.validateStaticSegments();
     this.validateRouteAmbiguity();
     this.productSlugIndex = this.buildReverseIndex(
-      productSlugCatalog,
+      this.slugCatalog.getProductSlugCatalog(),
       "product",
     );
-    this.pageSlugIndex = this.buildReverseIndex(pageSlugCatalog, "page");
+    this.pageSlugIndex = this.buildReverseIndex(
+      this.slugCatalog.getPageSlugCatalog(),
+      "page",
+    );
     this.categoryPathIndex = this.buildReverseIndex(
-      categorySlugCatalog,
+      this.slugCatalog.getCategorySlugCatalog(),
       "category",
     );
     deepFreeze(this.productSlugIndex);
@@ -97,7 +104,7 @@ export class SlugIndexService {
   resolveProductHandle(locale: string, slug: string): string | undefined {
     return this.resolveCanonicalKey(
       this.productSlugIndex,
-      productSlugCatalog,
+      this.slugCatalog.getProductSlugCatalog(),
       normalizeSlugValue(slug),
       locale,
     );
@@ -106,7 +113,7 @@ export class SlugIndexService {
   resolvePageHandle(locale: string, slug: string): string | undefined {
     return this.resolveCanonicalKey(
       this.pageSlugIndex,
-      pageSlugCatalog,
+      this.slugCatalog.getPageSlugCatalog(),
       normalizeSlugValue(slug),
       locale,
     );
@@ -115,7 +122,7 @@ export class SlugIndexService {
   resolveCategoryKey(locale: string, slugPath: string): string | undefined {
     return this.resolveCanonicalKey(
       this.categoryPathIndex,
-      categorySlugCatalog,
+      this.slugCatalog.getCategorySlugCatalog(),
       normalizeCategoryPath(slugPath),
       locale,
     );
@@ -124,7 +131,7 @@ export class SlugIndexService {
   getHealthSummary() {
     return {
       defaultLocale: this.defaultLocale,
-      locales: Object.keys(staticRouteSegmentCatalog),
+      locales: Object.keys(this.slugCatalog.getStaticRouteSegmentCatalog()),
       productSlugLocales: Object.keys(this.productSlugIndex),
       pageSlugLocales: Object.keys(this.pageSlugIndex),
       categorySlugLocales: Object.keys(this.categoryPathIndex),
@@ -162,7 +169,8 @@ export class SlugIndexService {
   ): Record<string, Record<string, string>> {
     const reverseIndex: Record<string, Record<string, string>> = {};
 
-    for (const locale of Object.keys(staticRouteSegmentCatalog)) {
+    const segmentCatalog = this.slugCatalog.getStaticRouteSegmentCatalog();
+    for (const locale of Object.keys(segmentCatalog)) {
       const mapping = catalog[locale] ?? {};
       const reverse: Record<string, string> = {};
 
@@ -183,9 +191,8 @@ export class SlugIndexService {
   }
 
   private validateStaticSegments() {
-    for (const [locale, segments] of Object.entries(
-      staticRouteSegmentCatalog,
-    )) {
+    const segmentCatalog = this.slugCatalog.getStaticRouteSegmentCatalog();
+    for (const [locale, segments] of Object.entries(segmentCatalog)) {
       const values = [
         segments.search,
         segments.product,
@@ -202,8 +209,12 @@ export class SlugIndexService {
   }
 
   private validateRouteAmbiguity() {
-    for (const [locale, pages] of Object.entries(pageSlugCatalog)) {
-      const segments = staticRouteSegmentCatalog[locale];
+    const segmentCatalog = this.slugCatalog.getStaticRouteSegmentCatalog();
+    const supportedLangs = this.slugCatalog.getSupportedLanguageCodes();
+    for (const [locale, pages] of Object.entries(
+      this.slugCatalog.getPageSlugCatalog(),
+    )) {
+      const segments = segmentCatalog[locale];
       if (!segments) continue;
       const reserved = new Set(
         [
@@ -212,7 +223,7 @@ export class SlugIndexService {
           segments.categories,
           segments.cart,
           segments.checkout,
-          ...supportedLanguageCodes,
+          ...supportedLangs,
         ].map((item) => normalizeSlugValue(item)),
       );
 

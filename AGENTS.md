@@ -8,9 +8,19 @@ This is an Nx monorepo containing a Next.js storefront and a NestJS BFF (Backend
 apps/
   storefront/   - Next.js ecommerce frontend (port 3000)
   bff/          - NestJS backend-for-frontend (port 4000)
+  api/          - Java Spring Boot backend API (Gradle, port 8080)
 libs/
   shared-types/ - Shared TypeScript types
 ```
+
+### API Backend (apps/api)
+
+A Java Spring Boot application that serves as the real commerce backend.
+It uses JPA entities (Product, ProductVariant, ProductOption, etc.) with an
+in-memory H2 database and a `DataSeeder` for dev data.
+
+The BFF currently runs against `MockCommerceModule` only. A future
+`SpringCommerceModule` adapter will implement the BFF ports against this API.
 
 ## Commands
 

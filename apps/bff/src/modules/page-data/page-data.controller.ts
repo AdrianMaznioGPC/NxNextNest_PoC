@@ -1,3 +1,4 @@
+import type { PageBootstrapModel } from "@commerce/shared-types";
 import {
   BadRequestException,
   Controller,
@@ -8,14 +9,17 @@ import {
   Query,
   Res,
 } from "@nestjs/common";
-import { createHash, randomUUID } from "node:crypto";
-import type { LocaleContext, PageBootstrapModel } from "@commerce/shared-types";
 import type { FastifyReply } from "fastify";
+import { createHash, randomUUID } from "node:crypto";
 import { I18nService } from "../i18n/i18n.service";
-import { PageDataService } from "./page-data.service";
-import { BootstrapOrchestratorService } from "./bootstrap-orchestrator.service";
-import { SlotDataService } from "./slot-data.service";
+import {
+  localeContextFromQuery,
+  normalizeQuery,
+} from "../i18n/locale-query.utils";
 import { CachePolicyService } from "../system/cache-policy.service";
+import { BootstrapOrchestratorService } from "./bootstrap-orchestrator.service";
+import { PageDataService } from "./page-data.service";
+import { SlotDataService } from "./slot-data.service";
 
 @Controller("page-data")
 export class PageDataController {
@@ -205,39 +209,6 @@ export class PageDataController {
       localeContext,
     );
   }
-}
-
-function normalizeQuery(
-  query: Record<string, string | string[] | undefined> = {},
-): Record<string, string | undefined> {
-  const normalized: Record<string, string | undefined> = {};
-  for (const [key, value] of Object.entries(query)) {
-    normalized[key] = Array.isArray(value) ? value[0] : value;
-  }
-  return normalized;
-}
-
-function localeContextFromQuery(query: Record<string, string | undefined>) {
-  const partial: Partial<LocaleContext> = {
-    locale: query.locale,
-    language: normalizeLanguage(query.language),
-    region: query.region,
-    currency: query.currency,
-    market: query.market,
-    domain: query.domain,
-  };
-
-  const hasAnyValue = Object.values(partial).some(Boolean);
-  return hasAnyValue ? partial : undefined;
-}
-
-function normalizeLanguage(
-  input?: string,
-): LocaleContext["language"] | undefined {
-  if (input === "en" || input === "es" || input === "nl" || input === "fr") {
-    return input;
-  }
-  return undefined;
 }
 
 function weakEtag(input: unknown): string {

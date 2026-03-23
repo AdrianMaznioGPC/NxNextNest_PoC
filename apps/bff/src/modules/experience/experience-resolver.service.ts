@@ -1,9 +1,10 @@
 import type { LocaleContext, SlotManifest } from "@commerce/shared-types";
 import { Injectable } from "@nestjs/common";
+import { applySlotOverlay } from "../page-data/slot-overlay.utils";
 import { ExperienceProfileService } from "./experience-profile.service";
+import type { ResolvedExperienceProfile } from "./experience-profile.types";
 import { ExperienceSignalsService } from "./experience-signals.service";
 import { MarketingOverlayService } from "./marketing-overlay.service";
-import type { ResolvedExperienceProfile } from "./experience-profile.types";
 
 @Injectable()
 export class ExperienceResolverService {
@@ -46,89 +47,19 @@ export class ExperienceResolverService {
     });
   }
 
-  applyToSlots(slots: SlotManifest[], profile: ResolvedExperienceProfile) {
-    const rulesByRenderer = new Map(
-      profile.slotRules.map((rule) => [rule.rendererKey, rule]),
-    );
-
-    const nextSlots: SlotManifest[] = [];
-    for (const slot of slots) {
-      const rule = rulesByRenderer.get(slot.rendererKey);
-      if (rule?.include === false) {
-        continue;
-      }
-
-      const presentation = {
-        ...slot.presentation,
-        variantKey:
-          rule?.variantKey ?? slot.presentation?.variantKey ?? "default",
-        layoutKey: rule?.layoutKey ?? slot.presentation?.layoutKey,
-        density: rule?.density ?? slot.presentation?.density,
-        flags: mergeFlags(slot.presentation?.flags, rule?.flags),
-      };
-
-      const nextSlotRef = slot.slotRef
-        ? {
-            ...slot.slotRef,
-            query: dedupeQuery({
-              ...slot.slotRef.query,
-              variantKey: presentation.variantKey,
-              layoutKey: presentation.layoutKey,
-              density: presentation.density,
-            }),
-          }
-        : undefined;
-
-      nextSlots.push({
-        ...slot,
-        presentation,
-        slotRef: nextSlotRef,
-        revalidateTags: dedupe([
-          ...slot.revalidateTags,
-          `experience:${profile.experienceProfileId}`,
-          `theme:${profile.themeKey}:${profile.themeRevision}`,
-          `theme-pack:${profile.themeTokenPack ?? profile.themeKey}`,
-          `customer-profile:${profile.signals.customerProfile}`,
-          `campaign:${profile.signals.campaignKey}`,
-          ...profile.signals.activeMarketingDirectiveIds.map(
-            (directiveId) => `marketing:${directiveId}`,
-          ),
-        ]),
-        priority: slot.priority,
-        stream: slot.stream,
-      });
-    }
-
-    return nextSlots;
+  applyToSlots(
+    slots: SlotManifest[],
+    profile: ResolvedExperienceProfile,
+  ): SlotManifest[] {
+    return applySlotOverlay(slots, profile.slotRules, [
+      `experience:${profile.experienceProfileId}`,
+      `theme:${profile.themeKey}:${profile.themeRevision}`,
+      `theme-pack:${profile.themeTokenPack ?? profile.themeKey}`,
+      `customer-profile:${profile.signals.customerProfile}`,
+      `campaign:${profile.signals.campaignKey}`,
+      ...profile.signals.activeMarketingDirectiveIds.map(
+        (directiveId) => `marketing:${directiveId}`,
+      ),
+    ]);
   }
-}
-
-function dedupe(values: string[]) {
-  return [...new Set(values)];
-}
-
-function mergeFlags(
-  slotFlags?: Record<string, boolean>,
-  ruleFlags?: Record<string, boolean>,
-) {
-  if (!slotFlags && !ruleFlags) {
-    return undefined;
-  }
-
-  return {
-    ...(slotFlags ?? {}),
-    ...(ruleFlags ?? {}),
-  };
-}
-
-function dedupeQuery(
-  input: Record<string, string | undefined>,
-): Record<string, string> {
-  const result: Record<string, string> = {};
-  for (const [key, value] of Object.entries(input)) {
-    if (value !== undefined) {
-      result[key] = value;
-    }
-  }
-  return result;
 }

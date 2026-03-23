@@ -1,27 +1,30 @@
 import type { LanguageCode, LocaleContext } from "@commerce/shared-types";
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import {
-  categorySlugCatalog,
-  defaultLocaleContext,
-  domainConfig,
-  localeByLanguage,
-  normalizeLanguage,
-  pageSlugCatalog,
-  productSlugCatalog,
-  resolveCatalogLocale,
-  staticRouteSegmentCatalog,
-  supportedLanguageCodes,
-} from "../../adapters/mock/mock-data";
+  I18N_CONFIG_PORT,
+  type I18nConfigPort,
+} from "../../ports/i18n-config.port";
+import {
+  SLUG_CATALOG_PORT,
+  type SlugCatalogPort,
+} from "../../ports/slug-catalog.port";
 import type { ResolvedIncomingRoute, StaticRouteSegments } from "./slug.types";
 
 @Injectable()
 export class SlugMapperService {
-  private readonly defaultLocale = defaultLocaleContext.locale;
+  private readonly defaultLocale: string;
 
-  constructor() {
-    this.assertUniqueSlugs(productSlugCatalog, "product");
-    this.assertUniqueSlugs(pageSlugCatalog, "page");
-    this.assertUniqueSlugs(categorySlugCatalog, "category");
+  constructor(
+    @Inject(I18N_CONFIG_PORT) private readonly i18nConfig: I18nConfigPort,
+    @Inject(SLUG_CATALOG_PORT) private readonly slugCatalog: SlugCatalogPort,
+  ) {
+    this.defaultLocale = this.i18nConfig.getDefaultLocaleContext().locale;
+    this.assertUniqueSlugs(this.slugCatalog.getProductSlugCatalog(), "product");
+    this.assertUniqueSlugs(this.slugCatalog.getPageSlugCatalog(), "page");
+    this.assertUniqueSlugs(
+      this.slugCatalog.getCategorySlugCatalog(),
+      "category",
+    );
   }
 
   getDefaultLocale(): string {
@@ -29,20 +32,22 @@ export class SlugMapperService {
   }
 
   getSupportedLocale(locale: string): string {
-    const direct = resolveCatalogLocale(locale);
-    if (staticRouteSegmentCatalog[direct]) return direct;
-    const language = normalizeLanguage(locale);
-    if (language && localeByLanguage[language]) {
-      return localeByLanguage[language];
+    const segmentCatalog = this.slugCatalog.getStaticRouteSegmentCatalog();
+    const direct = this.i18nConfig.resolveCatalogLocale(locale);
+    if (segmentCatalog[direct]) return direct;
+    const language = this.i18nConfig.normalizeLanguage(locale);
+    const localeByLang = this.slugCatalog.getLocaleByLanguage();
+    if (language && localeByLang[language]) {
+      return localeByLang[language];
     }
     return this.defaultLocale;
   }
 
   getStaticSegments(locale: string): StaticRouteSegments {
+    const segmentCatalog = this.slugCatalog.getStaticRouteSegmentCatalog();
     const supported = this.getSupportedLocale(locale);
     const segments =
-      staticRouteSegmentCatalog[supported] ??
-      staticRouteSegmentCatalog[this.defaultLocale];
+      segmentCatalog[supported] ?? segmentCatalog[this.defaultLocale];
     if (!segments) {
       throw new Error("Missing static route segment catalog configuration");
     }
@@ -68,7 +73,7 @@ export class SlugMapperService {
   buildProductPath(locale: string, productHandle: string): string {
     const segment = this.getStaticSegments(locale).product;
     const slug = this.getLocalizedSlug(
-      productSlugCatalog,
+      this.slugCatalog.getProductSlugCatalog(),
       locale,
       productHandle,
     );
@@ -76,7 +81,11 @@ export class SlugMapperService {
   }
 
   buildPagePath(locale: string, pageHandle: string): string {
-    const slug = this.getLocalizedSlug(pageSlugCatalog, locale, pageHandle);
+    const slug = this.getLocalizedSlug(
+      this.slugCatalog.getPageSlugCatalog(),
+      locale,
+      pageHandle,
+    );
     return `/${slug}`;
   }
 
@@ -84,7 +93,7 @@ export class SlugMapperService {
     const segment = this.getStaticSegments(locale).categories;
     const normalized = normalizeCategoryKey(categoryKey);
     const slugPath = this.getLocalizedSlug(
-      categorySlugCatalog,
+      this.slugCatalog.getCategorySlugCatalog(),
       locale,
       normalized,
     );
@@ -102,8 +111,8 @@ export class SlugMapperService {
       this.getDomainLanguageConfig(localeContext.domain);
     const requestedLanguage =
       languagePrefix ??
-      normalizeLanguage(localeContext.language) ??
-      normalizeLanguage(localeContext.locale) ??
+      this.i18nConfig.normalizeLanguage(localeContext.language) ??
+      this.i18nConfig.normalizeLanguage(localeContext.locale) ??
       defaultLanguage;
     const language = supportedLanguages.includes(requestedLanguage)
       ? requestedLanguage
@@ -155,8 +164,9 @@ export class SlugMapperService {
     canonicalPath: string,
   ): Record<string, string> {
     const alternates: Record<string, string> = {};
+    const domainCfg = this.i18nConfig.getDomainConfig();
 
-    for (const item of domainConfig.domains) {
+    for (const item of domainCfg.domains) {
       const supportedLanguages = item.supportedLanguages.length
         ? item.supportedLanguages
         : [item.defaultLanguage];
@@ -185,7 +195,7 @@ export class SlugMapperService {
   } {
     const normalized = normalizePath(path);
     const parts = normalized.split("/").filter(Boolean);
-    const first = normalizeLanguage(parts[0]);
+    const first = this.i18nConfig.normalizeLanguage(parts[0]);
     if (!first) {
       return { strippedPath: normalized };
     }
@@ -203,8 +213,8 @@ export class SlugMapperService {
       localeContext.domain,
     );
     const language =
-      normalizeLanguage(localeContext.language) ??
-      normalizeLanguage(localeContext.locale) ??
+      this.i18nConfig.normalizeLanguage(localeContext.language) ??
+      this.i18nConfig.normalizeLanguage(localeContext.locale) ??
       defaultLanguage;
 
     if (language === defaultLanguage) {
@@ -225,18 +235,15 @@ export class SlugMapperService {
     defaultLanguage: LanguageCode;
     supportedLanguages: LanguageCode[];
   } {
+    const domainCfg = this.i18nConfig.getDomainConfig();
     const normalized = (domain ?? "").toLowerCase();
-    const alias = domainConfig.aliases?.find(
-      (item) => item.host === normalized,
-    );
+    const alias = domainCfg.aliases?.find((item) => item.host === normalized);
     const canonicalHost = alias?.canonicalHost ?? normalized;
-    const match = domainConfig.domains.find(
-      (item) => item.host === canonicalHost,
-    );
+    const match = domainCfg.domains.find((item) => item.host === canonicalHost);
     if (!match) {
       return {
         defaultLanguage: "en",
-        supportedLanguages: [...supportedLanguageCodes],
+        supportedLanguages: [...this.slugCatalog.getSupportedLanguageCodes()],
       };
     }
 
@@ -249,16 +256,28 @@ export class SlugMapperService {
   }
 
   toCanonicalProductHandle(locale: string, slug: string): string | undefined {
-    return this.toCanonicalKey(productSlugCatalog, locale, slug);
+    return this.toCanonicalKey(
+      this.slugCatalog.getProductSlugCatalog(),
+      locale,
+      slug,
+    );
   }
 
   toCanonicalPageHandle(locale: string, slug: string): string | undefined {
-    return this.toCanonicalKey(pageSlugCatalog, locale, slug);
+    return this.toCanonicalKey(
+      this.slugCatalog.getPageSlugCatalog(),
+      locale,
+      slug,
+    );
   }
 
   toCanonicalCategoryKey(locale: string, slugPath: string): string | undefined {
     const normalized = normalizeCategoryKey(slugPath);
-    return this.toCanonicalKey(categorySlugCatalog, locale, normalized);
+    return this.toCanonicalKey(
+      this.slugCatalog.getCategorySlugCatalog(),
+      locale,
+      normalized,
+    );
   }
 
   private resolveIncomingPathByLocale(

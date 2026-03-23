@@ -1,14 +1,14 @@
 import type { LocaleContext } from "@commerce/shared-types";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 import { performance } from "node:perf_hooks";
-import { Injectable, Logger } from "@nestjs/common";
 import {
-  localeByLanguage,
-  normalizeLanguage,
-} from "../../../adapters/mock/mock-data";
+  I18N_CONFIG_PORT,
+  type I18nConfigPort,
+} from "../../../ports/i18n-config.port";
+import { ScalabilityMetricsService } from "../../system/scalability-metrics.service";
 import { RouteMatcherFactory } from "./route-matcher.factory";
 import type { ResolvedRouteDescriptor, RouteKind } from "./route-rule.types";
 import { SlugIndexService } from "./slug-index.service";
-import { ScalabilityMetricsService } from "../../system/scalability-metrics.service";
 
 const TRANSLATED_SLUGS_REDIRECT_ENABLED =
   process.env.TRANSLATED_SLUGS_REDIRECT_ENABLED === "true";
@@ -21,6 +21,7 @@ export class RouteRecognitionService {
     private readonly matcherFactory: RouteMatcherFactory,
     private readonly slugIndex: SlugIndexService,
     private readonly metrics: ScalabilityMetricsService,
+    @Inject(I18N_CONFIG_PORT) private readonly i18nConfig: I18nConfigPort,
   ) {}
 
   recognize(
@@ -33,6 +34,7 @@ export class RouteRecognitionService {
     const effectiveLocaleContext = resolveEffectiveLocaleContext(
       localeContext,
       prefixResolution.languagePrefix,
+      this.i18nConfig,
     );
     const primary = this.tryRecognize({
       requestedPath: normalizedPath,
@@ -273,7 +275,9 @@ export class RouteRecognitionService {
     const { supportedLanguages } = this.slugIndex.getDomainLanguageConfig(
       localeContext.domain,
     );
-    const baseLanguage = normalizeLanguage(localeContext.language);
+    const baseLanguage = this.i18nConfig.normalizeLanguage(
+      localeContext.language,
+    );
 
     const candidates = supportedLanguages.filter(
       (language) => language !== baseLanguage,
@@ -281,7 +285,7 @@ export class RouteRecognitionService {
     const matches: ResolvedRouteDescriptor[] = [];
 
     for (const language of candidates) {
-      const fallbackLocale = localeByLanguage[language];
+      const fallbackLocale = this.i18nConfig.getLocaleByLanguage(language);
       if (!fallbackLocale) {
         continue;
       }
@@ -415,11 +419,14 @@ export class RouteRecognitionService {
   }
 }
 
+// NOTE: We cannot inject into a free function, so we use the slug index
+// (which also has access to the same config) to resolve the locale.
 function resolveEffectiveLocaleContext(
   localeContext: LocaleContext,
-  languagePrefix?: string,
+  languagePrefix: string | undefined,
+  i18nConfig: I18nConfigPort,
 ): LocaleContext {
-  const overrideLanguage = normalizeLanguage(languagePrefix);
+  const overrideLanguage = i18nConfig.normalizeLanguage(languagePrefix);
   if (!overrideLanguage) {
     return localeContext;
   }
@@ -427,7 +434,8 @@ function resolveEffectiveLocaleContext(
   return {
     ...localeContext,
     language: overrideLanguage,
-    locale: localeByLanguage[overrideLanguage],
+    locale:
+      i18nConfig.getLocaleByLanguage(overrideLanguage) ?? localeContext.locale,
   };
 }
 

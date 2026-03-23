@@ -1,21 +1,14 @@
 import type {
-  ExperienceRendererKey,
   LanguageCode,
   MerchandisingMode,
   MerchandisingSortSlug,
+  SlotOverlayRule,
 } from "@commerce/shared-types";
 import type { RouteKind } from "../page-data/routing/route-rule.types";
 
 export type MerchandisingRouteKind = Exclude<RouteKind, "unknown"> | "*";
 
-export type MerchandisingSlotRule = {
-  rendererKey: ExperienceRendererKey;
-  include?: boolean;
-  variantKey?: string;
-  layoutKey?: string;
-  density?: "compact" | "comfortable";
-  flags?: Record<string, boolean>;
-};
+export type MerchandisingSlotRule = SlotOverlayRule;
 
 export type MerchandisingProfile = {
   id: string;

@@ -3,16 +3,21 @@ import type {
   SlotPayloadModel,
   SlotPresentation,
 } from "@commerce/shared-types";
+import { Inject, Injectable, Logger, NotFoundException } from "@nestjs/common";
+import type { FastifyReply } from "fastify";
 import { createHash } from "node:crypto";
 import { performance } from "node:perf_hooks";
-import { Injectable, Logger, NotFoundException } from "@nestjs/common";
-import type { FastifyReply } from "fastify";
+import {
+  CONTENT_SUPPLEMENT_PORT,
+  type ContentSupplementPort,
+} from "../../ports/content-supplement.port";
 import { I18nService } from "../i18n/i18n.service";
 import { LinkLocalizationPolicyService } from "../slug/link-localization-policy.service";
-import { PageDataService } from "./page-data.service";
 import { CachePolicyService } from "../system/cache-policy.service";
 import { LoadSheddingService } from "../system/load-shedding.service";
 import { ScalabilityMetricsService } from "../system/scalability-metrics.service";
+import { withLanguageScopedTags } from "./cache-tag.utils";
+import { PageDataService } from "./page-data.service";
 
 type QueryMap = Record<string, string | undefined>;
 const DEBUG_PDP_REVIEWS_DELAY_MS = Number(
@@ -34,6 +39,8 @@ export class SlotDataService {
     private readonly cachePolicy: CachePolicyService,
     private readonly loadShedding: LoadSheddingService,
     private readonly metrics: ScalabilityMetricsService,
+    @Inject(CONTENT_SUPPLEMENT_PORT)
+    private readonly contentSupplement: ContentSupplementPort,
   ) {}
 
   async resolveSlotPayload(params: {
@@ -109,7 +116,10 @@ export class SlotDataService {
             slotId,
             rendererKey: "page.pdp-reviews",
             props: {
-              reviews: mockReviews(handle, localeContext.locale),
+              reviews: this.contentSupplement.getReviews(
+                handle,
+                localeContext.locale,
+              ),
             },
             presentation: presentationFromQuery(query),
             revalidateTags: [`reviews:${handle}`],
@@ -137,7 +147,7 @@ export class SlotDataService {
             slotId,
             rendererKey: "page.pdp-faq",
             props: {
-              items: mockFaq(localeContext.locale),
+              items: this.contentSupplement.getFaq(localeContext.locale),
             },
             presentation: presentationFromQuery(query),
             revalidateTags: [`faq:${handle}`],
@@ -264,25 +274,6 @@ export class SlotDataService {
   }
 }
 
-function withLanguageScopedTags(tags: string[], language: string): string[] {
-  const next = new Set(tags);
-  for (const tag of tags) {
-    if (tag === "products" || tag.startsWith("products:")) {
-      next.add(`products:lang:${language}`);
-    }
-    if (tag === "collections" || tag.startsWith("collections:")) {
-      next.add(`collections:lang:${language}`);
-    }
-    if (tag === "pages" || tag.startsWith("pages:")) {
-      next.add(`pages:lang:${language}`);
-    }
-    if (tag === "menus" || tag.startsWith("menus:")) {
-      next.add(`menus:lang:${language}`);
-    }
-  }
-  return [...next];
-}
-
 function extractProductHandle(path: string): string | undefined {
   const parts = path.split("/").filter(Boolean);
   return parts.at(-1);
@@ -321,55 +312,6 @@ function getSorting(query: QueryMap): {
     default:
       return { sortKey: undefined, reverse: false };
   }
-}
-
-function mockReviews(handle: string, locale: string) {
-  const isSpanish = locale.startsWith("es");
-  return [
-    {
-      id: `${handle}-review-1`,
-      author: isSpanish ? "Carlos M." : "Alex R.",
-      rating: 5,
-      title: isSpanish ? "Gran calidad" : "Excellent quality",
-      body: isSpanish
-        ? "La instalación fue simple y la mejora se notó al instante."
-        : "Install was straightforward and performance improved immediately.",
-    },
-    {
-      id: `${handle}-review-2`,
-      author: isSpanish ? "Lucia T." : "Jordan K.",
-      rating: 4,
-      title: isSpanish ? "Muy recomendable" : "Highly recommended",
-      body: isSpanish
-        ? "Buena relación precio/calidad, volvería a comprar."
-        : "Great value for money, would buy again.",
-    },
-  ];
-}
-
-function mockFaq(locale: string) {
-  const isSpanish = locale.startsWith("es");
-  return isSpanish
-    ? [
-        {
-          q: "¿Incluye instrucciones de instalación?",
-          a: "Sí. Incluye guía rápida y especificaciones de montaje.",
-        },
-        {
-          q: "¿Cuál es el tiempo de envío?",
-          a: "Generalmente entre 3 y 5 días hábiles.",
-        },
-      ]
-    : [
-        {
-          q: "Does it include installation instructions?",
-          a: "Yes. A quick-start guide and fitment notes are included.",
-        },
-        {
-          q: "What is the shipping timeline?",
-          a: "Most orders arrive in 3-5 business days.",
-        },
-      ];
 }
 
 function sleep(ms: number) {

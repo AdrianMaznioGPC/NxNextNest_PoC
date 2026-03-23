@@ -1,5 +1,4 @@
 import type {
-  ExperienceRendererKey,
   LocaleContext,
   PageContentNode,
   ResolvedPageModel,
@@ -7,6 +6,7 @@ import type {
   SlotManifest,
 } from "@commerce/shared-types";
 import { Injectable, Logger } from "@nestjs/common";
+import { rendererKeyForNode } from "./renderer-key.map";
 import type { ResolvedRouteDescriptor } from "./routing/route-rule.types";
 
 type QueryMap = Record<string, string | undefined>;
@@ -318,31 +318,6 @@ function toSlotsFromContent(content: PageContentNode[]): ResolvedPageSlot[] {
       priority: node.type === "search-results" ? "deferred" : "critical",
     };
   });
-}
-
-function rendererKeyForNode(
-  type: PageContentNode["type"],
-): ExperienceRendererKey {
-  switch (type) {
-    case "home":
-      return "page.home";
-    case "category-list":
-      return "page.category-list";
-    case "category-subcollections":
-      return "page.category-subcollections";
-    case "category-products":
-      return "page.category-products";
-    case "product-detail":
-      return "page.product-detail";
-    case "search-results":
-      return "page.search-results";
-    case "content-page":
-      return "page.content-page";
-    case "cart-page":
-      return "page.cart";
-    case "checkout-page":
-      return "page.checkout-main";
-  }
 }
 
 function withLocaleContext(

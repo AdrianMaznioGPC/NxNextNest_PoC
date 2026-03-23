@@ -1,3 +1,4 @@
+import type { Cart, LocaleContext } from "@commerce/shared-types";
 import {
   Body,
   Controller,
@@ -5,36 +6,36 @@ import {
   Get,
   Headers,
   Inject,
-  Logger,
   Param,
   Patch,
   Post,
   Query,
   Res,
 } from "@nestjs/common";
-import type { Cart, LocaleContext } from "@commerce/shared-types";
-import { randomUUID } from "node:crypto";
 import type { FastifyReply } from "fastify";
-import { localizeCartLineMerchandise } from "../../adapters/mock/mock-commerce-localization";
+import { randomUUID } from "node:crypto";
+import {
+  CART_LOCALIZATION_PORT,
+  type CartLocalizationPort,
+} from "../../ports/cart-localization.port";
 import { CART_PORT, CartPort } from "../../ports/cart.port";
 import { I18nService } from "../i18n/i18n.service";
-import { SlugService } from "../slug/slug.service";
 import {
-  getCartCookieConfig,
-  readCookie,
-  serializeCartCookie,
-  serializeExpiredCartCookie,
-} from "./cart-cookie.config";
+  localeContextFromQuery,
+  normalizeQuery,
+} from "../i18n/locale-query.utils";
+import { SlugService } from "../slug/slug.service";
+import { CartSessionService } from "./cart-session.service";
 
 @Controller("cart")
 export class CartController {
-  private readonly logger = new Logger(CartController.name);
-  private readonly cartCookie = getCartCookieConfig();
-
   constructor(
     @Inject(CART_PORT) private readonly cart: CartPort,
+    @Inject(CART_LOCALIZATION_PORT)
+    private readonly cartLocalization: CartLocalizationPort,
     private readonly i18n: I18nService,
     private readonly slug: SlugService,
+    private readonly session: CartSessionService,
   ) {}
 
   @Post()
@@ -53,18 +54,18 @@ export class CartController {
     const localeContext = this.i18n.resolveLocaleContext(
       localeContextFromQuery(normalizeQuery(query)),
     );
-    const existingCartId = this.readCartId(cookieHeader);
+    const existingCartId = this.session.readCartId(cookieHeader);
     if (existingCartId) {
       const existing = await this.cart.getCart(existingCartId);
       if (existing) {
-        this.logCartEvent(
+        this.session.logCartEvent(
           requestId,
           "create_or_get_current",
           true,
           false,
           false,
         );
-        return localizeCart(existing, localeContext, this.slug);
+        return this.localizeCart(existing, localeContext);
       }
     }
 
@@ -72,9 +73,15 @@ export class CartController {
     if (!createdCart.id) {
       throw new Error("Cart ID missing for created cart");
     }
-    this.setCartCookie(response, createdCart.id);
-    this.logCartEvent(requestId, "create_or_get_current", false, true, true);
-    return localizeCart(createdCart, localeContext, this.slug);
+    this.session.setCartCookie(response, createdCart.id);
+    this.session.logCartEvent(
+      requestId,
+      "create_or_get_current",
+      false,
+      true,
+      true,
+    );
+    return this.localizeCart(createdCart, localeContext);
   }
 
   @Get("current")
@@ -88,21 +95,21 @@ export class CartController {
     const localeContext = this.i18n.resolveLocaleContext(
       localeContextFromQuery(normalizeQuery(query)),
     );
-    const cartId = this.readCartId(cookieHeader);
+    const cartId = this.session.readCartId(cookieHeader);
     if (!cartId) {
-      this.logCartEvent(requestId, "get_current", false, false, false);
+      this.session.logCartEvent(requestId, "get_current", false, false, false);
       response?.status(204);
       return undefined;
     }
     const cart = await this.cart.getCart(cartId);
     if (!cart) {
-      this.clearCartCookie(response);
-      this.logCartEvent(requestId, "get_current", true, false, false);
+      this.session.clearCartCookie(response);
+      this.session.logCartEvent(requestId, "get_current", true, false, false);
       response?.status(204);
       return undefined;
     }
-    this.logCartEvent(requestId, "get_current", true, false, false);
-    return localizeCart(cart, localeContext, this.slug);
+    this.session.logCartEvent(requestId, "get_current", true, false, false);
+    return this.localizeCart(cart, localeContext);
   }
 
   @Post("current/lines")
@@ -118,19 +125,17 @@ export class CartController {
       localeContextFromQuery(normalizeQuery(query)),
     );
     const normalizedLines = body?.lines ?? [];
-    const { cartId, cookieIssued, cartCreated } = await this.getOrCreateCartId(
-      cookieHeader,
-      response,
-    );
+    const { cartId, cookieIssued, cartCreated } =
+      await this.session.getOrCreateCartId(cookieHeader, response);
     const cart = await this.cart.addToCart(cartId, normalizedLines);
-    this.logCartEvent(
+    this.session.logCartEvent(
       requestId,
       "add_to_current",
-      this.readCartId(cookieHeader) !== undefined,
+      this.session.readCartId(cookieHeader) !== undefined,
       cartCreated,
       cookieIssued,
     );
-    return localizeCart(cart, localeContext, this.slug);
+    return this.localizeCart(cart, localeContext);
   }
 
   @Delete("current/lines")
@@ -145,10 +150,8 @@ export class CartController {
     const localeContext = this.i18n.resolveLocaleContext(
       localeContextFromQuery(normalizeQuery(query)),
     );
-    const { cartId, cookieIssued, cartCreated } = await this.getOrCreateCartId(
-      cookieHeader,
-      response,
-    );
+    const { cartId, cookieIssued, cartCreated } =
+      await this.session.getOrCreateCartId(cookieHeader, response);
     const current = await this.cart.getCart(cartId);
     const lineIds = new Set<string>(body?.lineIds ?? []);
     const merchandiseIds = new Set(body?.merchandiseIds ?? []);
@@ -161,14 +164,14 @@ export class CartController {
     }
 
     const cart = await this.cart.removeFromCart(cartId, [...lineIds]);
-    this.logCartEvent(
+    this.session.logCartEvent(
       requestId,
       "remove_from_current",
-      this.readCartId(cookieHeader) !== undefined,
+      this.session.readCartId(cookieHeader) !== undefined,
       cartCreated,
       cookieIssued,
     );
-    return localizeCart(cart, localeContext, this.slug);
+    return this.localizeCart(cart, localeContext);
   }
 
   @Patch("current/lines")
@@ -187,10 +190,8 @@ export class CartController {
       localeContextFromQuery(normalizeQuery(query)),
     );
     const normalizedLines = body?.lines ?? [];
-    const { cartId, cookieIssued, cartCreated } = await this.getOrCreateCartId(
-      cookieHeader,
-      response,
-    );
+    const { cartId, cookieIssued, cartCreated } =
+      await this.session.getOrCreateCartId(cookieHeader, response);
     const current = await this.cart.getCart(cartId);
     const lineIdByMerchandise = new Map<string, string>();
     for (const line of current?.lines ?? []) {
@@ -237,22 +238,22 @@ export class CartController {
     if (!cart) {
       cart = await this.cart.createCart();
       if (cart.id && cart.id !== cartId) {
-        this.setCartCookie(response, cart.id);
+        this.session.setCartCookie(response, cart.id);
       }
     }
-    this.logCartEvent(
+    this.session.logCartEvent(
       requestId,
       "update_current",
-      this.readCartId(cookieHeader) !== undefined,
+      this.session.readCartId(cookieHeader) !== undefined,
       cartCreated,
       cookieIssued,
     );
-    return localizeCart(cart, localeContext, this.slug);
+    return this.localizeCart(cart, localeContext);
   }
 
   @Delete("current")
   clearCurrentCart(@Res({ passthrough: true }) response?: FastifyReply) {
-    this.clearCartCookie(response);
+    this.session.clearCartCookie(response);
     return { cleared: true };
   }
 
@@ -265,7 +266,7 @@ export class CartController {
       localeContextFromQuery(normalizeQuery(query)),
     );
     const cart = await this.cart.getCart(id);
-    return cart ? localizeCart(cart, localeContext, this.slug) : undefined;
+    return cart ? this.localizeCart(cart, localeContext) : undefined;
   }
 
   @Post(":id/lines")
@@ -278,7 +279,7 @@ export class CartController {
       localeContextFromQuery(normalizeQuery(query)),
     );
     const cart = await this.cart.addToCart(id, body.lines);
-    return localizeCart(cart, localeContext, this.slug);
+    return this.localizeCart(cart, localeContext);
   }
 
   @Delete(":id/lines")
@@ -291,7 +292,7 @@ export class CartController {
       localeContextFromQuery(normalizeQuery(query)),
     );
     const cart = await this.cart.removeFromCart(id, body.lineIds);
-    return localizeCart(cart, localeContext, this.slug);
+    return this.localizeCart(cart, localeContext);
   }
 
   @Patch(":id/lines")
@@ -307,134 +308,40 @@ export class CartController {
       localeContextFromQuery(normalizeQuery(query)),
     );
     const cart = await this.cart.updateCart(id, body.lines);
-    return localizeCart(cart, localeContext, this.slug);
+    return this.localizeCart(cart, localeContext);
   }
 
-  private readCartId(cookieHeader: string | undefined): string | undefined {
-    return readCookie(cookieHeader, this.cartCookie.name);
-  }
-
-  private clearCartCookie(response?: FastifyReply) {
-    response?.header("Set-Cookie", serializeExpiredCartCookie(this.cartCookie));
-  }
-
-  private setCartCookie(response: FastifyReply | undefined, cartId: string) {
-    response?.header(
-      "Set-Cookie",
-      serializeCartCookie(this.cartCookie, cartId),
-    );
-  }
-
-  private async getOrCreateCartId(
-    cookieHeader: string | undefined,
-    response?: FastifyReply,
-  ): Promise<{ cartId: string; cookieIssued: boolean; cartCreated: boolean }> {
-    const existingCartId = this.readCartId(cookieHeader);
-    if (existingCartId) {
-      const existing = await this.cart.getCart(existingCartId);
-      if (existing) {
-        return {
-          cartId: existingCartId,
-          cookieIssued: false,
-          cartCreated: false,
-        };
-      }
-    }
-
-    const created = await this.cart.createCart();
-    if (!created.id) {
-      throw new Error("Cart ID missing for created cart");
-    }
-    this.setCartCookie(response, created.id);
-    return { cartId: created.id, cookieIssued: true, cartCreated: true };
-  }
-
-  private logCartEvent(
-    requestId: string,
-    action: string,
-    cartCookiePresent: boolean,
-    cartCreated: boolean,
-    cookieIssued: boolean,
-  ) {
-    this.logger.log(
-      JSON.stringify({
-        requestId,
-        action,
-        cartCookiePresent,
-        cartCreated,
-        cookieIssued,
-      }),
-    );
-  }
-}
-
-function localizeCart(
-  cart: Cart,
-  localeContext: LocaleContext,
-  slug: SlugService,
-): Cart {
-  return {
-    ...cart,
-    lines: cart.lines.map((line) => {
-      const localized = localizeCartLineMerchandise(
-        {
-          productHandle: line.merchandise.product.handle,
-          productTitle: line.merchandise.product.title,
-          merchandiseId: line.merchandise.id,
-          merchandiseTitle: line.merchandise.title,
-          selectedOptions: line.merchandise.selectedOptions,
-        },
-        localeContext,
-      );
-      return {
-        ...line,
-        merchandise: {
-          ...line.merchandise,
-          title: localized.value.merchandiseTitle,
-          selectedOptions: localized.value.selectedOptions,
-          product: {
-            ...line.merchandise.product,
-            title: localized.value.productTitle,
-            path: slug.buildProductPath(
-              localeContext,
-              line.merchandise.product.handle,
-            ),
+  private localizeCart(cart: Cart, localeContext: LocaleContext): Cart {
+    return {
+      ...cart,
+      lines: cart.lines.map((line) => {
+        const localized = this.cartLocalization.localizeCartLineMerchandise(
+          {
+            productHandle: line.merchandise.product.handle,
+            productTitle: line.merchandise.product.title,
+            merchandiseId: line.merchandise.id,
+            merchandiseTitle: line.merchandise.title,
+            selectedOptions: line.merchandise.selectedOptions,
           },
-        },
-      };
-    }),
-  };
-}
-
-function normalizeQuery(
-  query: Record<string, string | string[] | undefined> = {},
-): Record<string, string | undefined> {
-  const normalized: Record<string, string | undefined> = {};
-  for (const [key, value] of Object.entries(query)) {
-    normalized[key] = Array.isArray(value) ? value[0] : value;
+          localeContext,
+        );
+        return {
+          ...line,
+          merchandise: {
+            ...line.merchandise,
+            title: localized.merchandiseTitle,
+            selectedOptions: localized.selectedOptions,
+            product: {
+              ...line.merchandise.product,
+              title: localized.productTitle,
+              path: this.slug.buildProductPath(
+                localeContext,
+                line.merchandise.product.handle,
+              ),
+            },
+          },
+        };
+      }),
+    };
   }
-  return normalized;
-}
-
-function localeContextFromQuery(query: Record<string, string | undefined>) {
-  const partial: Partial<LocaleContext> = {
-    locale: query.locale,
-    language: normalizeLanguage(query.language),
-    region: query.region,
-    currency: query.currency,
-    market: query.market,
-    domain: query.domain,
-  };
-
-  const hasAnyValue = Object.values(partial).some(Boolean);
-  return hasAnyValue ? partial : undefined;
-}
-
-function normalizeLanguage(
-  input?: string,
-): LocaleContext["language"] | undefined {
-  if (input === "en" || input === "es" || input === "nl" || input === "fr") {
-    return input;
-  }
-  return undefined;
 }
