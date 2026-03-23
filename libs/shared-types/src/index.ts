@@ -147,6 +147,11 @@ export type FeaturedProductsBlock = CmsBlockBase<"featured-products"> & {
   products: Product[];
 };
 
+export type FeaturedCategoriesBlock = CmsBlockBase<"featured-categories"> & {
+  heading: string;
+  categories: Collection[];
+};
+
 export type ProductCarouselBlock = CmsBlockBase<"product-carousel"> & {
   heading: string;
   products: Product[];
@@ -159,6 +164,7 @@ export type RichTextBlock = CmsBlockBase<"rich-text"> & {
 export type CmsBlock =
   | HeroBannerBlock
   | FeaturedProductsBlock
+  | FeaturedCategoriesBlock
   | ProductCarouselBlock
   | RichTextBlock;
 
@@ -693,4 +699,3 @@ export type SwitchUrlResponse = {
       | "target_region_unresolved";
   };
 };
-

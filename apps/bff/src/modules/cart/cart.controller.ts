@@ -57,7 +57,13 @@ export class CartController {
     if (existingCartId) {
       const existing = await this.cart.getCart(existingCartId);
       if (existing) {
-        this.logCartEvent(requestId, "create_or_get_current", true, false, false);
+        this.logCartEvent(
+          requestId,
+          "create_or_get_current",
+          true,
+          false,
+          false,
+        );
         return localizeCart(existing, localeContext, this.slug);
       }
     }
@@ -193,7 +199,11 @@ export class CartController {
       }
     }
 
-    const updateLines: { id: string; merchandiseId: string; quantity: number }[] = [];
+    const updateLines: {
+      id: string;
+      merchandiseId: string;
+      quantity: number;
+    }[] = [];
     const addLines: { merchandiseId: string; quantity: number }[] = [];
     for (const line of normalizedLines) {
       const resolvedLineId =
@@ -309,7 +319,10 @@ export class CartController {
   }
 
   private setCartCookie(response: FastifyReply | undefined, cartId: string) {
-    response?.header("Set-Cookie", serializeCartCookie(this.cartCookie, cartId));
+    response?.header(
+      "Set-Cookie",
+      serializeCartCookie(this.cartCookie, cartId),
+    );
   }
 
   private async getOrCreateCartId(
@@ -320,7 +333,11 @@ export class CartController {
     if (existingCartId) {
       const existing = await this.cart.getCart(existingCartId);
       if (existing) {
-        return { cartId: existingCartId, cookieIssued: false, cartCreated: false };
+        return {
+          cartId: existingCartId,
+          cookieIssued: false,
+          cartCreated: false,
+        };
       }
     }
 
@@ -351,7 +368,11 @@ export class CartController {
   }
 }
 
-function localizeCart(cart: Cart, localeContext: LocaleContext, slug: SlugService): Cart {
+function localizeCart(
+  cart: Cart,
+  localeContext: LocaleContext,
+  slug: SlugService,
+): Cart {
   return {
     ...cart,
     lines: cart.lines.map((line) => {
@@ -374,7 +395,10 @@ function localizeCart(cart: Cart, localeContext: LocaleContext, slug: SlugServic
           product: {
             ...line.merchandise.product,
             title: localized.value.productTitle,
-            path: slug.buildProductPath(localeContext, line.merchandise.product.handle),
+            path: slug.buildProductPath(
+              localeContext,
+              line.merchandise.product.handle,
+            ),
           },
         },
       };
@@ -406,13 +430,10 @@ function localeContextFromQuery(query: Record<string, string | undefined>) {
   return hasAnyValue ? partial : undefined;
 }
 
-function normalizeLanguage(input?: string): LocaleContext["language"] | undefined {
-  if (
-    input === "en" ||
-    input === "es" ||
-    input === "nl" ||
-    input === "fr"
-  ) {
+function normalizeLanguage(
+  input?: string,
+): LocaleContext["language"] | undefined {
+  if (input === "en" || input === "es" || input === "nl" || input === "fr") {
     return input;
   }
   return undefined;

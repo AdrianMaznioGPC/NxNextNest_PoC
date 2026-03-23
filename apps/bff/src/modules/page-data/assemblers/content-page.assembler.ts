@@ -17,9 +17,7 @@ export class ContentPageAssembler implements PageAssembler {
     private readonly slug: SlugService,
   ) {}
 
-  async assemble(
-    ctx: PageAssemblyContext,
-  ): Promise<PageAssemblyResult | null> {
+  async assemble(ctx: PageAssemblyContext): Promise<PageAssemblyResult | null> {
     const pageHandle = ctx.route.refs.pageHandle;
     if (!pageHandle) return null;
 
@@ -35,4 +33,3 @@ export class ContentPageAssembler implements PageAssembler {
     };
   }
 }
-

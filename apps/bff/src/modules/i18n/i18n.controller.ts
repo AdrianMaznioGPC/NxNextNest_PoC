@@ -29,7 +29,10 @@ export class I18nController {
     const payload = this.i18n.getDomainConfig();
     const etag = weakContentEtag(payload);
     response.header("ETag", etag);
-    response.header("Cache-Control", "public, max-age=60, stale-while-revalidate=300");
+    response.header(
+      "Cache-Control",
+      "public, max-age=60, stale-while-revalidate=300",
+    );
 
     if (ifNoneMatch === etag) {
       response.status(304);
@@ -66,9 +69,7 @@ export class I18nController {
   }
 
   @Post("switch-url")
-  async switchUrlForRegionAndLanguage(
-    @Body() payload: SwitchUrlRequest,
-  ) {
+  async switchUrlForRegionAndLanguage(@Body() payload: SwitchUrlRequest) {
     if (!payload?.path) {
       throw new BadRequestException("Field 'path' is required");
     }
@@ -109,8 +110,8 @@ function stableStringify(input: unknown): string {
     return `[${input.map((item) => stableStringify(item)).join(",")}]`;
   }
 
-  const entries = Object.entries(input as Record<string, unknown>).sort(([a], [b]) =>
-    a.localeCompare(b),
+  const entries = Object.entries(input as Record<string, unknown>).sort(
+    ([a], [b]) => a.localeCompare(b),
   );
   return `{${entries
     .map(([key, value]) => `${JSON.stringify(key)}:${stableStringify(value)}`)

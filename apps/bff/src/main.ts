@@ -29,7 +29,8 @@ async function bootstrap() {
       ? incomingRequestId[0]
       : incomingRequestId;
     const requestId =
-      normalizedIncomingRequestId && normalizedIncomingRequestId.trim().length > 0
+      normalizedIncomingRequestId &&
+      normalizedIncomingRequestId.trim().length > 0
         ? normalizedIncomingRequestId
         : randomUUID();
     request.headers["x-request-id"] = requestId;

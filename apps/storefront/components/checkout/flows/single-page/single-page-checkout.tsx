@@ -86,8 +86,7 @@ export function SinglePageCheckout({
 
   const [billingValues, setBillingValues] = useState<Record<string, string>>(
     () =>
-      defaultBilling?.values ??
-      buildInitialValues(config.billingAddressSchema),
+      defaultBilling?.values ?? buildInitialValues(config.billingAddressSchema),
   );
 
   const handleSelectBillingAddress = useCallback(
@@ -118,12 +117,19 @@ export function SinglePageCheckout({
   );
 
   useEffect(() => {
-    const option = config.deliveryOptions.find((o) => o.id === selectedDelivery);
+    const option = config.deliveryOptions.find(
+      (o) => o.id === selectedDelivery,
+    );
     syncSelectedDelivery(
       selectedDelivery,
       option?.price ?? { amount: "0.00", currencyCode: fallbackCurrency },
     );
-  }, [config.deliveryOptions, fallbackCurrency, selectedDelivery, syncSelectedDelivery]);
+  }, [
+    config.deliveryOptions,
+    fallbackCurrency,
+    selectedDelivery,
+    syncSelectedDelivery,
+  ]);
 
   // -- Field change handlers -------------------------------------------------
 
@@ -183,10 +189,7 @@ export function SinglePageCheckout({
 
   return (
     <div className="lg:grid lg:grid-cols-12 lg:gap-x-8">
-      <form
-        onSubmit={handleSubmit}
-        className="min-w-0 space-y-8 lg:col-span-7"
-      >
+      <form onSubmit={handleSubmit} className="min-w-0 space-y-8 lg:col-span-7">
         {/* Shipping address */}
         <div className="space-y-6">
           <AddressSection
@@ -261,9 +264,7 @@ export function SinglePageCheckout({
 
         {/* Error message */}
         {orderError && (
-          <p className="text-sm font-medium text-red-600">
-            {orderError}
-          </p>
+          <p className="text-sm font-medium text-red-600">{orderError}</p>
         )}
 
         {/* Submit */}

@@ -26,19 +26,19 @@ export class SwitchUrlService {
     const sourceLocaleContext = this.i18n.resolveLocaleContext({
       domain: sourceHost,
     });
-    const route = this.routeRecognition.recognize(input.path, sourceLocaleContext);
+    const route = this.routeRecognition.recognize(
+      input.path,
+      sourceLocaleContext,
+    );
 
     const targetDomain = this.i18n.resolveDomainByRegion(input.targetRegion);
     if (!targetDomain) {
       const fallbackHost = this.i18n.getDomainConfig().defaultDomain;
       return {
-        targetUrl: buildTargetUrl(
-          input.sourceOrigin,
-          fallbackHost,
-          "/",
-        ),
+        targetUrl: buildTargetUrl(input.sourceOrigin, fallbackHost, "/"),
         resolved: {
-          routeKind: route.routeKind === "unknown" ? undefined : route.routeKind,
+          routeKind:
+            route.routeKind === "unknown" ? undefined : route.routeKind,
           fallbackApplied: true,
           reason: "target_region_unresolved",
         },
@@ -112,11 +112,17 @@ export class SwitchUrlService {
     }
 
     if (route.routeKind === "category-detail" && route.refs.categoryKey) {
-      return this.slug.buildCategoryPath(targetLocaleContext, route.refs.categoryKey);
+      return this.slug.buildCategoryPath(
+        targetLocaleContext,
+        route.refs.categoryKey,
+      );
     }
 
     if (route.routeKind === "content-page" && route.refs.pageHandle) {
-      return this.slug.buildPagePath(targetLocaleContext, route.refs.pageHandle);
+      return this.slug.buildPagePath(
+        targetLocaleContext,
+        route.refs.pageHandle,
+      );
     }
 
     if (route.routeKind === "product-detail" && route.refs.productHandle) {
@@ -125,7 +131,10 @@ export class SwitchUrlService {
         targetLocaleContext,
       );
       if (!page) return homePath;
-      return this.slug.buildProductPath(targetLocaleContext, route.refs.productHandle);
+      return this.slug.buildProductPath(
+        targetLocaleContext,
+        route.refs.productHandle,
+      );
     }
 
     return homePath;
@@ -142,13 +151,22 @@ export class SwitchUrlService {
     if (route.routeKind === "checkout") return routes.checkout;
     if (route.routeKind === "category-list") return routes.categoryList;
     if (route.routeKind === "category-detail" && route.refs.categoryKey) {
-      return this.slug.buildCategoryPath(targetLocaleContext, route.refs.categoryKey);
+      return this.slug.buildCategoryPath(
+        targetLocaleContext,
+        route.refs.categoryKey,
+      );
     }
     if (route.routeKind === "content-page" && route.refs.pageHandle) {
-      return this.slug.buildPagePath(targetLocaleContext, route.refs.pageHandle);
+      return this.slug.buildPagePath(
+        targetLocaleContext,
+        route.refs.pageHandle,
+      );
     }
     if (route.routeKind === "product-detail" && route.refs.productHandle) {
-      return this.slug.buildProductPath(targetLocaleContext, route.refs.productHandle);
+      return this.slug.buildProductPath(
+        targetLocaleContext,
+        route.refs.productHandle,
+      );
     }
     return routes.home;
   }

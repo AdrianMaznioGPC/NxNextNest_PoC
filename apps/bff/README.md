@@ -13,16 +13,19 @@ This app is the backend-for-frontend for the storefront. It exposes commerce API
 ## Domain Map
 
 ### Page orchestration
+
 - `src/modules/page-data`: the main bootstrap pipeline
 - `src/modules/page`: older direct page endpoints
 - `src/modules/slug`: localized path generation and link normalization
 - `src/modules/system`: cache policy, resilience, load shedding, metrics
 
 ### Experience and commercial logic
+
 - `src/modules/experience`: store/route experience profiles, marketing-driven overlays, and slot overrides
 - `src/modules/merchandising`: commercial variants, merchandising mode, default sort behavior
 
 ### Commerce-facing domains
+
 - `src/modules/cart`: cart session and cart cookie handling
 - `src/modules/checkout`: checkout config and order endpoints
 - `src/modules/product`: product endpoints

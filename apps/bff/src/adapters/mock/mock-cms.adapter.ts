@@ -36,8 +36,14 @@ const mockPages: CmsRawPage[] = [
         ],
       },
       {
-        type: "product-carousel",
+        type: "featured-categories",
         id: "block-3",
+        heading: "Shop by Category",
+        categoryHandles: ["brakes", "engine", "suspension"],
+      },
+      {
+        type: "product-carousel",
+        id: "block-4",
         heading: "New Arrivals",
         collectionHandle: "hidden-homepage-carousel",
       },

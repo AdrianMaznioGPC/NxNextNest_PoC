@@ -82,12 +82,19 @@ export function ExpressCheckout({
   );
 
   useEffect(() => {
-    const option = config.deliveryOptions.find((o) => o.id === selectedDelivery);
+    const option = config.deliveryOptions.find(
+      (o) => o.id === selectedDelivery,
+    );
     syncSelectedDelivery(
       selectedDelivery,
       option?.price ?? { amount: "0.00", currencyCode: fallbackCurrency },
     );
-  }, [config.deliveryOptions, fallbackCurrency, selectedDelivery, syncSelectedDelivery]);
+  }, [
+    config.deliveryOptions,
+    fallbackCurrency,
+    selectedDelivery,
+    syncSelectedDelivery,
+  ]);
 
   // -- Field change handler (for manual address entry) ---------------------
 

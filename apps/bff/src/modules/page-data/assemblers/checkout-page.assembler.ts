@@ -32,8 +32,12 @@ export class CheckoutPageAssembler implements PageAssembler {
       return null;
     }
 
-    const storeContext = this.experienceProfiles.resolveStoreContext(ctx.localeContext);
-    const baseConfig = await this.checkout.getCheckoutConfig(storeContext.storeKey);
+    const storeContext = this.experienceProfiles.resolveStoreContext(
+      ctx.localeContext,
+    );
+    const baseConfig = await this.checkout.getCheckoutConfig(
+      storeContext.storeKey,
+    );
     const flowType = resolveCheckoutFlowType(ctx, baseConfig.flowType);
     const config =
       flowType === baseConfig.flowType
@@ -44,7 +48,8 @@ export class CheckoutPageAssembler implements PageAssembler {
         ? this.i18n.t(ctx.localeContext.locale, "checkout.expressTitle")
         : this.i18n.t(ctx.localeContext.locale, "checkout.title");
     const initialShippingCost =
-      config.deliveryOptions[0]?.price ?? fallbackMoney(cart.cost.totalAmount.currencyCode);
+      config.deliveryOptions[0]?.price ??
+      fallbackMoney(cart.cost.totalAmount.currencyCode);
 
     return {
       assemblerKey: "checkout.v1",
@@ -104,13 +109,17 @@ function resolveCheckoutFlowType(
   fallback: "single-page" | "multi-step" | "express",
 ) {
   return (
-    ctx.experience.slotRules.find(
+    (ctx.experience.slotRules.find(
       (rule) => rule.rendererKey === "page.checkout-main" && rule.variantKey,
-    )?.variantKey as typeof fallback | undefined
-  ) ?? fallback;
+    )?.variantKey as typeof fallback | undefined) ?? fallback
+  );
 }
 
-function localizeCart(cart: Cart, localeContext: LocaleContext, slug: SlugService): Cart {
+function localizeCart(
+  cart: Cart,
+  localeContext: LocaleContext,
+  slug: SlugService,
+): Cart {
   return {
     ...cart,
     lines: cart.lines.map((line) => {
@@ -134,7 +143,10 @@ function localizeCart(cart: Cart, localeContext: LocaleContext, slug: SlugServic
           product: {
             ...line.merchandise.product,
             title: localized.value.productTitle,
-            path: slug.buildProductPath(localeContext, line.merchandise.product.handle),
+            path: slug.buildProductPath(
+              localeContext,
+              line.merchandise.product.handle,
+            ),
           },
         },
       };

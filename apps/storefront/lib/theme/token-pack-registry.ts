@@ -19,8 +19,7 @@ export function resolveThemeTokenPack(input: {
     "themeTokenPack",
   );
   const revision = input.themeRevision ?? "fallback";
-  const stylesheetHref =
-    `${TOKEN_PACK_REGISTRY[normalizedTokenPack]}?v=${encodeURIComponent(revision)}`;
+  const stylesheetHref = `${TOKEN_PACK_REGISTRY[normalizedTokenPack]}?v=${encodeURIComponent(revision)}`;
 
   return {
     themeKey: normalizedThemeKey,

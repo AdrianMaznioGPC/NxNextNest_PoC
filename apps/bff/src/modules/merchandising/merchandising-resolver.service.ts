@@ -16,7 +16,11 @@ export class MerchandisingResolverService {
     language: LanguageCode;
   }): ResolvedMerchandisingProfile {
     const routeKind = params.routeKind ?? "*";
-    const selectors: Array<{ storeKey: string | "*"; routeKind: string | "*"; language: LanguageCode | "*" }> = [
+    const selectors: Array<{
+      storeKey: string | "*";
+      routeKind: string | "*";
+      language: LanguageCode | "*";
+    }> = [
       {
         storeKey: params.storeKey,
         routeKind,
@@ -99,7 +103,8 @@ export class MerchandisingResolverService {
 
       const presentation = {
         ...slot.presentation,
-        variantKey: rule?.variantKey ?? slot.presentation?.variantKey ?? "default",
+        variantKey:
+          rule?.variantKey ?? slot.presentation?.variantKey ?? "default",
         layoutKey: rule?.layoutKey ?? slot.presentation?.layoutKey,
         density: rule?.density ?? slot.presentation?.density,
         flags: rule?.flags ?? slot.presentation?.flags,
@@ -134,7 +139,11 @@ export class MerchandisingResolverService {
 }
 
 function pickFirstMatchingProfile(
-  selectors: Array<{ storeKey: string | "*"; routeKind: string | "*"; language: LanguageCode | "*" }>,
+  selectors: Array<{
+    storeKey: string | "*";
+    routeKind: string | "*";
+    language: LanguageCode | "*";
+  }>,
 ) {
   for (const selector of selectors) {
     const match = MERCHANDISING_PROFILES.find(
@@ -166,4 +175,3 @@ function dedupeQuery(
   }
   return result;
 }
-

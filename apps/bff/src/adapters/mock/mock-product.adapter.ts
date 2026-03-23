@@ -13,11 +13,14 @@ import {
 export class MockProductAdapter implements ProductPort {
   private readonly logger = new Logger(MockProductAdapter.name);
 
-  async getProducts(params: {
-    query?: string;
-    reverse?: boolean;
-    sortKey?: string;
-  }, localeContext?: LocaleContext): Promise<Product[]> {
+  async getProducts(
+    params: {
+      query?: string;
+      reverse?: boolean;
+      sortKey?: string;
+    },
+    localeContext?: LocaleContext,
+  ): Promise<Product[]> {
     const localized = localizeProducts(products, localeContext);
     this.logTelemetry("get_products", localized.telemetry, {
       query: params.query,
@@ -27,18 +30,18 @@ export class MockProductAdapter implements ProductPort {
 
     if (params.query) {
       const q = params.query.toLowerCase();
-      const canonicalById = new Map(products.map((product) => [product.id, product]));
-      result = result.filter(
-        (product) => {
-          const canonical = canonicalById.get(product.id);
-          return (
-            product.title.toLowerCase().includes(q) ||
-            product.description.toLowerCase().includes(q) ||
-            canonical?.title.toLowerCase().includes(q) === true ||
-            canonical?.description.toLowerCase().includes(q) === true
-          );
-        },
+      const canonicalById = new Map(
+        products.map((product) => [product.id, product]),
       );
+      result = result.filter((product) => {
+        const canonical = canonicalById.get(product.id);
+        return (
+          product.title.toLowerCase().includes(q) ||
+          product.description.toLowerCase().includes(q) ||
+          canonical?.title.toLowerCase().includes(q) === true ||
+          canonical?.description.toLowerCase().includes(q) === true
+        );
+      });
     }
 
     if (params.sortKey === "PRICE") {
@@ -81,7 +84,9 @@ export class MockProductAdapter implements ProductPort {
     productId: string,
     localeContext?: LocaleContext,
   ): Promise<Product[]> {
-    const recommendations = products.filter((p) => p.id !== productId).slice(0, 4);
+    const recommendations = products
+      .filter((p) => p.id !== productId)
+      .slice(0, 4);
     const localized = localizeProducts(recommendations, localeContext);
     this.logTelemetry("get_product_recommendations", localized.telemetry, {
       productId,

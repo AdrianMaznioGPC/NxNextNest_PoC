@@ -1,4 +1,4 @@
-import type { Product } from "@commerce/shared-types";
+import type { Collection, Product } from "@commerce/shared-types";
 import { registerBlockResolver } from "./block-resolver-registry";
 
 // hero-banner: no backend data to resolve, pass through
@@ -37,11 +37,32 @@ registerBlockResolver("featured-products", async (raw, ctx) => {
   };
 });
 
+// featured-categories: resolve handles → full collections
+registerBlockResolver("featured-categories", async (raw, ctx) => {
+  const categories = (
+    await Promise.all(
+      raw.categoryHandles.map((h: string) =>
+        ctx.collections.getCollection(h, ctx.localeContext),
+      ),
+    )
+  ).filter((c): c is Collection => c !== undefined);
+
+  return {
+    type: "featured-categories" as const,
+    id: raw.id,
+    heading: raw.heading,
+    categories,
+  };
+});
+
 // product-carousel: resolve collection → products
 registerBlockResolver("product-carousel", async (raw, ctx) => {
-  const products = await ctx.collections.getCollectionProducts({
-    collection: raw.collectionHandle,
-  }, ctx.localeContext);
+  const products = await ctx.collections.getCollectionProducts(
+    {
+      collection: raw.collectionHandle,
+    },
+    ctx.localeContext,
+  );
 
   return {
     type: "product-carousel" as const,

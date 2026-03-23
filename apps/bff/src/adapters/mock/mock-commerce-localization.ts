@@ -107,7 +107,7 @@ const PRODUCT_COPY: Record<LanguageCode, Record<string, ProductCopy>> = {
     "exhaust-tip-clamp-on": {
       title: "Punta de escape con abrazadera",
       description:
-        "Punta universal de acero inoxidable con abrazadera. Compatible con tubos de 2.5\" a 3\".",
+        'Punta universal de acero inoxidable con abrazadera. Compatible con tubos de 2.5" a 3".',
     },
     "short-ram-intake": {
       title: "Kit de admision short ram",
@@ -169,7 +169,7 @@ const PRODUCT_COPY: Record<LanguageCode, Record<string, ProductCopy>> = {
     "exhaust-tip-clamp-on": {
       title: "Klem-uitlaattip",
       description:
-        "Universele roestvrijstalen uitlaattip met klem. Past op 2.5\" tot 3\" pijpen.",
+        'Universele roestvrijstalen uitlaattip met klem. Past op 2.5" tot 3" pijpen.',
     },
     "short-ram-intake": {
       title: "Short ram inlaatkit",
@@ -231,7 +231,7 @@ const PRODUCT_COPY: Record<LanguageCode, Record<string, ProductCopy>> = {
     "exhaust-tip-clamp-on": {
       title: "Embout d'echappement a collier",
       description:
-        "Embout universel inox a collier. Compatible avec tubes de 2.5\" a 3\".",
+        'Embout universel inox a collier. Compatible avec tubes de 2.5" a 3".',
     },
     "short-ram-intake": {
       title: "Kit admission short ram",
@@ -519,7 +519,10 @@ const PAGE_COPY: Record<LanguageCode, Record<string, PageCopy>> = {
   },
 };
 
-const CMS_BLOCK_COPY: Record<LanguageCode, Record<string, Record<string, CmsBlockCopy>>> = {
+const CMS_BLOCK_COPY: Record<
+  LanguageCode,
+  Record<string, Record<string, CmsBlockCopy>>
+> = {
   en: {},
   es: {
     home: {
@@ -696,11 +699,7 @@ export function localizeProduct(
   const telemetry = createTelemetry(language);
   const copy = PRODUCT_COPY[language][product.handle];
 
-  const title = translated(
-    telemetry,
-    copy?.title,
-    product.title,
-  );
+  const title = translated(telemetry, copy?.title, product.title);
   const description = translated(
     telemetry,
     copy?.description,
@@ -714,7 +713,11 @@ export function localizeProduct(
     descriptionHtml: `<p>${description}</p>`,
     seo: {
       ...product.seo,
-      title: translated(telemetry, copy?.seoTitle ?? copy?.title, product.seo.title),
+      title: translated(
+        telemetry,
+        copy?.seoTitle ?? copy?.title,
+        product.seo.title,
+      ),
       description: translated(
         telemetry,
         copy?.seoDescription ?? copy?.description,
@@ -744,19 +747,21 @@ export function localizeProduct(
       };
     }),
     variants: product.variants.map((variant) => {
-      const localizedSelectedOptions = variant.selectedOptions.map((selected) => ({
-        ...selected,
-        name: translated(
-          telemetry,
-          OPTION_NAME_COPY[language][selected.name],
-          selected.name,
-        ),
-        value: translated(
-          telemetry,
-          OPTION_VALUE_COPY[language][selected.value],
-          selected.value,
-        ),
-      }));
+      const localizedSelectedOptions = variant.selectedOptions.map(
+        (selected) => ({
+          ...selected,
+          name: translated(
+            telemetry,
+            OPTION_NAME_COPY[language][selected.name],
+            selected.name,
+          ),
+          value: translated(
+            telemetry,
+            OPTION_VALUE_COPY[language][selected.value],
+            selected.value,
+          ),
+        }),
+      );
 
       const localizedVariantTitle =
         localizedSelectedOptions[0]?.value ?? variant.title;
@@ -825,7 +830,11 @@ export function localizeMenu(
   const telemetry = createTelemetry(language);
   const value = input.map((item) => ({
     ...item,
-    title: translated(telemetry, MENU_TITLE_COPY[language][item.title], item.title),
+    title: translated(
+      telemetry,
+      MENU_TITLE_COPY[language][item.title],
+      item.title,
+    ),
   }));
   return { value, telemetry };
 }
@@ -852,7 +861,11 @@ export function localizePage(
     seo: page.seo
       ? {
           ...page.seo,
-          title: translated(telemetry, copy?.seoTitle ?? copy?.title, page.seo.title),
+          title: translated(
+            telemetry,
+            copy?.seoTitle ?? copy?.title,
+            page.seo.title,
+          ),
           description: translated(
             telemetry,
             copy?.seoDescription ?? copy?.bodySummary,
@@ -901,15 +914,26 @@ export function localizeCmsPage(
             copy?.subheading,
             block.subheading,
           ),
-          ctaLabel: translatedOptional(telemetry, copy?.ctaLabel, block.ctaLabel),
+          ctaLabel: translatedOptional(
+            telemetry,
+            copy?.ctaLabel,
+            block.ctaLabel,
+          ),
           image: {
             ...block.image,
-            altText: translated(telemetry, copy?.imageAltText, block.image.altText),
+            altText: translated(
+              telemetry,
+              copy?.imageAltText,
+              block.image.altText,
+            ),
           },
         };
       }
 
-      if (block.type === "featured-products" || block.type === "product-carousel") {
+      if (
+        block.type === "featured-products" ||
+        block.type === "product-carousel"
+      ) {
         return {
           ...block,
           heading: translated(telemetry, copy?.heading, block.heading),
@@ -947,7 +971,9 @@ export function localizeCartLineMerchandise(
   const language = resolveLocalizationLanguage(localeContext);
   const telemetry = createTelemetry(language);
 
-  const product = products.find((candidate) => candidate.handle === params.productHandle);
+  const product = products.find(
+    (candidate) => candidate.handle === params.productHandle,
+  );
   if (!product) {
     telemetry.totalFields += 1;
     telemetry.fallbackCount += 1;
@@ -1018,7 +1044,9 @@ export function telemetryCoverage(telemetry: LocalizationTelemetry): number {
   if (telemetry.totalFields === 0) {
     return 1;
   }
-  return (telemetry.totalFields - telemetry.fallbackCount) / telemetry.totalFields;
+  return (
+    (telemetry.totalFields - telemetry.fallbackCount) / telemetry.totalFields
+  );
 }
 
 function localizeCollectionWithTelemetry(
@@ -1030,7 +1058,11 @@ function localizeCollectionWithTelemetry(
   return {
     ...collection,
     title: translated(telemetry, copy?.title, collection.title),
-    description: translated(telemetry, copy?.description, collection.description),
+    description: translated(
+      telemetry,
+      copy?.description,
+      collection.description,
+    ),
     seo: {
       ...collection.seo,
       title: translated(
@@ -1078,7 +1110,8 @@ function localizeBreadcrumb(
         ...breadcrumb,
         title: translated(
           telemetry,
-          translatedFromCollection ?? BREADCRUMB_COPY[language][breadcrumb.title],
+          translatedFromCollection ??
+            BREADCRUMB_COPY[language][breadcrumb.title],
           breadcrumb.title,
         ),
       };

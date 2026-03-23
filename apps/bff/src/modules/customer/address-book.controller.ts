@@ -5,9 +5,7 @@ import type { CustomerPort } from "../../ports/customer.port";
 
 @Controller("customer/addresses")
 export class AddressBookController {
-  constructor(
-    @Inject(CUSTOMER_PORT) private readonly customer: CustomerPort,
-  ) {}
+  constructor(@Inject(CUSTOMER_PORT) private readonly customer: CustomerPort) {}
 
   @Get()
   getAddresses(): Promise<SavedAddress[]> {
@@ -15,9 +13,7 @@ export class AddressBookController {
   }
 
   @Post()
-  createAddress(
-    @Body() body: Omit<SavedAddress, "id">,
-  ): Promise<SavedAddress> {
+  createAddress(@Body() body: Omit<SavedAddress, "id">): Promise<SavedAddress> {
     return this.customer.createAddress("mock-customer", body);
   }
 }

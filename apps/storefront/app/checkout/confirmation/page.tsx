@@ -74,9 +74,7 @@ export default async function ConfirmationPage({
                 <div className="flex flex-1 flex-col justify-center">
                   <p className="text-sm font-medium">{line.title}</p>
                   {line.variantTitle !== "Default Title" && (
-                    <p className="text-xs text-muted">
-                      {line.variantTitle}
-                    </p>
+                    <p className="text-xs text-muted">{line.variantTitle}</p>
                   )}
                 </div>
                 <Price

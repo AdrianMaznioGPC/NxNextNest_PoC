@@ -13,9 +13,7 @@ export class ProductDetailPageAssembler implements PageAssembler {
 
   constructor(private readonly pageData: PageDataService) {}
 
-  async assemble(
-    ctx: PageAssemblyContext,
-  ): Promise<PageAssemblyResult | null> {
+  async assemble(ctx: PageAssemblyContext): Promise<PageAssemblyResult | null> {
     const productHandle = ctx.route.refs.productHandle;
     if (!productHandle) return null;
 
@@ -40,4 +38,3 @@ export class ProductDetailPageAssembler implements PageAssembler {
     };
   }
 }
-

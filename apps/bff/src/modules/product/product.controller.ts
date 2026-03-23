@@ -22,11 +22,14 @@ export class ProductController {
     const localeContext = this.i18n.resolveLocaleContext(
       localeContextFromQuery(normalizeQuery(queryParams)),
     );
-    const result = await this.products.getProducts({
-      query,
-      sortKey,
-      reverse: reverse === "true",
-    }, localeContext);
+    const result = await this.products.getProducts(
+      {
+        query,
+        sortKey,
+        reverse: reverse === "true",
+      },
+      localeContext,
+    );
     return this.slug.localizeProducts(result, localeContext);
   }
 
@@ -40,8 +43,13 @@ export class ProductController {
     );
     const canonicalHandle =
       this.slug.toCanonicalProductHandle(localeContext, handle) ?? handle;
-    const product = await this.products.getProduct(canonicalHandle, localeContext);
-    return product ? this.slug.localizeProduct(product, localeContext) : undefined;
+    const product = await this.products.getProduct(
+      canonicalHandle,
+      localeContext,
+    );
+    return product
+      ? this.slug.localizeProduct(product, localeContext)
+      : undefined;
   }
 
   @Get(":id/recommendations")
@@ -84,13 +92,10 @@ function localeContextFromQuery(query: Record<string, string | undefined>) {
   return hasAnyValue ? partial : undefined;
 }
 
-function normalizeLanguage(input?: string): LocaleContext["language"] | undefined {
-  if (
-    input === "en" ||
-    input === "es" ||
-    input === "nl" ||
-    input === "fr"
-  ) {
+function normalizeLanguage(
+  input?: string,
+): LocaleContext["language"] | undefined {
+  if (input === "en" || input === "es" || input === "nl" || input === "fr") {
     return input;
   }
   return undefined;

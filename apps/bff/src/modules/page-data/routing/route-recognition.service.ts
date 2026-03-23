@@ -1,7 +1,10 @@
 import type { LocaleContext } from "@commerce/shared-types";
 import { performance } from "node:perf_hooks";
 import { Injectable, Logger } from "@nestjs/common";
-import { localeByLanguage, normalizeLanguage } from "../../../adapters/mock/mock-data";
+import {
+  localeByLanguage,
+  normalizeLanguage,
+} from "../../../adapters/mock/mock-data";
 import { RouteMatcherFactory } from "./route-matcher.factory";
 import type { ResolvedRouteDescriptor, RouteKind } from "./route-rule.types";
 import { SlugIndexService } from "./slug-index.service";
@@ -74,7 +77,8 @@ export class RouteRecognitionService {
     const locale = this.slugIndex.getSupportedLocale(localeContext.locale);
     const defaultLocale = this.slugIndex.getDefaultLocale();
     const staticSegments = this.slugIndex.getStaticSegments(locale);
-    const canonicalStaticSegments = this.slugIndex.getStaticSegments(defaultLocale);
+    const canonicalStaticSegments =
+      this.slugIndex.getStaticSegments(defaultLocale);
     const matchers = this.matcherFactory.getMatchers({
       locale,
       staticSegments,
@@ -152,7 +156,10 @@ export class RouteRecognitionService {
           continue;
         }
 
-        const productHandle = this.slugIndex.resolveProductHandle(locale, rawSlug);
+        const productHandle = this.slugIndex.resolveProductHandle(
+          locale,
+          rawSlug,
+        );
         if (!productHandle) {
           continue;
         }
@@ -197,7 +204,10 @@ export class RouteRecognitionService {
           continue;
         }
 
-        const categoryKey = this.slugIndex.resolveCategoryKey(locale, rawCategoryPath);
+        const categoryKey = this.slugIndex.resolveCategoryKey(
+          locale,
+          rawCategoryPath,
+        );
         if (!categoryKey) {
           continue;
         }
@@ -238,7 +248,10 @@ export class RouteRecognitionService {
             this.slugIndex.buildPagePath(locale, pageHandle),
             localeContext,
           ),
-          canonicalPath: this.slugIndex.buildPagePath(defaultLocale, pageHandle),
+          canonicalPath: this.slugIndex.buildPagePath(
+            defaultLocale,
+            pageHandle,
+          ),
           refs: { pageHandle },
           matchedRuleId: rule.id,
           localeContext,

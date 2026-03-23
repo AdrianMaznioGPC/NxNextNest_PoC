@@ -5,10 +5,6 @@ import {
   EXPERIENCE_PROFILES,
   EXPERIENCE_RENDERER_VARIANTS,
 } from "./experience-profile.catalog";
-import {
-  MOCK_CAMPAIGN_KEYS,
-  MOCK_CUSTOMER_PROFILES,
-} from "./experience-profile.types";
 const ALLOWED_CART_UX_MODES = ["drawer", "page"] as const;
 const ALLOWED_LANGUAGES = ["en", "es", "nl", "fr"] as const;
 
@@ -41,26 +37,6 @@ export class ExperienceValidatorService {
       }
       profileKeys.add(key);
 
-      if (
-        profile.customerProfile &&
-        profile.customerProfile !== "*" &&
-        !MOCK_CUSTOMER_PROFILES.includes(profile.customerProfile)
-      ) {
-        throw new Error(
-          `Unknown customerProfile "${profile.customerProfile}" in profile "${profile.id}"`,
-        );
-      }
-
-      if (
-        profile.campaignKey &&
-        profile.campaignKey !== "*" &&
-        !MOCK_CAMPAIGN_KEYS.includes(profile.campaignKey)
-      ) {
-        throw new Error(
-          `Unknown campaignKey "${profile.campaignKey}" in profile "${profile.id}"`,
-        );
-      }
-
       const seenRendererRules = new Set<string>();
       for (const rule of profile.slotRules) {
         if (seenRendererRules.has(rule.rendererKey)) {
@@ -70,7 +46,8 @@ export class ExperienceValidatorService {
         }
         seenRendererRules.add(rule.rendererKey);
 
-        const supportedVariants = EXPERIENCE_RENDERER_VARIANTS[rule.rendererKey];
+        const supportedVariants =
+          EXPERIENCE_RENDERER_VARIANTS[rule.rendererKey];
         if (!supportedVariants) {
           throw new Error(
             `Unknown renderer key "${rule.rendererKey}" in profile "${profile.id}"`,
@@ -102,9 +79,7 @@ export class ExperienceValidatorService {
 
     for (const domain of config.domains) {
       if (!domain.regionCode || !domain.regionCode.trim()) {
-        throw new Error(
-          `Missing regionCode for store "${domain.storeKey}"`,
-        );
+        throw new Error(`Missing regionCode for store "${domain.storeKey}"`);
       }
 
       if (!domain.storeFlagIconSrc || !domain.storeFlagIconSrc.trim()) {
@@ -165,7 +140,11 @@ export class ExperienceValidatorService {
         );
       }
 
-      if (!ALLOWED_THEME_KEYS.includes(domain.themeKey as (typeof ALLOWED_THEME_KEYS)[number])) {
+      if (
+        !ALLOWED_THEME_KEYS.includes(
+          domain.themeKey as (typeof ALLOWED_THEME_KEYS)[number],
+        )
+      ) {
         throw new Error(
           `Unknown theme key "${domain.themeKey}" for store "${domain.storeKey}"`,
         );

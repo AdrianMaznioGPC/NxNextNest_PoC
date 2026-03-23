@@ -55,4 +55,3 @@ const SearchProductsClearanceSlot: SlotRenderer<"page.search-products"> = ({
 };
 
 export default SearchProductsClearanceSlot;
-

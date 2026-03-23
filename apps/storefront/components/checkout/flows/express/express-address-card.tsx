@@ -50,9 +50,7 @@ export function ExpressAddressCard({
     }
   }
 
-  const summary = (
-    <p className="text-sm text-muted">{formatAddress(values)}</p>
-  );
+  const summary = <p className="text-sm text-muted">{formatAddress(values)}</p>;
 
   return (
     <ExpressSummaryCard

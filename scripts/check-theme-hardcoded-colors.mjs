@@ -16,7 +16,8 @@ const FILES = [
   "apps/storefront/components/product/product-description.tsx",
 ];
 
-const BANNED = /\b(?:bg|text|border|fill|stroke)-(?:black|white|neutral|stone|slate|gray|zinc|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)(?:-\d{2,3})?\b/g;
+const BANNED =
+  /\b(?:bg|text|border|fill|stroke)-(?:black|white|neutral|stone|slate|gray|zinc|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)(?:-\d{2,3})?\b/g;
 
 const violations = [];
 

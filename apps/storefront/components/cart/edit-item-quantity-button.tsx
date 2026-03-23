@@ -65,11 +65,7 @@ export function EditItemQuantityButton({
 
   return (
     <>
-      <SubmitButton
-        type={type}
-        onClick={handleUpdate}
-        disabled={isMutating}
-      />
+      <SubmitButton type={type} onClick={handleUpdate} disabled={isMutating} />
       <p aria-live="polite" className="sr-only" role="status">
         {message ?? ""}
       </p>

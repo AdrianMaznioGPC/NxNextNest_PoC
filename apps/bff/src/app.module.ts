@@ -1,24 +1,27 @@
 import { Module } from "@nestjs/common";
-import { MockBackendModule } from "./adapters/mock/mock-backend.module";
+import { LaunchDarklyModule } from "./adapters/launchdarkly/launchdarkly.module";
+import { MockCommerceModule } from "./adapters/mock/mock-commerce.module";
+import { MockDirectiveModule } from "./adapters/mock/mock-directive.module";
 import { AppController } from "./app.controller";
 import { CartController } from "./modules/cart/cart.controller";
 import { CheckoutController } from "./modules/checkout/checkout.controller";
 import { CollectionController } from "./modules/collection/collection.controller";
 import { AddressBookController } from "./modules/customer/address-book.controller";
-import { MarketingOverlayService } from "./modules/experience/marketing-overlay.service";
+import { BlockOverlayService } from "./modules/experience/block-overlay.service";
 import { ExperienceProfileService } from "./modules/experience/experience-profile.service";
 import { ExperienceResolverService } from "./modules/experience/experience-resolver.service";
 import { ExperienceSignalsService } from "./modules/experience/experience-signals.service";
 import { ExperienceValidatorService } from "./modules/experience/experience-validator.service";
+import { MarketingOverlayService } from "./modules/experience/marketing-overlay.service";
 import { I18nController } from "./modules/i18n/i18n.controller";
 import { I18nService } from "./modules/i18n/i18n.service";
 import { SwitchUrlService } from "./modules/i18n/switch-url.service";
 import { MenuController } from "./modules/menu/menu.controller";
 import { MerchandisingModule } from "./modules/merchandising/merchandising.module";
 import { CartPageAssembler } from "./modules/page-data/assemblers/cart-page.assembler";
-import { CheckoutPageAssembler } from "./modules/page-data/assemblers/checkout-page.assembler";
 import { CategoryDetailPageAssembler } from "./modules/page-data/assemblers/category-detail-page.assembler";
 import { CategoryListPageAssembler } from "./modules/page-data/assemblers/category-list-page.assembler";
+import { CheckoutPageAssembler } from "./modules/page-data/assemblers/checkout-page.assembler";
 import { ContentPageAssembler } from "./modules/page-data/assemblers/content-page.assembler";
 import { HomePageAssembler } from "./modules/page-data/assemblers/home-page.assembler";
 import { PageAssemblerRegistry } from "./modules/page-data/assemblers/page-assembler.registry";
@@ -40,8 +43,24 @@ import { LoadSheddingService } from "./modules/system/load-shedding.service";
 import { ResilienceService } from "./modules/system/resilience.service";
 import { ScalabilityMetricsService } from "./modules/system/scalability-metrics.service";
 
+/**
+ * Commerce ports are always served by MockCommerceModule.
+ * The directive provider is swapped based on DIRECTIVE_PROVIDER env:
+ * - "launchdarkly" → LaunchDarklyModule
+ * - default → MockDirectiveModule
+ */
+const DirectiveModule =
+  process.env.DIRECTIVE_PROVIDER === "launchdarkly"
+    ? LaunchDarklyModule
+    : MockDirectiveModule;
+
 @Module({
-  imports: [MockBackendModule, SlugModule, MerchandisingModule],
+  imports: [
+    MockCommerceModule,
+    DirectiveModule,
+    SlugModule,
+    MerchandisingModule,
+  ],
   controllers: [
     AppController,
     ProductController,
@@ -57,6 +76,7 @@ import { ScalabilityMetricsService } from "./modules/system/scalability-metrics.
   providers: [
     I18nService,
     SwitchUrlService,
+    BlockOverlayService,
     MarketingOverlayService,
     ExperienceProfileService,
     ExperienceResolverService,
@@ -85,4 +105,3 @@ import { ScalabilityMetricsService } from "./modules/system/scalability-metrics.
   ],
 })
 export class AppModule {}
-

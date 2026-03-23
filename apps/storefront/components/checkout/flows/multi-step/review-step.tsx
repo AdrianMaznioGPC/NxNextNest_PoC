@@ -82,9 +82,7 @@ export function ReviewStep({
         editLabel={t("edit")}
         onEdit={() => onEditStep(0)}
       >
-        <p className="text-sm text-muted">
-          {formatAddress(addressValues)}
-        </p>
+        <p className="text-sm text-muted">{formatAddress(addressValues)}</p>
       </ReviewCard>
 
       {/* Billing address */}
@@ -94,9 +92,7 @@ export function ReviewStep({
           editLabel={t("edit")}
           onEdit={() => onEditStep(0)}
         >
-          <p className="text-sm text-muted">
-            {formatAddress(billingValues)}
-          </p>
+          <p className="text-sm text-muted">{formatAddress(billingValues)}</p>
         </ReviewCard>
       )}
 
@@ -110,9 +106,7 @@ export function ReviewStep({
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium">{deliveryOption.label}</p>
-              <p className="text-xs text-muted">
-                {deliveryOption.description}
-              </p>
+              <p className="text-xs text-muted">{deliveryOption.description}</p>
             </div>
             <Price
               className="text-sm font-medium"
@@ -131,9 +125,7 @@ export function ReviewStep({
           onEdit={() => onEditStep(1)}
         >
           <p className="text-sm font-medium">{paymentOption.label}</p>
-          <p className="text-xs text-muted">
-            {paymentOption.description}
-          </p>
+          <p className="text-xs text-muted">{paymentOption.description}</p>
         </ReviewCard>
       )}
     </div>

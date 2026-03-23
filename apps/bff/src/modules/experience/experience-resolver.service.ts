@@ -19,7 +19,9 @@ export class ExperienceResolverService {
     query?: Record<string, string | undefined>;
     cookieHeader?: string;
   }): Promise<ResolvedExperienceProfile> {
-    const storeContext = this.profiles.resolveStoreContext(params.localeContext);
+    const storeContext = this.profiles.resolveStoreContext(
+      params.localeContext,
+    );
     const resolvedSignals = await this.signals.resolve({
       storeKey: storeContext.storeKey,
       routeKind: params.routeKind,
@@ -58,7 +60,8 @@ export class ExperienceResolverService {
 
       const presentation = {
         ...slot.presentation,
-        variantKey: rule?.variantKey ?? slot.presentation?.variantKey ?? "default",
+        variantKey:
+          rule?.variantKey ?? slot.presentation?.variantKey ?? "default",
         layoutKey: rule?.layoutKey ?? slot.presentation?.layoutKey,
         density: rule?.density ?? slot.presentation?.density,
         flags: mergeFlags(slot.presentation?.flags, rule?.flags),

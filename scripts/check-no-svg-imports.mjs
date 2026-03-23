@@ -21,4 +21,3 @@ try {
   console.error("[svg-network-guard] Failed to run ripgrep.");
   process.exit(1);
 }
-

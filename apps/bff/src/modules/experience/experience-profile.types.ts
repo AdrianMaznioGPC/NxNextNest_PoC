@@ -1,12 +1,21 @@
-import type { ExperienceRendererKey, LanguageCode } from "@commerce/shared-types";
+import type {
+  ExperienceRendererKey,
+  LanguageCode,
+} from "@commerce/shared-types";
 import type { RouteKind } from "../page-data/routing/route-rule.types";
 import type {
+  BlockOverride,
   CheckoutExperiencePreference,
   ExperienceFunnelMode,
 } from "./marketing-directive.types";
 
 export type ExperienceRouteKind = Exclude<RouteKind, "unknown"> | "*";
 
+/**
+ * Known customer profiles used by the mock directive adapter.
+ * Kept for documentation only — the BFF does not validate against this list.
+ * Any string is accepted; the directive provider decides what profiles mean.
+ */
 export const MOCK_CUSTOMER_PROFILES = [
   "guest",
   "first-time",
@@ -14,29 +23,35 @@ export const MOCK_CUSTOMER_PROFILES = [
   "vip",
 ] as const;
 
+/**
+ * Known campaign keys used by the mock directive adapter.
+ * Kept for documentation only — the BFF does not validate against this list.
+ * Any string is accepted as a campaign key; the directive provider is the
+ * source of truth for which campaigns are active.
+ */
 export const MOCK_CAMPAIGN_KEYS = [
   "default",
   "paid-social-discovery",
   "email-reorder",
   "vip-reengagement",
+  "black-friday",
+  "summer-sale",
 ] as const;
 
-export type MockCustomerProfile = (typeof MOCK_CUSTOMER_PROFILES)[number];
-export type MockCampaignKey = (typeof MOCK_CAMPAIGN_KEYS)[number];
+/** Any string is a valid customer profile — the directive provider decides what it means. */
+export type CustomerProfile = string;
 
-export type ExperienceSignalSource =
-  | "default"
-  | "mock-query"
-  | "marketing-provider";
+/** Any string is a valid campaign key — the directive provider decides what it means. */
+export type CampaignKey = string;
+
+/** Signal source identifier. Not a closed set — adapters may add their own. */
+export type ExperienceSignalSource = string;
 
 export type ResolvedExperienceSignals = {
-  customerProfile: MockCustomerProfile;
-  campaignKey: MockCampaignKey;
-  isReturningCustomer: boolean;
+  customerProfile: CustomerProfile;
+  campaignKey: CampaignKey;
   funnelMode: ExperienceFunnelMode;
-  heroOverride?: ExperienceHomeHero;
-  promotedCategories: string[];
-  promotedProducts: string[];
+  blockOverrides: BlockOverride[];
   audienceTags: string[];
   checkoutPreference: CheckoutExperiencePreference;
   slotFlagsByRenderer: Partial<
@@ -55,23 +70,16 @@ export type ExperienceSlotRule = {
   flags?: Record<string, boolean>;
 };
 
-export type ExperienceHomeHero = {
-  heading: string;
-  subheading?: string;
-  ctaLabel?: string;
-  ctaUrl?: string;
-};
-
 export type ExperienceProfile = {
   id: string;
   storeKey: string | "*";
   routeKind: ExperienceRouteKind;
   locale: string | "*";
-  customerProfile?: MockCustomerProfile | "*";
-  campaignKey?: MockCampaignKey | "*";
+  customerProfile?: CustomerProfile | "*";
+  campaignKey?: CampaignKey | "*";
   layoutKey: string;
   slotRules: ExperienceSlotRule[];
-  homeHero?: ExperienceHomeHero;
+  blockOverrides?: BlockOverride[];
 };
 
 export type StoreThemeBinding = {
@@ -114,5 +122,4 @@ export type ResolvedExperienceProfile = {
   layoutKey: string;
   slotRules: ExperienceSlotRule[];
   signals: ResolvedExperienceSignals;
-  homeHero?: ExperienceHomeHero;
 };

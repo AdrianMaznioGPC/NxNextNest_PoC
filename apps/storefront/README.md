@@ -13,22 +13,26 @@ This app is the Next.js storefront. It renders the BFF bootstrap contract, owns 
 ## Domain Map
 
 ### Rendering and composition
+
 - `components/page-renderer`: slot rendering, renderer registry, slot boundaries, compatibility node renderers
 - `app/[[...page]]`: catch-all slot-based page route
 - `app/checkout`: dedicated checkout route shell using bootstrap slots
 
 ### Commerce UI
+
 - `components/cart`: cart state, cart UX, cart mutations, drawer/page cart UI
 - `components/checkout`: slot-based checkout flows and order summary synchronization
 - `components/product`: PDP-focused UI components
 
 ### Content and shared presentation
+
 - `components/cms`: CMS block rendering
 - `components/layout`: navbar, footer, breadcrumbs, search, store selector, layout primitives
 - `components/grid`: lower-level merchandising layout primitives
 - `components/icons`: shared iconography
 
 ### App support layers
+
 - `lib/api`: BFF fetch layer
 - `lib/bootstrap.ts`: request bootstrap helper
 - `lib/i18n`: locale and messages helpers

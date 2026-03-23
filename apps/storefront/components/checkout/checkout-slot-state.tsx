@@ -9,7 +9,9 @@ type CheckoutSlotStateValue = {
   syncSelectedDelivery: (id: string, shippingCost: Money) => void;
 };
 
-const CheckoutSlotStateContext = createContext<CheckoutSlotStateValue | null>(null);
+const CheckoutSlotStateContext = createContext<CheckoutSlotStateValue | null>(
+  null,
+);
 
 export function CheckoutSlotStateProvider({
   children,
@@ -18,7 +20,9 @@ export function CheckoutSlotStateProvider({
   children: React.ReactNode;
   initialShippingCost: Money;
 }) {
-  const [selectedDeliveryId, setSelectedDeliveryId] = useState<string | undefined>();
+  const [selectedDeliveryId, setSelectedDeliveryId] = useState<
+    string | undefined
+  >();
   const [shippingCost, setShippingCost] = useState(initialShippingCost);
 
   const value = useMemo<CheckoutSlotStateValue>(

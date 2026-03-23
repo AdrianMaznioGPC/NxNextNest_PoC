@@ -17,6 +17,13 @@ export type CmsRawFeaturedProducts = {
   productHandles: string[];
 };
 
+export type CmsRawFeaturedCategories = {
+  type: "featured-categories";
+  id: string;
+  heading: string;
+  categoryHandles: string[];
+};
+
 export type CmsRawProductCarousel = {
   type: "product-carousel";
   id: string;
@@ -33,6 +40,7 @@ export type CmsRawRichText = {
 export type CmsRawBlock =
   | CmsRawHeroBanner
   | CmsRawFeaturedProducts
+  | CmsRawFeaturedCategories
   | CmsRawProductCarousel
   | CmsRawRichText;
 

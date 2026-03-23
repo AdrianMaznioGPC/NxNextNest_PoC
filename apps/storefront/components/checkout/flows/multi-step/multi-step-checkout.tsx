@@ -95,8 +95,7 @@ export function MultiStepCheckout({
 
   const [billingValues, setBillingValues] = useState<Record<string, string>>(
     () =>
-      defaultBilling?.values ??
-      buildInitialValues(config.billingAddressSchema),
+      defaultBilling?.values ?? buildInitialValues(config.billingAddressSchema),
   );
 
   const handleSelectBillingAddress = useCallback(
@@ -127,12 +126,19 @@ export function MultiStepCheckout({
   );
 
   useEffect(() => {
-    const option = config.deliveryOptions.find((o) => o.id === selectedDelivery);
+    const option = config.deliveryOptions.find(
+      (o) => o.id === selectedDelivery,
+    );
     syncSelectedDelivery(
       selectedDelivery,
       option?.price ?? { amount: "0.00", currencyCode: fallbackCurrency },
     );
-  }, [config.deliveryOptions, fallbackCurrency, selectedDelivery, syncSelectedDelivery]);
+  }, [
+    config.deliveryOptions,
+    fallbackCurrency,
+    selectedDelivery,
+    syncSelectedDelivery,
+  ]);
 
   // -- Field change handlers -------------------------------------------------
 

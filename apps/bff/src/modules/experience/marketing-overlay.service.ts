@@ -4,6 +4,13 @@ import type {
   ResolvedExperienceProfile,
 } from "./experience-profile.types";
 
+/**
+ * Applies slot-level overlays from resolved signals onto the experience profile.
+ *
+ * This service is a pure data merger — it projects `slotFlagsByRenderer` and
+ * `checkoutPreference` from the resolved signals onto concrete slot rules.
+ * It does not interpret funnel modes or block types.
+ */
 @Injectable()
 export class MarketingOverlayService {
   apply(profile: ResolvedExperienceProfile): ResolvedExperienceProfile {
@@ -12,24 +19,19 @@ export class MarketingOverlayService {
       flags: rule.flags ? { ...rule.flags } : undefined,
     }));
 
-    if (profile.signals.funnelMode === "discovery") {
-      upsertSlotFlags(slotRules, "page.home", { discoveryMode: true });
-    }
-
-    if (profile.signals.funnelMode === "reengagement") {
-      upsertSlotFlags(slotRules, "page.home", { reengagementMode: true });
-    }
-
+    // Apply slot flags from directives
     for (const [rendererKey, flags] of Object.entries(
       profile.signals.slotFlagsByRenderer,
     )) {
-      upsertSlotFlags(slotRules, rendererKey as ExperienceSlotRule["rendererKey"], flags);
+      upsertSlotFlags(
+        slotRules,
+        rendererKey as ExperienceSlotRule["rendererKey"],
+        flags,
+      );
     }
 
-    if (
-      profile.signals.checkoutPreference === "prefer-express" &&
-      profile.signals.isReturningCustomer
-    ) {
+    // Apply checkout preference
+    if (profile.signals.checkoutPreference === "prefer-express") {
       upsertSlotRule(slotRules, {
         rendererKey: "page.checkout-main",
         variantKey: "express",
@@ -40,7 +42,6 @@ export class MarketingOverlayService {
     return {
       ...profile,
       slotRules,
-      homeHero: profile.signals.heroOverride ?? profile.homeHero,
     };
   }
 }
@@ -66,7 +67,9 @@ function upsertSlotRule(
   rules: ExperienceSlotRule[],
   nextRule: ExperienceSlotRule,
 ) {
-  const existing = rules.find((rule) => rule.rendererKey === nextRule.rendererKey);
+  const existing = rules.find(
+    (rule) => rule.rendererKey === nextRule.rendererKey,
+  );
   if (!existing) {
     rules.push(nextRule);
     return;

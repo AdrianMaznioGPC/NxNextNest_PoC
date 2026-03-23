@@ -12,5 +12,10 @@ export default function CheckoutSummarySlot({
   initialShippingCost: Money;
 }) {
   const state = useCheckoutSlotState();
-  return <OrderSummary cart={cart} shippingCost={state.shippingCost ?? initialShippingCost} />;
+  return (
+    <OrderSummary
+      cart={cart}
+      shippingCost={state.shippingCost ?? initialShippingCost}
+    />
+  );
 }

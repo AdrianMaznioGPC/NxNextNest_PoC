@@ -18,7 +18,10 @@ export class MockNavigationAdapter implements NavigationPort {
   private readonly logger = new Logger(MockNavigationAdapter.name);
 
   async getMegaMenu(localeContext?: LocaleContext): Promise<MegaMenuItem[]> {
-    const localizedCollections = localizeCollections(collections, localeContext);
+    const localizedCollections = localizeCollections(
+      collections,
+      localeContext,
+    );
     this.logTelemetry("get_mega_menu", localizedCollections.telemetry);
     return localizedCollections.value.map((c) => ({
       title: c.title,

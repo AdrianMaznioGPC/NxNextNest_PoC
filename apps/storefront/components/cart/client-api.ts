@@ -8,10 +8,7 @@ export async function ensureCartClient() {
   });
 }
 
-export async function addToCartClient(
-  merchandiseId: string,
-  quantity: number,
-) {
+export async function addToCartClient(merchandiseId: string, quantity: number) {
   return cartApiFetch("/current/lines", {
     method: "POST",
     body: JSON.stringify({
@@ -41,7 +38,10 @@ export async function removeFromCartClient(merchandiseId: string) {
   });
 }
 
-async function cartApiFetch(path: string, options: RequestInit): Promise<Cart | undefined> {
+async function cartApiFetch(
+  path: string,
+  options: RequestInit,
+): Promise<Cart | undefined> {
   const response = await fetch(`${CART_API_BASE}${path}`, {
     ...options,
     credentials: "same-origin",
@@ -52,7 +52,9 @@ async function cartApiFetch(path: string, options: RequestInit): Promise<Cart | 
     },
   });
   if (!response.ok) {
-    throw new Error(`Cart API error: ${response.status} ${response.statusText}`);
+    throw new Error(
+      `Cart API error: ${response.status} ${response.statusText}`,
+    );
   }
   if (response.status === 204) {
     return undefined;

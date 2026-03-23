@@ -59,8 +59,9 @@ export class ExperienceProfileService {
       themeRevision: entry.themeRevision,
       themeTokenPack: entry.themeTokenPack ?? entry.themeKey,
       language:
-        entry.supportedLanguages.find((language) => language === localeContext.language) ??
-        entry.defaultLanguage,
+        entry.supportedLanguages.find(
+          (language) => language === localeContext.language,
+        ) ?? entry.defaultLanguage,
       defaultLanguage: entry.defaultLanguage,
       supportedLanguages: entry.supportedLanguages.length
         ? entry.supportedLanguages
@@ -80,7 +81,12 @@ export class ExperienceProfileService {
     const resolvedRouteKind = routeKind ?? "*";
 
     const matchingProfiles = EXPERIENCE_PROFILES.filter((profile) =>
-      matchesProfile(profile, storeContext.storeKey, resolvedRouteKind, signals),
+      matchesProfile(
+        profile,
+        storeContext.storeKey,
+        resolvedRouteKind,
+        signals,
+      ),
     );
 
     const baseProfile =
@@ -109,17 +115,30 @@ export class ExperienceProfileService {
       openCartOnAdd: storeContext.openCartOnAdd,
       layoutKey: profile.layoutKey ?? baseProfile.layoutKey,
       slotRules: dedupeSlotRules(baseProfile.slotRules, profile.slotRules),
-      signals,
-      homeHero: profile.homeHero ?? baseProfile.homeHero,
+      signals: {
+        ...signals,
+        // Profile block overrides are the base layer; directive overrides
+        // (already on signals) win. Single source of truth on signals.
+        blockOverrides: dedupeBlockOverrides(
+          baseProfile.blockOverrides ?? [],
+          profile.blockOverrides ?? [],
+          signals.blockOverrides,
+        ),
+      },
     };
   }
 
   resolveStoreThemeBinding(
     storeKey: string,
-    fallback?: Pick<ExperienceStoreContext, "themeKey" | "themeRevision" | "themeTokenPack">,
+    fallback?: Pick<
+      ExperienceStoreContext,
+      "themeKey" | "themeRevision" | "themeTokenPack"
+    >,
   ): StoreThemeBinding {
     const config = this.i18n.getDomainConfig();
-    const matched = config.domains.find((domain) => domain.storeKey === storeKey);
+    const matched = config.domains.find(
+      (domain) => domain.storeKey === storeKey,
+    );
     if (matched) {
       return {
         storeKey,
@@ -133,7 +152,8 @@ export class ExperienceProfileService {
       storeKey,
       themeKey: fallback?.themeKey ?? "theme-default",
       themeRevision: fallback?.themeRevision ?? "fallback",
-      themeTokenPack: fallback?.themeTokenPack ?? fallback?.themeKey ?? "theme-default",
+      themeTokenPack:
+        fallback?.themeTokenPack ?? fallback?.themeKey ?? "theme-default",
     };
   }
 }
@@ -183,6 +203,21 @@ function dedupeSlotRules(...ruleSets: ExperienceProfile["slotRules"][]) {
   for (const rules of ruleSets) {
     for (const rule of rules) {
       result.set(rule.rendererKey, rule);
+    }
+  }
+  return [...result.values()];
+}
+
+function dedupeBlockOverrides(
+  ...overrideSets: NonNullable<ExperienceProfile["blockOverrides"]>[]
+) {
+  const result = new Map<
+    string,
+    NonNullable<ExperienceProfile["blockOverrides"]>[number]
+  >();
+  for (const overrides of overrideSets) {
+    for (const override of overrides) {
+      result.set(override.blockType, override);
     }
   }
   return [...result.values()];

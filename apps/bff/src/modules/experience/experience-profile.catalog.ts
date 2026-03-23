@@ -46,12 +46,17 @@ export const EXPERIENCE_PROFILES: ExperienceProfile[] = [
     campaignKey: "*",
     layoutKey: "layout-default",
     slotRules: [],
-    homeHero: {
-      heading: "Welcome back to your garage",
-      subheading: "Jump back into the parts and categories you shop most.",
-      ctaLabel: "Shop best sellers",
-      ctaUrl: "/categories",
-    },
+    blockOverrides: [
+      {
+        blockType: "hero-banner",
+        fields: {
+          heading: "Welcome back to your garage",
+          subheading: "Jump back into the parts and categories you shop most.",
+          ctaLabel: "Shop best sellers",
+          ctaUrl: "/categories",
+        },
+      },
+    ],
   },
   {
     id: "exp-checkout-returning-v1",

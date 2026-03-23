@@ -1,4 +1,8 @@
-import type { Collection, LocaleContext, Product } from "@commerce/shared-types";
+import type {
+  Collection,
+  LocaleContext,
+  Product,
+} from "@commerce/shared-types";
 
 export interface CollectionPort {
   getCollections(localeContext?: LocaleContext): Promise<Collection[]>;
@@ -13,11 +17,14 @@ export interface CollectionPort {
     localeContext?: LocaleContext,
   ): Promise<Collection | undefined>;
 
-  getCollectionProducts(params: {
-    collection: string;
-    reverse?: boolean;
-    sortKey?: string;
-  }, localeContext?: LocaleContext): Promise<Product[]>;
+  getCollectionProducts(
+    params: {
+      collection: string;
+      reverse?: boolean;
+      sortKey?: string;
+    },
+    localeContext?: LocaleContext,
+  ): Promise<Product[]>;
 }
 
 export const COLLECTION_PORT = Symbol("COLLECTION_PORT");

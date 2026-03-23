@@ -41,11 +41,14 @@ export class CollectionController {
       const canonicalCategory =
         this.slug.toCanonicalCategoryKey(localeContext, categoryPath) ??
         categoryPath;
-      const products = await this.collections.getCollectionProducts({
-        collection: canonicalCategory,
-        sortKey,
-        reverse: reverse === "true",
-      }, localeContext);
+      const products = await this.collections.getCollectionProducts(
+        {
+          collection: canonicalCategory,
+          sortKey,
+          reverse: reverse === "true",
+        },
+        localeContext,
+      );
       return this.slug.localizeProducts(products, localeContext);
     }
 
@@ -74,11 +77,14 @@ export class CollectionController {
     );
     const canonicalCollection =
       this.slug.toCanonicalCategoryKey(localeContext, handle) ?? handle;
-    const products = await this.collections.getCollectionProducts({
-      collection: canonicalCollection,
-      sortKey,
-      reverse: reverse === "true",
-    }, localeContext);
+    const products = await this.collections.getCollectionProducts(
+      {
+        collection: canonicalCollection,
+        sortKey,
+        reverse: reverse === "true",
+      },
+      localeContext,
+    );
     return this.slug.localizeProducts(products, localeContext);
   }
 
@@ -126,13 +132,10 @@ function localeContextFromQuery(query: Record<string, string | undefined>) {
   return hasAnyValue ? partial : undefined;
 }
 
-function normalizeLanguage(input?: string): LocaleContext["language"] | undefined {
-  if (
-    input === "en" ||
-    input === "es" ||
-    input === "nl" ||
-    input === "fr"
-  ) {
+function normalizeLanguage(
+  input?: string,
+): LocaleContext["language"] | undefined {
+  if (input === "en" || input === "es" || input === "nl" || input === "fr") {
     return input;
   }
   return undefined;

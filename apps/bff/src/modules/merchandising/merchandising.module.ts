@@ -7,4 +7,3 @@ import { MerchandisingValidatorService } from "./merchandising-validator.service
   exports: [MerchandisingResolverService],
 })
 export class MerchandisingModule {}
-

@@ -6,7 +6,9 @@ try {
   execSync(`rg -n "theme-contrast" ${TARGETS.join(" ")}`, {
     stdio: "inherit",
   });
-  console.error("[theme-catalog-guard] Found deprecated theme key \"theme-contrast\".");
+  console.error(
+    '[theme-catalog-guard] Found deprecated theme key "theme-contrast".',
+  );
   process.exit(1);
 } catch (error) {
   const code = error && typeof error === "object" ? error.status : undefined;

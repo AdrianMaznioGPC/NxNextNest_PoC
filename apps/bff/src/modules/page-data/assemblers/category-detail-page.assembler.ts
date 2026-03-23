@@ -1,10 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { I18nService } from "../../i18n/i18n.service";
 import { PageDataService } from "../page-data.service";
-import {
-  buildSortOptions,
-  getSorting,
-} from "./page-assembler.utils";
+import { buildSortOptions, getSorting } from "./page-assembler.utils";
 import type {
   PageAssembler,
   PageAssemblyContext,
@@ -20,9 +17,7 @@ export class CategoryDetailPageAssembler implements PageAssembler {
     private readonly i18n: I18nService,
   ) {}
 
-  async assemble(
-    ctx: PageAssemblyContext,
-  ): Promise<PageAssemblyResult | null> {
+  async assemble(ctx: PageAssemblyContext): Promise<PageAssemblyResult | null> {
     const categoryKey = ctx.route.refs.categoryKey;
     if (!categoryKey) return null;
 
@@ -73,4 +68,3 @@ export class CategoryDetailPageAssembler implements PageAssembler {
     };
   }
 }
-

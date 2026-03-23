@@ -70,4 +70,3 @@ const CategoryProductsClearanceSlot: SlotRenderer<"page.category-products"> = ({
 };
 
 export default CategoryProductsClearanceSlot;
-

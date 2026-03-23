@@ -42,7 +42,10 @@ function calculateItemCost(quantity: number, price: string): string {
   return (Number(price) * quantity).toString();
 }
 
-function setCartItemQuantity(item: CartItem, quantity: number): CartItem | null {
+function setCartItemQuantity(
+  item: CartItem,
+  quantity: number,
+): CartItem | null {
   if (quantity <= 0) return null;
 
   const singleItemAmount = Number(item.cost.totalAmount.amount) / item.quantity;
@@ -232,19 +235,16 @@ export function CartProvider({
     cartRef.current = cart;
   }, [cart]);
 
-  const setCartState = useCallback(
-    (next: Cart | ((prev: Cart) => Cart)) => {
-      setCart((previous) => {
-        const resolved =
-          typeof next === "function"
-            ? (next as (prev: Cart) => Cart)(previous)
-            : next;
-        cartRef.current = resolved;
-        return resolved;
-      });
-    },
-    [],
-  );
+  const setCartState = useCallback((next: Cart | ((prev: Cart) => Cart)) => {
+    setCart((previous) => {
+      const resolved =
+        typeof next === "function"
+          ? (next as (prev: Cart) => Cart)(previous)
+          : next;
+      cartRef.current = resolved;
+      return resolved;
+    });
+  }, []);
 
   const applyOptimistic = useCallback(
     (action: CartAction) => {
@@ -316,11 +316,7 @@ export function CartProvider({
     ],
   );
 
-  return (
-    <CartContext.Provider value={value}>
-      {children}
-    </CartContext.Provider>
-  );
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
 
 export function useCart() {

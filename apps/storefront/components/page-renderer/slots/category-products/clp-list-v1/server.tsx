@@ -28,8 +28,14 @@ const CategoryProductsListSlot: SlotRenderer<"page.category-products"> = ({
       ) : (
         <ul className="space-y-4">
           {products.map((product) => (
-            <li key={product.id} className="overflow-hidden rounded-xl border border-neutral-200 bg-white">
-              <SmartLink href={product.path} className="grid grid-cols-[96px_1fr] gap-4 p-4 sm:grid-cols-[120px_1fr]">
+            <li
+              key={product.id}
+              className="overflow-hidden rounded-xl border border-neutral-200 bg-white"
+            >
+              <SmartLink
+                href={product.path}
+                className="grid grid-cols-[96px_1fr] gap-4 p-4 sm:grid-cols-[120px_1fr]"
+              >
                 <div className="relative h-24 w-24 overflow-hidden rounded-md sm:h-[120px] sm:w-[120px]">
                   <Image
                     alt={product.featuredImage?.altText || product.title}

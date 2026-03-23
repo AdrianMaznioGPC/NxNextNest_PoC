@@ -13,9 +13,7 @@ const SearchProductsSlot: SlotRenderer<"page.search-products"> = ({
           <ProductGridItems products={products} />
         </Grid>
       ) : (
-        <p className="text-sm text-neutral-700">
-          No products found.
-        </p>
+        <p className="text-sm text-neutral-700">No products found.</p>
       )}
     </Container>
   );

@@ -24,8 +24,8 @@ export function CheckoutPageShell({
   const fallbackCurrency = bootstrap.page.localeContext?.currency ?? "USD";
   const initialShippingCost =
     summarySlot?.dataMode === "inline" && summarySlot.inlineProps
-      ? ((summarySlot.inlineProps as { initialShippingCost?: Money }).initialShippingCost ??
-        fallbackMoney(fallbackCurrency))
+      ? ((summarySlot.inlineProps as { initialShippingCost?: Money })
+          .initialShippingCost ?? fallbackMoney(fallbackCurrency))
       : fallbackMoney(fallbackCurrency);
 
   return (

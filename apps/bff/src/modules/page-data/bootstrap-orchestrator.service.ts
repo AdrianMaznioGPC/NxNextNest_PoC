@@ -77,7 +77,8 @@ export class BootstrapOrchestratorService {
     requestId: string;
     cookieHeader?: string;
   }): Promise<PageBootstrapModel> {
-    const { path, query, requestedLocaleContext, requestId, cookieHeader } = params;
+    const { path, query, requestedLocaleContext, requestId, cookieHeader } =
+      params;
     return this.loadShedding.run(
       "bootstrap",
       {
@@ -86,8 +87,9 @@ export class BootstrapOrchestratorService {
       },
       async () => {
         const totalStart = performance.now();
-        const requestedContext =
-          this.i18n.resolveLocaleContext(requestedLocaleContext);
+        const requestedContext = this.i18n.resolveLocaleContext(
+          requestedLocaleContext,
+        );
         const routeStart = performance.now();
         const route = this.routeRecognition.recognize(path, requestedContext);
         const routeMs = performance.now() - routeStart;
@@ -105,10 +107,8 @@ export class BootstrapOrchestratorService {
           routeKind: routeKindForExperience,
           language: localeContext.language,
         });
-        const {
-          query: queryWithMerchandising,
-          defaultSortApplied,
-        } = this.merchandising.applyDefaultSort(query, merchandising);
+        const { query: queryWithMerchandising, defaultSortApplied } =
+          this.merchandising.applyDefaultSort(query, merchandising);
         this.metrics.recordMerchandising({
           storeKey: experience.storeKey,
           routeKind: route.routeKind,
@@ -230,7 +230,8 @@ export class BootstrapOrchestratorService {
             canonicalUrl: resolvedModel.canonicalUrl,
             alternates: resolvedModel.alternates,
             translationVersion:
-              resolvedModel.translationVersion || messagePayload.translationVersion,
+              resolvedModel.translationVersion ||
+              messagePayload.translationVersion,
             translationSource: "bff-bootstrap",
             matchedRuleId: resolvedModel.matchedRuleId,
             assemblerKey: resolvedModel.assemblerKey,
@@ -293,8 +294,15 @@ export class BootstrapOrchestratorService {
     requestId: string;
     cookieHeader?: string;
   }): Promise<ResolvedPageModel> {
-    const { route, query, localeContext, experience, merchandising, requestId, cookieHeader } =
-      params;
+    const {
+      route,
+      query,
+      localeContext,
+      experience,
+      merchandising,
+      requestId,
+      cookieHeader,
+    } = params;
 
     if (route.status === 404 || route.routeKind === "unknown") {
       return this.notFound(route, localeContext);
@@ -417,7 +425,10 @@ export class BootstrapOrchestratorService {
       status: 404,
       seo: {
         title: this.i18n.t(localeContext.locale, "page.notFoundTitle"),
-        description: this.i18n.t(localeContext.locale, "page.notFoundDescription"),
+        description: this.i18n.t(
+          localeContext.locale,
+          "page.notFoundDescription",
+        ),
       },
       content: [],
       revalidateTags: [],
@@ -577,7 +588,9 @@ function toSlots(content: PageContentNode[]): ResolvedPageSlot[] {
   });
 }
 
-function rendererKeyForNode(type: PageContentNode["type"]): ExperienceRendererKey {
+function rendererKeyForNode(
+  type: PageContentNode["type"],
+): ExperienceRendererKey {
   switch (type) {
     case "home":
       return "page.home";
@@ -599,7 +612,3 @@ function rendererKeyForNode(type: PageContentNode["type"]): ExperienceRendererKe
       return "page.checkout-main";
   }
 }
-
-
-
-

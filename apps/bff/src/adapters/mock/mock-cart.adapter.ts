@@ -95,9 +95,9 @@ export class MockCartAdapter implements CartPort {
         const unitPrice =
           parseFloat(existing.cost.totalAmount.amount) / existing.quantity;
         existing.quantity = line.quantity;
-        existing.cost.totalAmount.amount = (
-          unitPrice * line.quantity
-        ).toFixed(2);
+        existing.cost.totalAmount.amount = (unitPrice * line.quantity).toFixed(
+          2,
+        );
       }
     }
 
@@ -113,8 +113,7 @@ export class MockCartAdapter implements CartPort {
       (sum, l) => sum + parseFloat(l.cost.totalAmount.amount),
       0,
     );
-    const currencyCode =
-      cart.lines[0]?.cost.totalAmount.currencyCode ?? "USD";
+    const currencyCode = cart.lines[0]?.cost.totalAmount.currencyCode ?? "USD";
     cart.cost = {
       subtotalAmount: { amount: totalAmount.toFixed(2), currencyCode },
       totalAmount: { amount: totalAmount.toFixed(2), currencyCode },

@@ -23,7 +23,9 @@ export async function POST(request: NextRequest) {
   }
 
   const host =
-    request.headers.get("x-forwarded-host") ?? request.headers.get("host") ?? "";
+    request.headers.get("x-forwarded-host") ??
+    request.headers.get("host") ??
+    "";
   const sourceHost = host.split(":")[0] ?? "";
   const sourceOrigin = resolveSourceOrigin(request, host);
 

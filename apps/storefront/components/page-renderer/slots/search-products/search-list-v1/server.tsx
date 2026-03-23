@@ -11,7 +11,10 @@ const SearchProductsListSlot: SlotRenderer<"page.search-products"> = ({
       {products.length > 0 ? (
         <ul className="space-y-4">
           {products.map((product) => (
-            <li key={product.id} className="overflow-hidden rounded-xl border border-neutral-200 bg-white">
+            <li
+              key={product.id}
+              className="overflow-hidden rounded-xl border border-neutral-200 bg-white"
+            >
               <SmartLink
                 href={product.path}
                 className="grid grid-cols-[96px_1fr] gap-4 p-4 sm:grid-cols-[120px_1fr]"
@@ -42,9 +45,7 @@ const SearchProductsListSlot: SlotRenderer<"page.search-products"> = ({
           ))}
         </ul>
       ) : (
-        <p className="text-sm text-neutral-700">
-          No products found.
-        </p>
+        <p className="text-sm text-neutral-700">No products found.</p>
       )}
     </Container>
   );

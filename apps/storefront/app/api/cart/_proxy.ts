@@ -63,7 +63,8 @@ function buildLocaleQuery(request: NextRequest): string {
   const prefLanguage = request.cookies.get("pref_lang")?.value;
   const prefRegion = request.cookies.get("pref_region")?.value;
   const localeCookie = request.cookies.get("locale")?.value;
-  const language = normalizeLanguage(prefLanguage) ?? normalizeLanguage(localeCookie);
+  const language =
+    normalizeLanguage(prefLanguage) ?? normalizeLanguage(localeCookie);
   const region = prefRegion || localeCookie?.split("-")[1] || "US";
 
   if (language) {
@@ -89,7 +90,9 @@ function normalizeHost(host: string | null): string | undefined {
   return normalized || undefined;
 }
 
-function normalizeLanguage(value?: string): "en" | "es" | "nl" | "fr" | undefined {
+function normalizeLanguage(
+  value?: string,
+): "en" | "es" | "nl" | "fr" | undefined {
   if (!value) return undefined;
   const normalized = value.toLowerCase().split("-")[0];
   if (

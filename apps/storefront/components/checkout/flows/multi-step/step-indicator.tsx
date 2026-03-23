@@ -10,7 +10,10 @@ interface StepIndicatorProps {
 
 const STEP_KEYS = ["stepAddress", "stepShippingPayment", "stepReview"] as const;
 
-export function StepIndicator({ currentStep, onStepClick }: StepIndicatorProps) {
+export function StepIndicator({
+  currentStep,
+  onStepClick,
+}: StepIndicatorProps) {
   const t = useT("checkout");
 
   return (
@@ -24,7 +27,10 @@ export function StepIndicator({ currentStep, onStepClick }: StepIndicatorProps) 
           return (
             <li
               key={key}
-              className={clsx("flex items-center", index < STEP_KEYS.length - 1 && "flex-1")}
+              className={clsx(
+                "flex items-center",
+                index < STEP_KEYS.length - 1 && "flex-1",
+              )}
             >
               {/* Step circle + label */}
               <button
@@ -45,12 +51,24 @@ export function StepIndicator({ currentStep, onStepClick }: StepIndicatorProps) 
                     "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold transition-colors",
                     isCurrent && "bg-primary text-primary-foreground",
                     isCompleted && "bg-primary text-primary-foreground",
-                    !isCurrent && !isCompleted && "border-2 border-border text-muted",
+                    !isCurrent &&
+                      !isCompleted &&
+                      "border-2 border-border text-muted",
                   )}
                 >
                   {isCompleted ? (
-                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
                     </svg>
                   ) : (
                     index + 1

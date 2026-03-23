@@ -20,4 +20,3 @@ export function translate(
   }
   return fallback ?? key;
 }
-

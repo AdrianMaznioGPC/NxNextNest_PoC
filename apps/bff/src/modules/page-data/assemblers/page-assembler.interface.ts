@@ -3,9 +3,12 @@ import type {
   PageContentNode,
   PageSeo,
 } from "@commerce/shared-types";
-import type { ResolvedRouteDescriptor, RouteKind } from "../routing/route-rule.types";
-import type { ResolvedMerchandisingProfile } from "../../merchandising/merchandising-profile.types";
 import type { ResolvedExperienceProfile } from "../../experience/experience-profile.types";
+import type { ResolvedMerchandisingProfile } from "../../merchandising/merchandising-profile.types";
+import type {
+  ResolvedRouteDescriptor,
+  RouteKind,
+} from "../routing/route-rule.types";
 
 export type PageAssemblyContext = {
   route: ResolvedRouteDescriptor;
@@ -17,7 +20,7 @@ export type PageAssemblyContext = {
   >;
   experience: Pick<
     ResolvedExperienceProfile,
-    "experienceProfileId" | "homeHero" | "signals" | "slotRules"
+    "experienceProfileId" | "signals" | "slotRules"
   >;
   cookieHeader?: string;
 };

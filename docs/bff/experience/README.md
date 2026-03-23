@@ -13,9 +13,11 @@ Resolves store and route-specific experience configuration. It chooses layout ke
 - `apps/bff/src/modules/experience/experience-profile.types.ts`
 - `apps/bff/src/modules/experience/experience-signals.service.ts`
 - `apps/bff/src/modules/experience/marketing-overlay.service.ts`
+- `apps/bff/src/modules/experience/block-overlay.service.ts`
 - `apps/bff/src/modules/experience/marketing-directive.types.ts`
 - `apps/bff/src/ports/marketing-directive.port.ts`
 - `apps/bff/src/adapters/mock/mock-marketing-directive.adapter.ts`
+- `apps/bff/src/adapters/launchdarkly/` (LaunchDarkly adapter)
 
 ## How It Works
 
@@ -23,8 +25,9 @@ Resolves store and route-specific experience configuration. It chooses layout ke
 2. `ExperienceSignalsService` reads mock query params such as `customerProfile` and `campaign`, calls the `MarketingDirectiveProvider`, and merges both sources into a single `ResolvedExperienceSignals` object.
 3. `ExperienceProfileService.resolveProfile()` filters `EXPERIENCE_PROFILES` by `storeKey`, `routeKind`, `customerProfile`, and `campaignKey`, then picks the most specific match using the profile scoring rules.
 4. The chosen profile is merged with the store baseline. Store bindings still own theme selection, while profile rules own layout and slot behavior.
-5. `MarketingOverlayService` applies the safe, high-level overlay on top of that profile. This is where discovery or re-engagement flags, hero overrides, and checkout preferences are converted into concrete slot rules.
-6. Later in bootstrap, `ExperienceResolverService.applyToSlots()` projects those rules onto the slot manifest by updating `presentation.variantKey`, `layoutKey`, `density`, `flags`, and `slotRef.query`, or by dropping slots whose rule sets `include: false`.
+5. `MarketingOverlayService` merges profile-level `blockOverrides` with directive-level `blockOverrides` (directives win), applies funnel mode and checkout preference flags into concrete slot rules.
+6. `BlockOverlayService` applies the merged `blockOverrides` to raw CMS blocks before resolution. It is a generic applicator with zero block-type knowledge — it matches by `blockType` and shallow-merges `fields`.
+7. Later in bootstrap, `ExperienceResolverService.applyToSlots()` projects slot rules onto the slot manifest by updating `presentation.variantKey`, `layoutKey`, `density`, `flags`, and `slotRef.query`, or by dropping slots whose rule sets `include: false`.
 
 ## Selection Rules
 
@@ -35,7 +38,7 @@ Resolves store and route-specific experience configuration. It chooses layout ke
 
 ## Runtime Effects
 
-- Homepage assembly can replace the first hero banner with `experience.homeHero`.
+- `blockOverrides` from both profiles and directives are merged and applied generically to any CMS block type (hero banners, featured products, featured categories, etc.).
 - Checkout assembly can switch the checkout flow type by reading the resolved slot rule for `page.checkout-main`.
 - Slot manifests receive extra revalidation tags for the experience profile, theme binding, customer profile, campaign, and active marketing directives.
 
@@ -46,15 +49,22 @@ Resolves store and route-specific experience configuration. It chooses layout ke
 
 ## Marketing Control Boundary
 
-Marketing directives are high-level only. They can influence:
+Marketing directives influence behavior through generic mechanisms:
 
-- funnel mode
-- homepage hero content
-- promoted categories and products
-- approved slot flags
-- checkout preference hints
+- `blockOverrides` — replace fields on any CMS block type (hero banners, featured products, categories, etc.)
+- `funnelMode` — discovery, reengagement, low-friction
+- `slotFlags` — boolean flags per renderer key
+- `checkoutPreference` — express checkout hints
+- `audienceTags` — tagging for analytics
 
 Marketing directives do not directly define FE components or arbitrary slot payloads.
+
+## Directive Provider Adapters
+
+- **Mock** (`MockMarketingDirectiveAdapter`): In-memory directives for development. Active by default.
+- **LaunchDarkly** (`LaunchDarklyDirectiveAdapter`): Evaluates a JSON flag returning `MarketingDirective[]`. Activate with `DIRECTIVE_PROVIDER=launchdarkly` and `LAUNCHDARKLY_SDK_KEY=<key>`.
+
+The provider is swapped via `MARKETING_DIRECTIVE_PORT` DI — the experience pipeline is provider-agnostic.
 
 ## Mocked Testing
 
@@ -67,6 +77,10 @@ You can trigger mocked experience signals through query params on any page boots
 - `?campaign=paid-social-discovery`
 - `?campaign=email-reorder`
 - `?campaign=vip-reengagement`
+- `?campaign=black-friday`
+- `?campaign=summer-sale`
+
+Any string is accepted as a campaign key — the directive provider decides what it means.
 
 Examples:
 
@@ -75,9 +89,12 @@ Examples:
 - homepage returning paid social: `/?customerProfile=returning&campaign=paid-social-discovery`
 - checkout email reorder: `/checkout?customerProfile=returning&campaign=email-reorder`
 - homepage VIP re-engagement: `/?customerProfile=vip&campaign=vip-reengagement`
+- homepage Black Friday: `/?campaign=black-friday`
+- homepage Summer Sale: `/?campaign=summer-sale`
 
 ## Extension Notes
 
-- Add new baseline experiences in `experience-profile.catalog.ts` when the rule is product-owned and deterministic.
+- Add new baseline experiences in `experience-profile.catalog.ts` using `blockOverrides` for any CMS block-level customization.
 - Add new campaign logic through `MarketingDirectiveProvider` when the signal comes from a marketing or audience system.
+- Both profiles and directives use the same `BlockOverride` shape — `{ blockType, fields }`. The generic `BlockOverlayService` applies them without block-type knowledge.
 - Keep overlays additive and constrained. If a new requirement needs arbitrary component composition, it belongs in page-data or slot payload assembly instead of this domain.

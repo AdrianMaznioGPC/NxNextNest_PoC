@@ -14,9 +14,7 @@ export default function CategoryCard({
       <h3 className="text-lg font-semibold text-card-foreground group-hover:underline">
         {collection.title}
       </h3>
-      <p className="mt-2 text-sm text-muted">
-        {collection.description}
-      </p>
+      <p className="mt-2 text-sm text-muted">{collection.description}</p>
       {collection.subcollections && collection.subcollections.length > 0 && (
         <p className="mt-4 text-xs text-muted">
           {collection.subcollections.length} subcategories

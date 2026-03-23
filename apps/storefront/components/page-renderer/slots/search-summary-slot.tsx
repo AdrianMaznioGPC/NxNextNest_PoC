@@ -14,9 +14,7 @@ const SearchSummarySlot: SlotRenderer<"page.search-summary"> = ({
         <div>
           <h1 className="text-2xl font-semibold">Search</h1>
           {summaryText ? (
-            <p className="mt-2 text-sm text-neutral-700">
-              {summaryText}
-            </p>
+            <p className="mt-2 text-sm text-neutral-700">{summaryText}</p>
           ) : query ? (
             <p className="mt-2 text-sm text-neutral-700">
               Results for &quot;{query}&quot;

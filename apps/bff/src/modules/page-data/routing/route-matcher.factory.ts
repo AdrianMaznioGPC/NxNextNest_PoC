@@ -52,11 +52,12 @@ export class RouteMatcherFactory {
     segments: StaticRouteSegments,
     canonicalSegments: StaticRouteSegments,
   ): CompiledRouteRule[] {
-    const rules: CompiledRouteRule[] = [
-      buildRule("home", "home", "/"),
-    ];
+    const rules: CompiledRouteRule[] = [buildRule("home", "home", "/")];
 
-    for (const searchSegment of unique([segments.search, canonicalSegments.search])) {
+    for (const searchSegment of unique([
+      segments.search,
+      canonicalSegments.search,
+    ])) {
       rules.push(buildRule("search", "search", `/${searchSegment}`));
     }
 
@@ -118,12 +119,15 @@ export class RouteMatcherFactory {
   }
 
   private warmup() {
-    const defaultSegments = staticRouteSegmentCatalog[defaultLocaleContext.locale];
+    const defaultSegments =
+      staticRouteSegmentCatalog[defaultLocaleContext.locale];
     if (!defaultSegments) {
       throw new Error("Missing default locale static route segments");
     }
 
-    for (const [locale, segments] of Object.entries(staticRouteSegmentCatalog)) {
+    for (const [locale, segments] of Object.entries(
+      staticRouteSegmentCatalog,
+    )) {
       const rules = this.getMatchers({
         locale,
         staticSegments: segments,
@@ -145,7 +149,9 @@ export class RouteMatcherFactory {
   getHealthSummary() {
     return {
       compiledMatcherSets: this.cache.size,
-      locales: [...new Set([...this.cache.keys()].map((key) => JSON.parse(key).locale))],
+      locales: [
+        ...new Set([...this.cache.keys()].map((key) => JSON.parse(key).locale)),
+      ],
     };
   }
 }

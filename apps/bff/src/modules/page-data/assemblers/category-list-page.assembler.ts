@@ -40,4 +40,3 @@ export class CategoryListPageAssembler implements PageAssembler {
     };
   }
 }
-

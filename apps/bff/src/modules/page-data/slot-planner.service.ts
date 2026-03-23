@@ -47,7 +47,8 @@ export class SlotPlannerService {
       return this.planCheckout(node, resolved);
     }
 
-    const defaultSlots = resolved.slots ?? toSlotsFromContent(resolved.content ?? []);
+    const defaultSlots =
+      resolved.slots ?? toSlotsFromContent(resolved.content ?? []);
     const manifests = defaultSlots.map((slot) =>
       toInlineManifest(slot, resolved.revalidateTags, 300),
     );
@@ -319,7 +320,9 @@ function toSlotsFromContent(content: PageContentNode[]): ResolvedPageSlot[] {
   });
 }
 
-function rendererKeyForNode(type: PageContentNode["type"]): ExperienceRendererKey {
+function rendererKeyForNode(
+  type: PageContentNode["type"],
+): ExperienceRendererKey {
   switch (type) {
     case "home":
       return "page.home";
@@ -368,6 +371,3 @@ function withLocaleContext(
 function byteSize(value: unknown): number {
   return Buffer.byteLength(JSON.stringify(value));
 }
-
-
-

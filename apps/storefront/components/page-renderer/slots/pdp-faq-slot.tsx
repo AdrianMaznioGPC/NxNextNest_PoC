@@ -17,9 +17,7 @@ const PdpFaqSlot: SlotRenderer<"page.pdp-faq"> = ({ items }) => {
               <summary className="cursor-pointer list-none font-medium">
                 {item.q}
               </summary>
-              <p className="pt-3 text-sm text-neutral-700">
-                {item.a}
-              </p>
+              <p className="pt-3 text-sm text-neutral-700">{item.a}</p>
             </details>
           ))}
         </div>

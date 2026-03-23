@@ -14,14 +14,18 @@ export function SinglePageCheckoutMainSlot({
   cart,
   config,
 }: CheckoutMainSlotProps) {
-  return <SinglePageCheckout cart={cart} config={config} renderSummary={false} />;
+  return (
+    <SinglePageCheckout cart={cart} config={config} renderSummary={false} />
+  );
 }
 
 export function MultiStepCheckoutMainSlot({
   cart,
   config,
 }: CheckoutMainSlotProps) {
-  return <MultiStepCheckout cart={cart} config={config} renderSummary={false} />;
+  return (
+    <MultiStepCheckout cart={cart} config={config} renderSummary={false} />
+  );
 }
 
 export function ExpressCheckoutMainSlot({

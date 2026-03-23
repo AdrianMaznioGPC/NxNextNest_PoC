@@ -3,13 +3,14 @@ import type {
   CategoryListPageData,
   CategoryPageData,
   Collection,
-  LocaleContext,
   GlobalLayoutData,
   HomePageData,
+  LocaleContext,
   ProductPageData,
   SearchPageData,
 } from "@commerce/shared-types";
 import { Inject, Injectable } from "@nestjs/common";
+import type { CmsRawBlock } from "../../ports/cms.port";
 import { CMS_PORT, CmsPort } from "../../ports/cms.port";
 import { COLLECTION_PORT, CollectionPort } from "../../ports/collection.port";
 import { NAVIGATION_PORT, NavigationPort } from "../../ports/navigation.port";
@@ -32,7 +33,9 @@ export class PageDataService {
     private readonly resilience: ResilienceService,
   ) {}
 
-  async getLayoutData(localeContext?: LocaleContext): Promise<GlobalLayoutData> {
+  async getLayoutData(
+    localeContext?: LocaleContext,
+  ): Promise<GlobalLayoutData> {
     const [megaMenu, featuredLinks] = await Promise.all([
       this.withReadPolicy("navigation:getMegaMenu", () =>
         this.navigation.getMegaMenu(localeContext),
@@ -58,18 +61,27 @@ export class PageDataService {
 
     return {
       megaMenu: this.slug.localizeMegaMenu(megaMenu, localeContext),
-      featuredLinks: this.slug.localizeFeaturedLinks(featuredLinks, localeContext),
+      featuredLinks: this.slug.localizeFeaturedLinks(
+        featuredLinks,
+        localeContext,
+      ),
       routes: this.slug.getStaticRoutes(localeContext),
     };
   }
 
-  async getHomePage(localeContext?: LocaleContext): Promise<HomePageData> {
+  async getHomePage(
+    localeContext?: LocaleContext,
+    rawBlockOverlay?: (blocks: CmsRawBlock[]) => CmsRawBlock[],
+  ): Promise<HomePageData> {
     const cmsPage = await this.withReadPolicy("cms:getPage:home", () =>
       this.cms.getPage("home", localeContext),
     );
     const rawBlocks = cmsPage?.blocks ?? [];
+    const overlaidBlocks = rawBlockOverlay
+      ? rawBlockOverlay(rawBlocks)
+      : rawBlocks;
 
-    const blocks = await resolveBlocks(rawBlocks, {
+    const blocks = await resolveBlocks(overlaidBlocks, {
       products: this.products,
       collections: this.collections,
       localeContext,
@@ -85,8 +97,9 @@ export class PageDataService {
   async getCategoryListPage(
     localeContext?: LocaleContext,
   ): Promise<CategoryListPageData> {
-    const collections = await this.withReadPolicy("collections:getCollections", () =>
-      this.collections.getCollections(localeContext),
+    const collections = await this.withReadPolicy(
+      "collections:getCollections",
+      () => this.collections.getCollections(localeContext),
     );
     return {
       collections: localeContext
@@ -107,7 +120,10 @@ export class PageDataService {
     );
     if (!collection) return undefined;
 
-    const breadcrumbs = await this.buildCategoryBreadcrumbs(slugs, localeContext);
+    const breadcrumbs = await this.buildCategoryBreadcrumbs(
+      slugs,
+      localeContext,
+    );
 
     const hasSubs =
       collection.subcollections && collection.subcollections.length > 0;
@@ -121,7 +137,10 @@ export class PageDataService {
         : breadcrumbs;
       const localizedSubs =
         localeContext && collection.subcollections
-          ? this.slug.localizeCollections(collection.subcollections, localeContext)
+          ? this.slug.localizeCollections(
+              collection.subcollections,
+              localeContext,
+            )
           : collection.subcollections;
 
       return {
@@ -135,11 +154,14 @@ export class PageDataService {
     const products = await this.withReadPolicy(
       `collections:getCollectionProducts:${collectionKey}`,
       () =>
-        this.collections.getCollectionProducts({
-          collection: collectionKey,
-          sortKey,
-          reverse,
-        }, localeContext),
+        this.collections.getCollectionProducts(
+          {
+            collection: collectionKey,
+            sortKey,
+            reverse,
+          },
+          localeContext,
+        ),
     );
 
     return {
@@ -159,8 +181,9 @@ export class PageDataService {
     handle: string,
     localeContext?: LocaleContext,
   ): Promise<ProductPageData | undefined> {
-    const product = await this.withReadPolicy(`products:getProduct:${handle}`, () =>
-      this.products.getProduct(handle, localeContext),
+    const product = await this.withReadPolicy(
+      `products:getProduct:${handle}`,
+      () => this.products.getProduct(handle, localeContext),
     );
     if (!product) return undefined;
 
@@ -180,7 +203,9 @@ export class PageDataService {
     ];
 
     return {
-      product: localeContext ? this.slug.localizeProduct(product, localeContext) : product,
+      product: localeContext
+        ? this.slug.localizeProduct(product, localeContext)
+        : product,
       breadcrumbs: localeContext
         ? this.slug.localizeBreadcrumbs(breadcrumbs, localeContext)
         : breadcrumbs,
@@ -197,11 +222,14 @@ export class PageDataService {
     localeContext?: LocaleContext,
   ): Promise<SearchPageData> {
     const products = await this.withReadPolicy("products:getProducts", () =>
-      this.products.getProducts({
-        query,
-        sortKey,
-        reverse,
-      }, localeContext),
+      this.products.getProducts(
+        {
+          query,
+          sortKey,
+          reverse,
+        },
+        localeContext,
+      ),
     );
 
     return {
@@ -225,8 +253,9 @@ export class PageDataService {
 
     // Walk the tree once instead of N separate calls
     let parent: Collection | undefined;
-    const allCollections = await this.withReadPolicy("collections:getCollections", () =>
-      this.collections.getCollections(localeContext),
+    const allCollections = await this.withReadPolicy(
+      "collections:getCollections",
+      () => this.collections.getCollections(localeContext),
     );
     for (let i = 0; i < slugs.length; i++) {
       let current: Collection | undefined;

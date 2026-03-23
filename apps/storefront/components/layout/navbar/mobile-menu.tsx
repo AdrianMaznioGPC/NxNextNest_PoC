@@ -127,14 +127,14 @@ function MobileMenuItem({
   return (
     <li className="border-b border-neutral-200">
       <div className="flex items-center justify-between">
-          <Link
-            href={item.path}
-            prefetch={false}
-            onClick={onNavigate}
-            className="flex-1 py-3 text-lg text-black transition-colors hover:text-neutral-500"
-          >
-            {item.title}
-          </Link>
+        <Link
+          href={item.path}
+          prefetch={false}
+          onClick={onNavigate}
+          className="flex-1 py-3 text-lg text-black transition-colors hover:text-neutral-500"
+        >
+          {item.title}
+        </Link>
         {hasChildren ? (
           <button
             onClick={() => setExpanded(!expanded)}

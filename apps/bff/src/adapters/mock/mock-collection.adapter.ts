@@ -1,4 +1,8 @@
-import type { Collection, LocaleContext, Product } from "@commerce/shared-types";
+import type {
+  Collection,
+  LocaleContext,
+  Product,
+} from "@commerce/shared-types";
 import { Injectable, Logger } from "@nestjs/common";
 import { CollectionPort } from "../../ports/collection.port";
 import {
@@ -63,11 +67,14 @@ export class MockCollectionAdapter implements CollectionPort {
     return localized.value;
   }
 
-  async getCollectionProducts(params: {
-    collection: string;
-    reverse?: boolean;
-    sortKey?: string;
-  }, localeContext?: LocaleContext): Promise<Product[]> {
+  async getCollectionProducts(
+    params: {
+      collection: string;
+      reverse?: boolean;
+      sortKey?: string;
+    },
+    localeContext?: LocaleContext,
+  ): Promise<Product[]> {
     const ids = collectionProductMap[params.collection];
     if (!ids) return [];
 

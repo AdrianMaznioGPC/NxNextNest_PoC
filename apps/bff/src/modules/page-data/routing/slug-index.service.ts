@@ -22,9 +22,15 @@ export class SlugIndexService {
   constructor(private readonly slugMapper: SlugMapperService) {
     this.validateStaticSegments();
     this.validateRouteAmbiguity();
-    this.productSlugIndex = this.buildReverseIndex(productSlugCatalog, "product");
+    this.productSlugIndex = this.buildReverseIndex(
+      productSlugCatalog,
+      "product",
+    );
     this.pageSlugIndex = this.buildReverseIndex(pageSlugCatalog, "page");
-    this.categoryPathIndex = this.buildReverseIndex(categorySlugCatalog, "category");
+    this.categoryPathIndex = this.buildReverseIndex(
+      categorySlugCatalog,
+      "category",
+    );
     deepFreeze(this.productSlugIndex);
     deepFreeze(this.pageSlugIndex);
     deepFreeze(this.categoryPathIndex);
@@ -75,7 +81,6 @@ export class SlugIndexService {
   buildCheckoutPath(locale: string): string {
     return this.slugMapper.buildCheckoutPath(locale);
   }
-
 
   buildProductPath(locale: string, canonicalHandle: string): string {
     return this.slugMapper.buildProductPath(locale, canonicalHandle);
@@ -178,7 +183,9 @@ export class SlugIndexService {
   }
 
   private validateStaticSegments() {
-    for (const [locale, segments] of Object.entries(staticRouteSegmentCatalog)) {
+    for (const [locale, segments] of Object.entries(
+      staticRouteSegmentCatalog,
+    )) {
       const values = [
         segments.search,
         segments.product,

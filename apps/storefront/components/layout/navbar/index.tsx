@@ -1,7 +1,11 @@
 import CartModal from "components/cart/modal";
 import LogoSquare from "components/logo-square";
 import SmartLink from "components/smart-link";
-import type { DomainConfigModel, GlobalLayoutData, StoreContext } from "lib/types";
+import type {
+  DomainConfigModel,
+  GlobalLayoutData,
+  StoreContext,
+} from "lib/types";
 import { Suspense } from "react";
 import CartPageLink from "./cart-page-link";
 import DeferredCart from "./deferred-cart";
@@ -28,10 +32,9 @@ export async function Navbar({
   storeContext: StoreContext;
   currentRegion: string;
 }) {
-  const [{ megaMenu, featuredLinks, routes }, domainConfig] = await Promise.all([
-    layoutDataPromise,
-    domainConfigPromise,
-  ]);
+  const [{ megaMenu, featuredLinks, routes }, domainConfig] = await Promise.all(
+    [layoutDataPromise, domainConfigPromise],
+  );
   const regionOptions = buildRegionOptions(domainConfig);
   const cartEntry =
     storeContext.cartUxMode === "page" ? (
@@ -49,7 +52,10 @@ export async function Navbar({
         {/* Mobile menu button */}
         <div className="block flex-none md:hidden">
           {DEFER_SHELL_INTERACTIONS ? (
-            <DeferredMobileMenu megaMenu={megaMenu} searchPath={routes.search} />
+            <DeferredMobileMenu
+              megaMenu={megaMenu}
+              searchPath={routes.search}
+            />
           ) : (
             <MobileMenu megaMenu={megaMenu} searchPath={routes.search} />
           )}

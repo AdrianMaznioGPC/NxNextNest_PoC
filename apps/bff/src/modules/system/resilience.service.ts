@@ -84,7 +84,9 @@ export class ResilienceService {
   private guardConcurrency(key: string, policy: Required<ExecutePolicy>) {
     const current = this.activeCounts.get(key) ?? 0;
     if (current >= policy.maxConcurrent) {
-      throw new ConcurrencyLimitError(`Concurrency limit exceeded for "${key}"`);
+      throw new ConcurrencyLimitError(
+        `Concurrency limit exceeded for "${key}"`,
+      );
     }
     this.activeCounts.set(key, current + 1);
   }
@@ -151,4 +153,3 @@ function backoffForAttempt(baseMs: number, attempt: number) {
   const jitter = Math.floor(Math.random() * 10);
   return baseMs * attempt + jitter;
 }
-

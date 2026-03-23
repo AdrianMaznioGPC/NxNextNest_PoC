@@ -5,7 +5,11 @@ import { useT } from "lib/i18n/messages-context";
 import Form from "next/form";
 import { useSearchParams } from "next/navigation";
 
-export default function Search({ actionPath = "/search" }: { actionPath?: string }) {
+export default function Search({
+  actionPath = "/search",
+}: {
+  actionPath?: string;
+}) {
   const searchParams = useSearchParams();
   const t = useT("common");
 

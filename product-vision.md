@@ -1,6 +1,7 @@
 # Product Vision and Handover Guide
 
 ## 1) Purpose
+
 This document describes the current end-to-end product architecture for the Nx monorepo storefront platform in `/NxNextNest_PoC`.
 
 It is intended to be a complete handover for engineering teams covering:
@@ -15,6 +16,7 @@ It is intended to be a complete handover for engineering teams covering:
 ---
 
 ## 2) Product Definition
+
 The platform is a server-rendered, multi-store, multi-language ecommerce storefront with:
 
 1. One storefront app using a catch-all App Router route.
@@ -24,6 +26,7 @@ The platform is a server-rendered, multi-store, multi-language ecommerce storefr
 5. Region-domain + language-path URL semantics.
 
 ### Core principle
+
 Storefront is a thin rendering runtime.  
 BFF owns orchestration, route resolution, URL generation, and experience assignment.
 
@@ -68,6 +71,7 @@ BFF owns orchestration, route resolution, URL generation, and experience assignm
 ## 4) Ownership Model
 
 ## BFF owns
+
 1. Route recognition and canonical entity resolution.
 2. URL generation policy and slug mapping.
 3. Bootstrap and slot payload composition.
@@ -82,6 +86,7 @@ BFF owns orchestration, route resolution, URL generation, and experience assignm
 12. i18n negotiation, catalog lookup, and dynamic message formatting.
 
 ## Storefront owns
+
 1. Rendering runtime (RSC + client islands where needed).
 2. Catch-all route shell and component rendering.
 3. Semantic theme CSS token packs and Tailwind classes.
@@ -94,6 +99,7 @@ BFF owns orchestration, route resolution, URL generation, and experience assignm
 10. No locale negotiation, pluralization, or business formatting logic.
 
 ## Downstream commerce systems own
+
 1. Long-term source of translated commerce content.
 2. Catalog availability and business data truth.
 
@@ -129,6 +135,7 @@ sequenceDiagram
 ## 6) URL Model: Region + Language
 
 ## Region
+
 1. Region/commercial context comes from domain host.
 2. Examples:
    1. `storefront.example.com` -> US context.
@@ -136,11 +143,13 @@ sequenceDiagram
    3. `storefront.nl.example.com` -> NL context.
 
 ## Language
+
 1. Non-default language uses explicit prefix (`/en/...`, `/es/...`, `/nl/...`, `/fr/...`).
 2. Default language is unprefixed on that domain.
 3. Default-language prefixed URL is redirected to unprefixed canonical.
 
 ## Deterministic rules
+
 1. Prefix language takes precedence when present.
 2. Without prefix, language is domain default.
 3. `pref_lang` cookie does **not** override unprefixed route parsing.
@@ -151,6 +160,7 @@ sequenceDiagram
 ## 7) Public API Surface
 
 ## 7.1 i18n endpoints
+
 1. `GET /i18n/domain-config`
    1. Returns domain-store bindings, language matrix, theme metadata, store-flag metadata, and cart UX metadata.
    2. Returns strong content-derived ETag.
@@ -162,12 +172,14 @@ sequenceDiagram
    2. Output: canonical target URL and fallback reason metadata.
 
 ## 7.2 page-data endpoints
+
 1. `GET /page-data/bootstrap`
 2. `GET /page-data/slot`
 3. `GET /page-data/layout`
 4. Legacy convenience endpoints still exist (`/page-data/home`, `/page-data/search`, etc.).
 
 ## 7.3 cart endpoints
+
 1. Cookie-based v2:
    1. `POST /cart/current`
    2. `GET /cart/current`
@@ -182,6 +194,7 @@ sequenceDiagram
 ## 8) Contract Examples
 
 ## 8.1 `GET /page-data/bootstrap` example
+
 Request:
 
 ```http
@@ -260,7 +273,11 @@ Response (representative):
       "dataMode": "inline",
       "presentation": { "variantKey": "default" },
       "inlineProps": { "...": "..." },
-      "revalidateTags": ["products", "products:lang:es", "experience:exp-store-a-v1"],
+      "revalidateTags": [
+        "products",
+        "products:lang:es",
+        "experience:exp-store-a-v1"
+      ],
       "staleAfterSeconds": 300
     },
     {
@@ -294,6 +311,7 @@ Response (representative):
 ```
 
 ## 8.2 `GET /page-data/slot` example
+
 Request:
 
 ```http
@@ -307,7 +325,12 @@ Response:
   "slotId": "slot:pdp-recommendations",
   "rendererKey": "page.pdp-recommendations",
   "props": {
-    "products": [{ "handle": "performance-air-filter", "path": "/es/producto/filtro-aire-rendimiento" }]
+    "products": [
+      {
+        "handle": "performance-air-filter",
+        "path": "/es/producto/filtro-aire-rendimiento"
+      }
+    ]
   },
   "presentation": { "variantKey": "default" },
   "revalidateTags": ["products:coilover-kit:recs", "products:lang:es"],
@@ -318,6 +341,7 @@ Response:
 ```
 
 ## 8.3 `POST /i18n/switch-url` example
+
 Request:
 
 ```json
@@ -344,6 +368,7 @@ Response:
 ```
 
 ## 8.4 Cart mutation example
+
 Request:
 
 ```http
@@ -354,13 +379,12 @@ Content-Type: application/json
 
 ```json
 {
-  "lines": [
-    { "merchandiseId": "var-front-0", "quantity": 1 }
-  ]
+  "lines": [{ "merchandiseId": "var-front-0", "quantity": 1 }]
 }
 ```
 
 Response:
+
 1. Returns authoritative cart JSON.
 2. May return `Set-Cookie: cartId=...` if cart is newly created or rotated.
 
@@ -369,6 +393,7 @@ Response:
 ## 9) Route Recognition and Slug System
 
 ## Matcher engine
+
 BFF compiles `path-to-regexp` rules per locale static segments:
 
 1. `/`
@@ -380,6 +405,7 @@ BFF compiles `path-to-regexp` rules per locale static segments:
 7. `/:pageSlug`
 
 ## Canonical refs
+
 After matching, BFF resolves:
 
 1. Product slug -> `productHandle`.
@@ -389,6 +415,7 @@ After matching, BFF resolves:
 Everything downstream uses canonical refs.
 
 ## Prefixing
+
 `SlugMapperService.withLanguagePrefix` applies prefix only for non-default language for current domain.
 
 ---
@@ -396,6 +423,7 @@ Everything downstream uses canonical refs.
 ## 10) Page Assembly and Slot Planning
 
 ## Internal assemblers
+
 Each route kind has a dedicated assembler:
 
 1. `home`
@@ -407,6 +435,7 @@ Each route kind has a dedicated assembler:
 7. `cart`
 
 ## Slot strategy
+
 1. Critical content may be inline blocking.
 2. Expensive content is deferred via `slotRef`.
 3. Slot planner enforces critical inline payload budget.
@@ -427,10 +456,12 @@ Profiles are BFF catalog entries mapping:
    5. `flags`
 
 ### Important current rule
+
 Experience resolution is locale-agnostic.  
 Store/domain controls experience, language switch does not alter experience profile.
 
 ### Variant dispatch
+
 Storefront resolves `rendererKey + variantKey` with an allowlisted async server loader map in:
 
 1. `/NxNextNest_PoC/apps/storefront/components/page-renderer/slot-renderer-registry.ts`
@@ -444,11 +475,13 @@ Unknown variant falls back to `default` with warning.
 Merchandising is a dedicated BFF layer independent from theme and layout assignment.
 
 ## Modes
+
 1. `discovery`: baseline browse behavior; default variants.
 2. `conversion`: conversion-oriented variants and default sort intent.
 3. `clearance`: sell-through variants and optional slot suppression for low-priority PDP content.
 
 ## Resolution model
+
 1. Selector precedence:
    1. `store + routeKind + language`
    2. `store + routeKind + *`
@@ -462,12 +495,14 @@ Merchandising is a dedicated BFF layer independent from theme and layout assignm
    4. `slotRules` (variant/include/layout/density/flags)
 
 ## Application order (critical)
+
 1. Base slot plan from `SlotPlannerService`.
 2. Experience rules applied.
 3. Merchandising rules applied last (last-wins).
 4. User sort query always overrides merchandising default sort.
 
 ## Phase-1/2 variant map
+
 1. `page.category-products`:
    1. `default`
    2. `clp-list-v1`
@@ -482,6 +517,7 @@ Merchandising is a dedicated BFF layer independent from theme and layout assignm
 ## 13) Theme System
 
 ## Theme assignment
+
 BFF returns semantic theme identity only:
 
 1. `themeKey`
@@ -491,6 +527,7 @@ BFF returns semantic theme identity only:
 No CSS values are sent over API.
 
 ## Theme packs (storefront-owned)
+
 Current packs:
 
 1. `theme-default` (blue accent, medium control radius)
@@ -506,11 +543,13 @@ Loaded in root layout as:
 This is intentional and allows one token pack per request.
 
 ## Light-only policy
+
 1. `color-scheme: light`
 2. No dark mode branches/classes.
 3. CI guard script enforces removal of dark mode markers.
 
 ## Store flag branding policy
+
 1. BFF returns render-ready metadata:
    1. `storeFlagIconSrc` (example `/icons/netherlands.svg`)
    2. `storeFlagIconLabel` (example `Netherlands`)
@@ -551,11 +590,13 @@ All stores currently support languages: `en`, `es`, `nl`, `fr`.
 ## 15) Cart Model
 
 ## Identity and cookie ownership
+
 1. BFF owns `cartId` issuance/rotation/clearing.
 2. Storefront does not author `cartId`.
 3. Storefront API routes proxy to BFF and forward `Set-Cookie`.
 
 ## UI mode
+
 1. `drawer` mode:
    1. navbar cart is a button.
    2. no cart page link is rendered.
@@ -565,6 +606,7 @@ All stores currently support languages: `en`, `es`, `nl`, `fr`.
    2. cart page route is enabled.
 
 ## Mutation and shared state
+
 1. Shared `CartProvider` is source of truth for cart state.
 2. Optimistic mutations are applied immediately.
 3. Authoritative reconciliation replaces state with BFF response.
@@ -602,6 +644,7 @@ Current implementation localizes:
 4. Product/category/menu/page/CMS labels where catalogs are available.
 
 ### Must-meet runtime guarantees
+
 1. Unprefixed content URLs always resolve to domain default language.
 2. Prefixed content URLs always resolve to prefix language.
 3. `pref_lang` does not force parsing of unprefixed content routes.
@@ -637,6 +680,7 @@ Implementation:
 ## 19) Performance and Scalability Model
 
 ## Latency/throughput
+
 BFF includes:
 
 1. load shedding
@@ -646,11 +690,13 @@ BFF includes:
 5. merchandising profile/mode resolution metrics
 
 ## Cache behavior
+
 1. Bootstrap and slot endpoints return `ETag`, `Cache-Control`, `Vary`, `X-Request-Id`.
 2. Cache tags include content, language, experience, and theme dimensions.
 3. Storefront uses Next cache APIs with request-level dedupe and tagging.
 
 ## Prefetch policy
+
 `SmartLink` uses conservative defaults:
 
 1. Shell links can prefetch.
@@ -685,6 +731,7 @@ These enforce:
 ## 21) Local Development and Testing
 
 ## Hosts setup
+
 Examples:
 
 1. `127.0.0.1 storefront.example.com`
@@ -692,10 +739,12 @@ Examples:
 3. `127.0.0.1 storefront.nl.example.com`
 
 ## Run
+
 1. `npm run dev:bff`
 2. `npm run dev:storefront`
 
 ## Validate key flows
+
 1. Cross-language navigation keeps prefix policy.
 2. Cross-region switch builds canonical URL and preserves entity where possible.
 3. Experience remains stable when language changes on same domain.
@@ -718,9 +767,11 @@ Examples:
 ## 23) Module Map (Primary Files)
 
 ## Shared contracts
+
 1. `/NxNextNest_PoC/libs/shared-types/src/index.ts`
 
 ## BFF
+
 1. `/NxNextNest_PoC/apps/bff/src/modules/page-data/page-data.controller.ts`
 2. `/NxNextNest_PoC/apps/bff/src/modules/page-data/bootstrap-orchestrator.service.ts`
 3. `/NxNextNest_PoC/apps/bff/src/modules/page-data/slot-planner.service.ts`
@@ -736,6 +787,7 @@ Examples:
 13. `/NxNextNest_PoC/apps/bff/src/adapters/mock/mock-data.ts`
 
 ## Storefront
+
 1. `/NxNextNest_PoC/apps/storefront/middleware.ts`
 2. `/NxNextNest_PoC/apps/storefront/app/[[...page]]/page.tsx`
 3. `/NxNextNest_PoC/apps/storefront/lib/bootstrap.ts`
@@ -768,7 +820,7 @@ Examples:
 4. Add or change store flag branding by updating BFF `domainConfig` fields only:
    1. `storeFlagIconSrc`
    2. `storeFlagIconLabel`
-   Storefront should require no mapping changes.
+      Storefront should require no mapping changes.
 5. Add new language by:
    1. extending language enums/catalogs,
    2. adding static segments/slugs/messages,

@@ -120,17 +120,11 @@ export function CartView({
                       currencyCode={item.cost.totalAmount.currencyCode}
                     />
                     <div className="ml-auto flex h-9 flex-row items-center rounded-control border border-neutral-200">
-                      <EditItemQuantityButton
-                        item={item}
-                        type="minus"
-                      />
+                      <EditItemQuantityButton item={item} type="minus" />
                       <p className="w-6 text-center">
                         <span className="w-full text-sm">{item.quantity}</span>
                       </p>
-                      <EditItemQuantityButton
-                        item={item}
-                        type="plus"
-                      />
+                      <EditItemQuantityButton item={item} type="plus" />
                     </div>
                   </div>
                 </div>

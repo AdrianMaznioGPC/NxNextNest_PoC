@@ -12,10 +12,7 @@ import {
   staticRouteSegmentCatalog,
   supportedLanguageCodes,
 } from "../../adapters/mock/mock-data";
-import type {
-  ResolvedIncomingRoute,
-  StaticRouteSegments,
-} from "./slug.types";
+import type { ResolvedIncomingRoute, StaticRouteSegments } from "./slug.types";
 
 @Injectable()
 export class SlugMapperService {
@@ -68,10 +65,13 @@ export class SlugMapperService {
     return `/${this.getStaticSegments(locale).checkout}`;
   }
 
-
   buildProductPath(locale: string, productHandle: string): string {
     const segment = this.getStaticSegments(locale).product;
-    const slug = this.getLocalizedSlug(productSlugCatalog, locale, productHandle);
+    const slug = this.getLocalizedSlug(
+      productSlugCatalog,
+      locale,
+      productHandle,
+    );
     return `/${segment}/${slug}`;
   }
 
@@ -83,7 +83,11 @@ export class SlugMapperService {
   buildCategoryPath(locale: string, categoryKey: string): string {
     const segment = this.getStaticSegments(locale).categories;
     const normalized = normalizeCategoryKey(categoryKey);
-    const slugPath = this.getLocalizedSlug(categorySlugCatalog, locale, normalized);
+    const slugPath = this.getLocalizedSlug(
+      categorySlugCatalog,
+      locale,
+      normalized,
+    );
     return `/${segment}/${slugPath}`;
   }
 
@@ -94,9 +98,8 @@ export class SlugMapperService {
     const normalizedRequested = normalizePath(requestedPath);
     const { languagePrefix, strippedPath } =
       this.extractLanguagePrefix(normalizedRequested);
-    const { defaultLanguage, supportedLanguages } = this.getDomainLanguageConfig(
-      localeContext.domain,
-    );
+    const { defaultLanguage, supportedLanguages } =
+      this.getDomainLanguageConfig(localeContext.domain);
     const requestedLanguage =
       languagePrefix ??
       normalizeLanguage(localeContext.language) ??
@@ -148,7 +151,9 @@ export class SlugMapperService {
     );
   }
 
-  buildAlternatesFromCanonicalPath(canonicalPath: string): Record<string, string> {
+  buildAlternatesFromCanonicalPath(
+    canonicalPath: string,
+  ): Record<string, string> {
     const alternates: Record<string, string> = {};
 
     for (const item of domainConfig.domains) {
@@ -194,7 +199,9 @@ export class SlugMapperService {
 
   withLanguagePrefix(path: string, localeContext: LocaleContext): string {
     const normalized = normalizePath(path);
-    const { defaultLanguage } = this.getDomainLanguageConfig(localeContext.domain);
+    const { defaultLanguage } = this.getDomainLanguageConfig(
+      localeContext.domain,
+    );
     const language =
       normalizeLanguage(localeContext.language) ??
       normalizeLanguage(localeContext.locale) ??
@@ -219,9 +226,13 @@ export class SlugMapperService {
     supportedLanguages: LanguageCode[];
   } {
     const normalized = (domain ?? "").toLowerCase();
-    const alias = domainConfig.aliases?.find((item) => item.host === normalized);
+    const alias = domainConfig.aliases?.find(
+      (item) => item.host === normalized,
+    );
     const canonicalHost = alias?.canonicalHost ?? normalized;
-    const match = domainConfig.domains.find((item) => item.host === canonicalHost);
+    const match = domainConfig.domains.find(
+      (item) => item.host === canonicalHost,
+    );
     if (!match) {
       return {
         defaultLanguage: "en",
@@ -333,7 +344,10 @@ export class SlugMapperService {
         kind: "product-detail",
         requestedPath: normalized,
         resolvedPath: this.buildProductPath(locale, canonicalHandle),
-        canonicalPath: this.buildProductPath(this.defaultLocale, canonicalHandle),
+        canonicalPath: this.buildProductPath(
+          this.defaultLocale,
+          canonicalHandle,
+        ),
         status: 200,
         localeContext,
         productHandle: canonicalHandle,
@@ -373,7 +387,10 @@ export class SlugMapperService {
     }
 
     if (segments.length === 1) {
-      const canonicalHandle = this.toCanonicalPageHandle(locale, segments[0] ?? "");
+      const canonicalHandle = this.toCanonicalPageHandle(
+        locale,
+        segments[0] ?? "",
+      );
       if (!canonicalHandle) {
         return this.notFound(localeContext, normalized);
       }
@@ -392,7 +409,10 @@ export class SlugMapperService {
     return this.notFound(localeContext, normalized);
   }
 
-  private buildPreferredPath(locale: string, route: ResolvedIncomingRoute): string {
+  private buildPreferredPath(
+    locale: string,
+    route: ResolvedIncomingRoute,
+  ): string {
     switch (route.kind) {
       case "home":
         return "/";
@@ -421,7 +441,10 @@ export class SlugMapperService {
     }
   }
 
-  private notFound(localeContext: LocaleContext, requestedPath: string): ResolvedIncomingRoute {
+  private notFound(
+    localeContext: LocaleContext,
+    requestedPath: string,
+  ): ResolvedIncomingRoute {
     return {
       kind: "unknown",
       requestedPath,
@@ -437,7 +460,9 @@ export class SlugMapperService {
     locale: string,
     slug: string,
   ): string | undefined {
-    const localizedReverse = this.buildReverseMap(catalog[this.getSupportedLocale(locale)]);
+    const localizedReverse = this.buildReverseMap(
+      catalog[this.getSupportedLocale(locale)],
+    );
     const canonicalReverse = this.buildReverseMap(catalog[this.defaultLocale]);
     const normalized = slug.trim().toLowerCase();
 
@@ -506,7 +531,10 @@ function normalizePath(path: string): string {
   return normalized.replace(/\/+$/, "") || "/";
 }
 
-function toAlternateLanguageTag(language: LanguageCode, region: string): string {
+function toAlternateLanguageTag(
+  language: LanguageCode,
+  region: string,
+): string {
   return `${language}-${region.toUpperCase()}`;
 }
 

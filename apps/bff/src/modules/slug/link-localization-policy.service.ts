@@ -23,12 +23,16 @@ export class LinkLocalizationPolicyService {
       return path;
     }
     const [pathname, suffix] = splitPathAndSuffix(path);
-    const strippedPath = this.mapper.extractLanguagePrefix(pathname).strippedPath;
+    const strippedPath =
+      this.mapper.extractLanguagePrefix(pathname).strippedPath;
     const localized = this.slug.localizePath(strippedPath, localeContext);
     return `${localized}${suffix}`;
   }
 
-  buildProductPath(localeContext: LocaleContext, productHandle: string): string {
+  buildProductPath(
+    localeContext: LocaleContext,
+    productHandle: string,
+  ): string {
     return this.slug.buildProductPath(localeContext, productHandle);
   }
 
@@ -40,7 +44,10 @@ export class LinkLocalizationPolicyService {
     return this.mapper.getDomainLanguageConfig(domain).defaultLanguage;
   }
 
-  assertPrefixPolicy(path: string, localeContext: LocaleContext): {
+  assertPrefixPolicy(
+    path: string,
+    localeContext: LocaleContext,
+  ): {
     compliant: boolean;
     expectedPrefix?: string;
     actualPrefix?: string;
@@ -53,7 +60,8 @@ export class LinkLocalizationPolicyService {
     const { defaultLanguage } = this.mapper.getDomainLanguageConfig(
       localeContext.domain,
     );
-    const language = normalizeLanguage(localeContext.language) ?? defaultLanguage;
+    const language =
+      normalizeLanguage(localeContext.language) ?? defaultLanguage;
     const actualPrefix = extractLanguagePrefix(pathname);
 
     if (language === defaultLanguage) {
@@ -71,14 +79,18 @@ export class LinkLocalizationPolicyService {
     };
   }
 
-  normalizePathFields<T>(input: T, localeContext: LocaleContext): {
+  normalizePathFields<T>(
+    input: T,
+    localeContext: LocaleContext,
+  ): {
     value: T;
     audit: LinkLocalizationAudit;
   } {
     const { defaultLanguage } = this.mapper.getDomainLanguageConfig(
       localeContext.domain,
     );
-    const language = normalizeLanguage(localeContext.language) ?? defaultLanguage;
+    const language =
+      normalizeLanguage(localeContext.language) ?? defaultLanguage;
     const samples = new Set<string>();
     let nonCompliantLinkCount = 0;
     let normalizedLinkCount = 0;

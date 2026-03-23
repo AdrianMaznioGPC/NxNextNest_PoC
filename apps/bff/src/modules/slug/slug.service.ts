@@ -24,7 +24,10 @@ export class SlugService {
     localeContext: LocaleContext,
     requestedPath: string,
   ): ResolvedIncomingRoute {
-    const resolved = this.mapper.resolveIncomingPath(localeContext, requestedPath);
+    const resolved = this.mapper.resolveIncomingPath(
+      localeContext,
+      requestedPath,
+    );
     if (resolved.status !== 200) {
       return resolved;
     }
@@ -86,8 +89,13 @@ export class SlugService {
     };
   }
 
-  localizeProducts(products: Product[], localeContext: LocaleContext): Product[] {
-    return products.map((product) => this.localizeProduct(product, localeContext));
+  localizeProducts(
+    products: Product[],
+    localeContext: LocaleContext,
+  ): Product[] {
+    return products.map((product) =>
+      this.localizeProduct(product, localeContext),
+    );
   }
 
   localizePage(page: Page, localeContext: LocaleContext): Page {
@@ -164,7 +172,10 @@ export class SlugService {
     }));
   }
 
-  localizeCmsBlocks(blocks: CmsBlock[], localeContext: LocaleContext): CmsBlock[] {
+  localizeCmsBlocks(
+    blocks: CmsBlock[],
+    localeContext: LocaleContext,
+  ): CmsBlock[] {
     return blocks.map((block) => {
       if (block.type === "hero-banner") {
         return {
@@ -175,10 +186,20 @@ export class SlugService {
         };
       }
 
-      if (block.type === "featured-products" || block.type === "product-carousel") {
+      if (
+        block.type === "featured-products" ||
+        block.type === "product-carousel"
+      ) {
         return {
           ...block,
           products: this.localizeProducts(block.products, localeContext),
+        };
+      }
+
+      if (block.type === "featured-categories") {
+        return {
+          ...block,
+          categories: this.localizeCollections(block.categories, localeContext),
         };
       }
 
@@ -190,7 +211,10 @@ export class SlugService {
     return this.mapper.localizePathFromCanonical(path, localeContext);
   }
 
-  buildProductPath(localeContext: LocaleContext, productHandle: string): string {
+  buildProductPath(
+    localeContext: LocaleContext,
+    productHandle: string,
+  ): string {
     return this.mapper.withLanguagePrefix(
       this.mapper.buildProductPath(localeContext.locale, productHandle),
       localeContext,

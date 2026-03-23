@@ -81,7 +81,8 @@ const slotLoaders: Record<ExperienceRendererKey, Record<string, SlotLoader>> = {
   },
   "page.checkout-header": {
     default: async () =>
-      (await import("./slots/checkout-header-slot")).default as AnySlotComponent,
+      (await import("./slots/checkout-header-slot"))
+        .default as AnySlotComponent,
   },
   "page.checkout-main": {
     default: async () =>
@@ -98,7 +99,8 @@ const slotLoaders: Record<ExperienceRendererKey, Record<string, SlotLoader>> = {
   },
   "page.checkout-summary": {
     default: async () =>
-      (await import("./slots/checkout-summary-slot")).default as AnySlotComponent,
+      (await import("./slots/checkout-summary-slot"))
+        .default as AnySlotComponent,
   },
 };
 

@@ -1,11 +1,14 @@
 import type { LocaleContext, Product } from "@commerce/shared-types";
 
 export interface ProductPort {
-  getProducts(params: {
-    query?: string;
-    reverse?: boolean;
-    sortKey?: string;
-  }, localeContext?: LocaleContext): Promise<Product[]>;
+  getProducts(
+    params: {
+      query?: string;
+      reverse?: boolean;
+      sortKey?: string;
+    },
+    localeContext?: LocaleContext,
+  ): Promise<Product[]>;
 
   getProduct(
     handle: string,

@@ -132,9 +132,7 @@ export class PageDataController {
   }
 
   @Get("home")
-  getHomePage(
-    @Query() query?: Record<string, string | string[] | undefined>,
-  ) {
+  getHomePage(@Query() query?: Record<string, string | string[] | undefined>) {
     const queryMap = normalizeQuery(query);
     const localeContext = this.i18n.resolveLocaleContext(
       localeContextFromQuery(queryMap),
@@ -233,13 +231,10 @@ function localeContextFromQuery(query: Record<string, string | undefined>) {
   return hasAnyValue ? partial : undefined;
 }
 
-function normalizeLanguage(input?: string): LocaleContext["language"] | undefined {
-  if (
-    input === "en" ||
-    input === "es" ||
-    input === "nl" ||
-    input === "fr"
-  ) {
+function normalizeLanguage(
+  input?: string,
+): LocaleContext["language"] | undefined {
+  if (input === "en" || input === "es" || input === "nl" || input === "fr") {
     return input;
   }
   return undefined;

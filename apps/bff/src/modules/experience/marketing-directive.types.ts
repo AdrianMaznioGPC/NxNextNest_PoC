@@ -1,9 +1,8 @@
 import type { ExperienceRendererKey } from "@commerce/shared-types";
 import type {
-  ExperienceHomeHero,
+  CampaignKey,
+  CustomerProfile,
   ExperienceRouteKind,
-  MockCampaignKey,
-  MockCustomerProfile,
 } from "./experience-profile.types";
 
 export type ExperienceFunnelMode =
@@ -14,27 +13,33 @@ export type ExperienceFunnelMode =
 
 export type CheckoutExperiencePreference = "default" | "prefer-express";
 
+/** A single block-level override. Targets a CMS block type and merges fields onto it. */
+export type BlockOverride = {
+  /** The CMS block type to target (e.g., "hero-banner", "featured-products") */
+  blockType: string;
+  /** Fields to shallow-merge onto the matching raw CMS block */
+  fields: Record<string, unknown>;
+};
+
 export type MarketingDirective = {
   id: string;
-  campaignKey: MockCampaignKey;
+  campaignKey: CampaignKey;
   priority: number;
   storeKeys: string[];
   routeKinds: ExperienceRouteKind[];
-  customerProfiles?: Array<MockCustomerProfile | "*">;
+  customerProfiles?: Array<CustomerProfile | "*">;
   funnelMode?: ExperienceFunnelMode;
-  heroOverride?: ExperienceHomeHero;
-  promotedCategories?: string[];
-  promotedProducts?: string[];
   audienceTags?: string[];
   checkoutPreference?: CheckoutExperiencePreference;
   slotFlags?: Partial<Record<ExperienceRendererKey, Record<string, boolean>>>;
+  blockOverrides?: BlockOverride[];
 };
 
 export type MarketingDirectiveRequest = {
   storeKey: string;
   routeKind?: string;
-  customerProfile: MockCustomerProfile;
-  campaignKey: MockCampaignKey;
+  customerProfile: CustomerProfile;
+  campaignKey: CampaignKey;
   query?: Record<string, string | undefined>;
   cookieHeader?: string;
 };

@@ -1,4 +1,9 @@
-import type { Page, PageSeo, Product, SortOption } from "@commerce/shared-types";
+import type {
+  Page,
+  PageSeo,
+  Product,
+  SortOption,
+} from "@commerce/shared-types";
 import { I18nService } from "../../i18n/i18n.service";
 
 const HIDDEN_PRODUCT_TAG = "nextjs-frontend-hidden";
@@ -52,7 +57,10 @@ export function buildSearchSummary(
   });
 }
 
-export function buildSortOptions(locale: string, i18n: I18nService): SortOption[] {
+export function buildSortOptions(
+  locale: string,
+  i18n: I18nService,
+): SortOption[] {
   return [
     {
       title: i18n.t(locale, "sort.relevance"),
@@ -151,4 +159,3 @@ function parseBoolean(raw: string | undefined): boolean | undefined {
   if (raw === "false") return false;
   return undefined;
 }
-

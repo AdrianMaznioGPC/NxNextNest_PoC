@@ -34,7 +34,7 @@ This is the core page orchestration domain in the BFF. It recognizes routes, ass
 
 - Assemblers own route-specific data fetching and page node construction.
 - Assemblers can use the resolved experience input to shape the content they emit.
-- The homepage assembler now applies `experience.homeHero` to the first hero banner block when present.
+- The homepage assembler applies `blockOverrides` via the generic `BlockOverlayService` to raw CMS blocks before resolution.
 - The checkout assembler can promote the checkout flow to `express` by reading the resolved `page.checkout-main` variant from experience.
 - Assemblers should return stable revalidation tags because those tags are further enriched downstream by experience and merchandising.
 

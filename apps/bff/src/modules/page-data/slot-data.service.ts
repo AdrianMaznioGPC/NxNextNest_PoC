@@ -68,7 +68,10 @@ export class SlotDataService {
             throw new NotFoundException(`Invalid product path "${path}"`);
           }
 
-          const page = await this.pageData.getProductPage(handle, localeContext);
+          const page = await this.pageData.getProductPage(
+            handle,
+            localeContext,
+          );
           if (!page) throw new NotFoundException();
 
           const payload: SlotPayloadModel = {
@@ -216,7 +219,10 @@ export class SlotDataService {
         }),
       );
     }
-    const revalidateTags = withLanguageScopedTags(payload.revalidateTags, language);
+    const revalidateTags = withLanguageScopedTags(
+      payload.revalidateTags,
+      language,
+    );
     const withMeta: SlotPayloadModel = {
       ...payload,
       props: normalizedProps.value,
@@ -229,7 +235,9 @@ export class SlotDataService {
     };
 
     const etag = weakEtag(withMeta);
-    const cacheHints = this.cachePolicy.getSlotCacheHints(payload.staleAfterSeconds);
+    const cacheHints = this.cachePolicy.getSlotCacheHints(
+      payload.staleAfterSeconds,
+    );
     response?.header("X-Request-Id", requestId);
     response?.header("ETag", etag);
     response?.header(

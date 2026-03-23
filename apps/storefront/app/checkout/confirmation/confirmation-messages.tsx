@@ -18,9 +18,7 @@ export function ConfirmationMessages({
     return (
       <>
         <h1 className="text-3xl font-bold">{t("title")}</h1>
-        <p className="mt-2 text-muted">
-          {t("thankYou")}
-        </p>
+        <p className="mt-2 text-muted">{t("thankYou")}</p>
         <p className="mt-1 text-sm text-muted">
           {t("orderNumber").replace("{orderNumber}", orderNumber)}
         </p>

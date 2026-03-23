@@ -2,11 +2,7 @@ import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import type { Breadcrumb } from "lib/types";
 import Link from "next/link";
 
-export default function Breadcrumbs({
-  items,
-}: {
-  items: Breadcrumb[];
-}) {
+export default function Breadcrumbs({ items }: { items: Breadcrumb[] }) {
   if (!items.length) return null;
 
   return (

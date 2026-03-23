@@ -5,11 +5,7 @@ import type { CartItem } from "lib/types";
 import { useState } from "react";
 import { useCartMutations } from "./use-cart-mutations";
 
-export function DeleteItemButton({
-  item,
-}: {
-  item: CartItem;
-}) {
+export function DeleteItemButton({ item }: { item: CartItem }) {
   const [message, setMessage] = useState<string | null>(null);
   const { removeItem, isMutating } = useCartMutations();
   const merchandiseId = item.merchandise.id;

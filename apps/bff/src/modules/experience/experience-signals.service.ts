@@ -1,12 +1,15 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { MARKETING_DIRECTIVE_PORT } from "../../ports/marketing-directive.port";
 import type { MarketingDirectiveProvider } from "../../ports/marketing-directive.port";
-import type { MarketingDirective } from "./marketing-directive.types";
+import { MARKETING_DIRECTIVE_PORT } from "../../ports/marketing-directive.port";
 import type {
-  MockCampaignKey,
-  MockCustomerProfile,
+  CampaignKey,
+  CustomerProfile,
   ResolvedExperienceSignals,
 } from "./experience-profile.types";
+import type {
+  BlockOverride,
+  MarketingDirective,
+} from "./marketing-directive.types";
 
 @Injectable()
 export class ExperienceSignalsService {
@@ -46,22 +49,22 @@ export class ExperienceSignalsService {
 
     const ordered = directives.sort((a, b) => b.priority - a.priority);
 
+    const blockOverridesByType = new Map<string, BlockOverride>();
+    for (const directive of ordered) {
+      for (const override of directive.blockOverrides ?? []) {
+        if (!blockOverridesByType.has(override.blockType)) {
+          blockOverridesByType.set(override.blockType, override);
+        }
+      }
+    }
+
     return {
       customerProfile,
       campaignKey,
-      isReturningCustomer:
-        customerProfile === "returning" || customerProfile === "vip",
       funnelMode:
         ordered.find((directive) => directive.funnelMode)?.funnelMode ??
         "default",
-      heroOverride: ordered.find((directive) => directive.heroOverride)
-        ?.heroOverride,
-      promotedCategories: dedupe(
-        ordered.flatMap((directive) => directive.promotedCategories ?? []),
-      ),
-      promotedProducts: dedupe(
-        ordered.flatMap((directive) => directive.promotedProducts ?? []),
-      ),
+      blockOverrides: [...blockOverridesByType.values()],
       audienceTags: dedupe(
         ordered.flatMap((directive) => directive.audienceTags ?? []),
       ),
@@ -76,30 +79,12 @@ export class ExperienceSignalsService {
     };
   }
 
-  private parseCustomerProfile(
-    input: string | undefined,
-  ): MockCustomerProfile {
-    switch (input) {
-      case "first-time":
-      case "returning":
-      case "vip":
-      case "guest":
-        return input;
-      default:
-        return "guest";
-    }
+  private parseCustomerProfile(input: string | undefined): CustomerProfile {
+    return input?.trim() || "guest";
   }
 
-  private parseCampaignKey(input: string | undefined): MockCampaignKey {
-    switch (input) {
-      case "paid-social-discovery":
-      case "email-reorder":
-      case "vip-reengagement":
-      case "default":
-        return input;
-      default:
-        return "default";
-    }
+  private parseCampaignKey(input: string | undefined): CampaignKey {
+    return input?.trim() || "default";
   }
 }
 
@@ -111,7 +96,9 @@ function mergeSlotFlags(
   current: ResolvedExperienceSignals["slotFlagsByRenderer"],
   directive: MarketingDirective,
 ) {
-  for (const [rendererKey, flags] of Object.entries(directive.slotFlags ?? {})) {
+  for (const [rendererKey, flags] of Object.entries(
+    directive.slotFlags ?? {},
+  )) {
     current[rendererKey as keyof typeof current] = {
       ...(current[rendererKey as keyof typeof current] ?? {}),
       ...flags,

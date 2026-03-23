@@ -20,4 +20,3 @@ try {
   console.error("[i18n-runtime-guard] Failed to run ripgrep.");
   process.exit(1);
 }
-

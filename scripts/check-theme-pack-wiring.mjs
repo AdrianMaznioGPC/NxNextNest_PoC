@@ -22,7 +22,8 @@ for (const importStatement of disallowedThemeImports) {
   }
 }
 
-const linkPattern = /<link\s+rel="stylesheet"\s+href=\{theme\.stylesheetHref\}\s*\/>/g;
+const linkPattern =
+  /<link\s+rel="stylesheet"\s+href=\{theme\.stylesheetHref\}\s*\/>/g;
 const linkMatches = layoutSource.match(linkPattern) ?? [];
 if (linkMatches.length !== 1) {
   fail(

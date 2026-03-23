@@ -65,6 +65,7 @@ Optional storefront rollout flags:
 - `NEXT_PUBLIC_DEFER_SHELL_INTERACTIONS=true` defers cart and mobile-menu hydration until user intent.
 
 Storefront i18n is BFF-authoritative:
+
 1. BFF resolves locale and message catalogs.
 2. Storefront performs thin key lookup over bootstrap `shell.messages`.
 3. No locale JSON files are stored in the storefront app.

@@ -1,19 +1,13 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "noEmit": true,
     "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
-      "@commerce/shared-types": [
-        "../../libs/shared-types/src/index.ts"
-      ]
+      "@commerce/shared-types": ["../../libs/shared-types/src/index.ts"]
     },
     "plugins": [
       {
@@ -28,7 +22,5 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

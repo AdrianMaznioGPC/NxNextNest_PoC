@@ -46,6 +46,7 @@ flowchart TD
 ```
 
 Notes:
+
 - Uses the default inline slot path from `ResolvedPageModel.content`
 - Experience can still adjust presentation, but there is no custom slot planning branch
 
@@ -62,6 +63,7 @@ flowchart TD
 ```
 
 Notes:
+
 - Single inline slot page
 - Mostly a straightforward assembler-to-renderer flow
 
@@ -83,6 +85,7 @@ flowchart TD
 ```
 
 Notes:
+
 - The assembler decides whether the page is a subcollection landing page or a product listing page
 - Experience and merchandising rules most commonly affect `page.category-products`
 
@@ -105,6 +108,7 @@ flowchart TD
 ```
 
 Notes:
+
 - PDP is explicitly orchestrated in `SlotPlannerService`
 - Main product content is blocking and inline
 - Recommendations, reviews, and FAQ are deferred slot fetches
@@ -124,6 +128,7 @@ flowchart TD
 ```
 
 Notes:
+
 - Summary and controls render first
 - Product results can be streamed/deferred
 - Merchandising and experience can change the `page.search-products` variant
@@ -141,6 +146,7 @@ flowchart TD
 ```
 
 Notes:
+
 - Simple page path
 - No custom slot planner branch today
 
@@ -159,6 +165,7 @@ flowchart TD
 ```
 
 Notes:
+
 - Cart route is gated by store experience settings
 - If cart is configured as drawer-only, the route is intentionally blocked
 
@@ -198,6 +205,7 @@ flowchart TD
 ```
 
 Notes:
+
 - Checkout is now bootstrap-driven like the other pages, but still uses a dedicated shell component on the storefront
 - `page.checkout-main` decides the flow through `variantKey`
 - Both storefront and BFF need access to the cart state for checkout to render successfully
