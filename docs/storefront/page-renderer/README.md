@@ -39,7 +39,39 @@ Renders the BFF bootstrap contract. It maps slot manifests and renderer keys to 
 - Missing `slotRef` values and failed deferred fetches degrade to `SlotFallback` rather than crashing the page.
 - This layer is intentionally thin: it resolves components and data boundaries, while the actual layout logic lives inside the slot implementations.
 
-## Notes
+## Slot Renderer Registry (Complete Map)
 
-- This is the main FE counterpart to BFF `page-data` orchestration.
-- See also [`../../page-pipeline.md`](../../page-pipeline.md).
+The registry in `slot-renderer-registry.ts` maps every `rendererKey` to its available variants:
+
+| Renderer Key                   | Variants                                           | Purpose                            |
+| ------------------------------ | -------------------------------------------------- | ---------------------------------- |
+| `page.home`                    | `default`                                          | Home page CMS blocks               |
+| `page.category-list`           | `default`                                          | All top-level categories           |
+| `page.category-subcollections` | `default`                                          | Category with child categories     |
+| `page.category-products`       | `default`, `clp-list-v1`, `clp-clearance-v1`       | Category product listing           |
+| `page.pdp-main`                | `default`                                          | Main PDP content (blocking inline) |
+| `page.pdp-recommendations`     | `default`                                          | Product recommendations (deferred) |
+| `page.pdp-reviews`             | `default`                                          | Product reviews (deferred)         |
+| `page.pdp-faq`                 | `default`                                          | Product FAQ (deferred)             |
+| `page.search-summary`          | `default`                                          | Search controls and summary        |
+| `page.search-products`         | `default`, `search-list-v1`, `search-clearance-v1` | Search results listing             |
+| `page.content-page`            | `default`                                          | Static content pages               |
+| `page.cart`                    | `default`                                          | Cart page                          |
+| `page.checkout-header`         | `default`                                          | Checkout header                    |
+| `page.checkout-main`           | `default`, `single-page`, `multi-step`, `express`  | Checkout flow                      |
+| `page.checkout-summary`        | `default`                                          | Order summary sidebar              |
+
+If the BFF sends an unknown variant, the registry logs a warning and falls back to `default`.
+
+## How to Add a New Slot Variant
+
+1. Create the server component in `components/page-renderer/slots/<slot-name>/<variant-key>/server.tsx`
+2. Register it in `slot-renderer-registry.ts` under the appropriate renderer key
+3. Add the variant to the BFF experience or merchandising profile catalog
+4. The BFF will now send the variant key, and the storefront will render it
+
+## See Also
+
+- [Page Pipeline Diagrams](../../page-pipeline.md) — visual flow for every page type
+- [BFF Page Data](../../bff/page-data/README.md) — how the BFF assembles slot manifests
+- [BFF Experience](../../bff/experience/README.md) — how variant keys are chosen

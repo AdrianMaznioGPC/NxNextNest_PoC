@@ -2,17 +2,19 @@
 
 ## Purpose
 
-Currently focused on address book management. It provides customer-owned data needed by checkout and future personalization layers.
+Manages customer-owned data, currently focused on **address book management**. Saved addresses are used by the checkout flow — especially the express checkout variant, which pre-fills shipping/billing from saved data.
 
 ## Key Files
 
-- `apps/bff/src/modules/customer/address-book.controller.ts`
+| File                         | Role                               |
+| ---------------------------- | ---------------------------------- |
+| `address-book.controller.ts` | CRUD endpoints for saved addresses |
 
-## Inputs And Outputs
+## How It Works
 
-- Inputs: customer address requests
-- Outputs: saved address payloads used by checkout flows
+The `CheckoutConfig` returned during checkout bootstrap includes a `savedAddresses[]` array. When the experience profile selects the `express` checkout variant, the checkout assembler uses these saved addresses to enable one-click-style ordering.
 
-## Notes
+## Interactions
 
-- Checkout uses saved addresses for express and returning-user experiences.
+- **Checkout Domain**: `CheckoutConfig.savedAddresses` is populated from this domain
+- **Experience Domain**: Customer profile signals (e.g., `customerProfile=returning`) can influence whether express checkout is offered

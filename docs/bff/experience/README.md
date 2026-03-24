@@ -92,9 +92,9 @@ Examples:
 - homepage Black Friday: `/?campaign=black-friday`
 - homepage Summer Sale: `/?campaign=summer-sale`
 
-## Extension Notes
+## How to Extend
 
-- Add new baseline experiences in `experience-profile.catalog.ts` using `blockOverrides` for any CMS block-level customization.
-- Add new campaign logic through `MarketingDirectiveProvider` when the signal comes from a marketing or audience system.
-- Both profiles and directives use the same `BlockOverride` shape — `{ blockType, fields }`. The generic `BlockOverlayService` applies them without block-type knowledge.
-- Keep overlays additive and constrained. If a new requirement needs arbitrary component composition, it belongs in page-data or slot payload assembly instead of this domain.
+1. **Add a new baseline experience**: Create a new entry in `experience-profile.catalog.ts` with the desired `storeKey`, `routeKind`, and slot rules. Use `blockOverrides` for CMS block-level customization.
+2. **Add a new campaign**: Implement the campaign logic in the `MarketingDirectiveProvider` (mock or LaunchDarkly). Any string is accepted as a campaign key — the directive provider decides what it means.
+3. **Both profiles and directives** use the same `BlockOverride` shape (`{ blockType, fields }`). The generic `BlockOverlayService` applies them without block-type knowledge.
+4. **Keep overlays additive and constrained.** If a new requirement needs arbitrary component composition, it belongs in page-data or slot payload assembly, not in this domain.

@@ -1,79 +1,44 @@
 # BFF App
 
-This app is the backend-for-frontend for the storefront. It exposes commerce APIs, localized routing, bootstrap-based page composition, checkout configuration, and the current experience and merchandising layer.
+NestJS 11 backend-for-frontend that owns route recognition, page composition, experience/merchandising resolution, i18n, and cart lifecycle. Returns `PageBootstrapModel` slot manifests consumed by the storefront.
 
-## Main Responsibilities
+**Port**: 4000 | **Framework**: NestJS 11 + Fastify | **Data**: Mock adapters (in-memory)
 
-- resolve incoming localized routes into canonical page intent
-- assemble route-specific page models
-- convert page models into slot manifests for the storefront
-- apply experience and merchandising rules to those slots
-- expose direct commerce endpoints for cart, checkout, product, collection, menu, and i18n
+## Domain Docs
 
-## Domain Map
-
-### Page orchestration
-
-- `src/modules/page-data`: the main bootstrap pipeline
-- `src/modules/page`: older direct page endpoints
-- `src/modules/slug`: localized path generation and link normalization
-- `src/modules/system`: cache policy, resilience, load shedding, metrics
-
-### Experience and commercial logic
-
-- `src/modules/experience`: store/route experience profiles, marketing-driven overlays, and slot overrides
-- `src/modules/merchandising`: commercial variants, merchandising mode, default sort behavior
-
-### Commerce-facing domains
-
-- `src/modules/cart`: cart session and cart cookie handling
-- `src/modules/checkout`: checkout config and order endpoints
-- `src/modules/product`: product endpoints
-- `src/modules/collection`: collection/category endpoints
-- `src/modules/customer`: address book endpoints
-- `src/modules/menu`: navigation/menu endpoints
-- `src/modules/i18n`: locale resolution, messages, alternates, and URL switching
+| Domain        | Doc                                                                 | What It Does                                                     |
+| ------------- | ------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| Page Data     | [`docs/bff/page-data/`](../../docs/bff/page-data/README.md)         | Core bootstrap pipeline: route → assembly → slots → response     |
+| Experience    | [`docs/bff/experience/`](../../docs/bff/experience/README.md)       | Store/route profiles, marketing overlays, slot variant selection |
+| Merchandising | [`docs/bff/merchandising/`](../../docs/bff/merchandising/README.md) | Strategy modes, default sort, slot overrides                     |
+| I18n          | [`docs/bff/i18n/`](../../docs/bff/i18n/README.md)                   | Locale resolution, domain config, messages, URL switching        |
+| Slug          | [`docs/bff/slug/`](../../docs/bff/slug/README.md)                   | Localized path generation, link normalization                    |
+| Cart          | [`docs/bff/cart/`](../../docs/bff/cart/README.md)                   | Cart session, cookie lifecycle, mutations                        |
+| Checkout      | [`docs/bff/checkout/`](../../docs/bff/checkout/README.md)           | Checkout config, order placement                                 |
+| Product       | [`docs/bff/product/`](../../docs/bff/product/README.md)             | Product detail and listing data                                  |
+| Collection    | [`docs/bff/collection/`](../../docs/bff/collection/README.md)       | Category list and detail data                                    |
+| Menu          | [`docs/bff/menu/`](../../docs/bff/menu/README.md)                   | Navigation data (mega menu, featured links)                      |
+| Customer      | [`docs/bff/customer/`](../../docs/bff/customer/README.md)           | Address book for checkout                                        |
+| Page          | [`docs/bff/page/`](../../docs/bff/page/README.md)                   | Legacy page endpoints                                            |
+| System        | [`docs/bff/system/`](../../docs/bff/system/README.md)               | Cache, load shedding, resilience, metrics                        |
 
 ## Key Files
 
-- `src/app.module.ts`: application wiring
-- `src/modules/page-data/bootstrap-orchestrator.service.ts`: end-to-end bootstrap orchestration
-- `src/modules/page-data/slot-planner.service.ts`: slot planning rules
-- `src/modules/page-data/routing/route-recognition.service.ts`: route classification
-- `src/modules/experience/experience-resolver.service.ts`: resolves the final experience profile and applies slot rules
-- `src/modules/merchandising/merchandising-resolver.service.ts`: applies merchandising rules to slots
+| File                                                         | Purpose                                  |
+| ------------------------------------------------------------ | ---------------------------------------- |
+| `src/app.module.ts`                                          | Module wiring and adapter selection      |
+| `src/main.ts`                                                | Fastify bootstrap, request logging, CORS |
+| `src/modules/page-data/bootstrap-orchestrator.service.ts`    | End-to-end bootstrap orchestration       |
+| `src/modules/page-data/slot-planner.service.ts`              | Slot planning rules                      |
+| `src/modules/page-data/routing/route-recognition.service.ts` | Route classification                     |
+| `src/adapters/mock/mock-data.ts`                             | All mock data and domain config          |
 
-## Request Flow
+## Adapter Architecture
 
-1. Storefront calls `/page-data/bootstrap`
-2. BFF recognizes the route
-3. BFF resolves experience and merchandising context
-4. A route-specific assembler builds a `ResolvedPageModel`
-5. Slot planning turns that into slot manifests
-6. Experience and merchandising adjust the slot manifests
-7. The final `PageBootstrapModel` is returned to the storefront
-
-## Checkout
-
-Checkout now participates in the same bootstrap pipeline as the rest of the site.
-
-- route kind: `checkout`
-- assembler: `src/modules/page-data/assemblers/checkout-page.assembler.ts`
-- slot planner branch: `page.checkout-header`, `page.checkout-main`, `page.checkout-summary`
-- checkout flow selection is driven by the `page.checkout-main` slot `variantKey`
-
-## Mocked Experience Testing
-
-Use query params to test mocked campaign and customer-profile-driven experiences:
-
-- `/?customerProfile=returning`
-- `/?campaign=paid-social-discovery`
-- `/?customerProfile=returning&campaign=paid-social-discovery`
-- `/checkout?customerProfile=returning&campaign=email-reorder`
-- `/?customerProfile=vip&campaign=vip-reengagement`
+The BFF uses a **ports-and-adapters** pattern. Business logic depends on port interfaces (`src/ports/`), not concrete data sources. Currently `MockCommerceModule` provides all commerce ports. The directive provider is swappable via `DIRECTIVE_PROVIDER` env (`mock` or `launchdarkly`).
 
 ## See Also
 
-- [`../../docs/page-pipeline.md`](../../docs/page-pipeline.md)
-- [`../../docs/bff/experience/README.md`](../../docs/bff/experience/README.md)
-- [`../../libs/shared-types/README.md`](../../libs/shared-types/README.md)
+- [Page Pipeline](../../docs/page-pipeline.md)
+- [Shared Types](../../libs/shared-types/README.md)
+- [Architecture Docs](../../docs/README.md)

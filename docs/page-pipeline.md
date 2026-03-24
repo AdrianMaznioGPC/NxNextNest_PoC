@@ -1,6 +1,8 @@
 # Page Pipeline Diagrams
 
-This document shows how each page flows through the current system, from request to BFF bootstrap to storefront rendering.
+This document shows how each page type flows through the system, from browser request through BFF bootstrap to storefront rendering. Each diagram below traces the exact code path for a specific route kind.
+
+**If you are new to the codebase**, read the [Shared Bootstrap Pipeline](#shared-bootstrap-pipeline) first — it shows the universal flow that every page goes through. Then look at the specific page type you're working on to understand how its assembler and slot plan differ.
 
 ## Legend
 

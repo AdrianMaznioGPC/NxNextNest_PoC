@@ -2,17 +2,22 @@
 
 ## Purpose
 
-Exposes storefront navigation data such as mega menu and featured links.
+Exposes storefront navigation data: **mega menu trees** and **featured links**. These power the navbar, mobile navigation, and footer link sections.
 
 ## Key Files
 
-- `apps/bff/src/modules/menu/menu.controller.ts`
+| File                 | Role                                   |
+| -------------------- | -------------------------------------- |
+| `menu.controller.ts` | HTTP endpoints for menu data by handle |
 
-## Inputs And Outputs
+## Data Model
 
-- Inputs: locale/store context
-- Outputs: menu trees and navigation link payloads
+- `MegaMenuItem`: `{ title, path, image?, children?: MegaMenuItem[] }` — recursive tree structure for the mega menu
+- `FeaturedLink`: `{ title, path }` — flat list of promoted links
 
-## Notes
+Paths are localized according to the current language and prefix policy.
 
-- Storefront layout components use this domain to build global navigation.
+## Interactions
+
+- **Storefront Layout**: `getLayoutData()` returns menus + featured links via `/page-data/layout`
+- **Slug Domain**: All menu paths are normalized for the current language

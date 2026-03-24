@@ -1,20 +1,23 @@
-# Shared Types Domain
+# Shared Types (`@commerce/shared-types`)
 
-## Purpose
+Single source of truth for all TypeScript contracts shared between the BFF and storefront. The BFF produces these shapes; the storefront renders against them.
 
-This library is the contract surface between the BFF and the storefront. It defines the shared commerce models, page bootstrap schema, slot schema, checkout contracts, and renderer key registry.
+**Import path**: `@commerce/shared-types` (mapped in root `tsconfig.base.json`)
 
-## Key Files
+## Type Modules
 
-- `src/index.ts`: central type exports for carts, products, collections, pages, slots, checkout, i18n, and page bootstrap.
+| File                     | Key Types                                                                         |
+| ------------------------ | --------------------------------------------------------------------------------- |
+| `commerce.types.ts`      | `Product`, `Cart`, `Collection`, `Page`, `Money`, `Image`                         |
+| `page-resolved.types.ts` | `PageBootstrapModel`, `SlotManifest`, `SlotPayloadModel`, `ExperienceRendererKey` |
+| `locale.types.ts`        | `LocaleContext`, `DomainConfigModel`, `SwitchUrlRequest/Response`                 |
+| `store.types.ts`         | `StoreContext`, `CartUxMode`, `MerchandisingMode`                                 |
+| `checkout.types.ts`      | `CheckoutConfig`, `PlaceOrderRequest`, `OrderConfirmation`                        |
+| `cms.types.ts`           | `CmsBlock` union (hero, featured products/categories, carousel, rich text)        |
+| `navigation.types.ts`    | `MegaMenuItem`, `FeaturedLink`                                                    |
+| `page-data.types.ts`     | `HomePageData`, `CategoryPageData`, `ProductPageData`, `GlobalLayoutData`         |
+| `slot-props.types.ts`    | Checkout slot prop types                                                          |
 
-## Inputs And Outputs
+## Detailed Reference
 
-- Inputs: domain modeling decisions from both apps.
-- Outputs: shared TypeScript contracts used by the BFF and storefront.
-
-## How It Fits
-
-- BFF emits these shapes.
-- Storefront renders against these shapes.
-- The slot-based experience layer depends on this package staying authoritative.
+- [Full type documentation](../../docs/shared-types/README.md)

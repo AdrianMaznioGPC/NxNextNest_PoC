@@ -2,15 +2,18 @@
 
 ## Purpose
 
-Contains low-level visual grid primitives used by merchandising and marketing layouts.
+Contains low-level visual grid primitives used by merchandising and marketing layouts. These are the building blocks for product grids, category card layouts, and featured content sections.
 
 ## Key Files
 
-- `apps/storefront/components/grid/index.tsx`
-- `apps/storefront/components/grid/three-items.tsx`
-- `apps/storefront/components/grid/tile.tsx`
+| File              | Role                                                       |
+| ----------------- | ---------------------------------------------------------- |
+| `index.tsx`       | Base `Grid` component with responsive column configuration |
+| `three-items.tsx` | Featured three-item promotional layout (used on home page) |
+| `tile.tsx`        | Individual grid tile with image, title, and overlay        |
 
-## Inputs And Outputs
+## Interactions
 
-- Inputs: arbitrary child content and card-like props
-- Outputs: consistent grid layouts
+- **CMS Blocks**: Featured products and categories use grid layouts
+- **Category Products**: Product listing variants use grid or list layouts
+- **Home Page**: Three-items grid is a common home page pattern

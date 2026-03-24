@@ -2,17 +2,29 @@
 
 ## Purpose
 
-Exposes product detail and product listing data from the BFF.
+Exposes product detail and product listing data from the BFF. Products are the core commerce entity — they include variants, options, pricing, images, and SEO metadata.
 
 ## Key Files
 
-- `apps/bff/src/modules/product/product.controller.ts`
+| File                    | Role                                          |
+| ----------------------- | --------------------------------------------- |
+| `product.controller.ts` | HTTP endpoints for product listing and search |
 
-## Inputs And Outputs
+## Product Model
 
-- Inputs: product handles, locale context
-- Outputs: normalized product payloads and recommendations
+Each `Product` includes:
 
-## Notes
+- `handle` (canonical identifier), `title`, `description`, `descriptionHtml`
+- `path` (localized URL)
+- `options[]` (e.g., Size, Color) and `variants[]` (specific combinations with price and availability)
+- `priceRange` (min/max variant prices)
+- `featuredImage` and `images[]`
+- `seo`, `tags`, `breadcrumbs`
 
-- Product detail assemblers and slot payload resolvers depend on this data.
+## Interactions
+
+- **Page Data Assemblers**: `ProductDetailPageAssembler` fetches product + recommendations via `ProductPort`
+- **Search**: `SearchPageAssembler` uses product search results
+- **Slot Data Service**: PDP deferred slots (recommendations, reviews, FAQ) fetch additional product data
+- **CMS Blocks**: Featured products and product carousel blocks reference products
+- **Slug Domain**: Product paths are localized using `productSlugCatalog`

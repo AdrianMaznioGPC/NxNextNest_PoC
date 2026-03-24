@@ -1,18 +1,19 @@
-# BFF Page Domain
+# BFF Page Domain (Legacy)
 
 ## Purpose
 
-Serves the older page-oriented endpoints outside the newer bootstrap pipeline.
+Serves the older page-oriented endpoints outside the newer bootstrap pipeline. These endpoints return direct page data without the slot-manifest composition layer.
 
 ## Key Files
 
-- `apps/bff/src/modules/page/page.controller.ts`
+| File                 | Role                                                                           |
+| -------------------- | ------------------------------------------------------------------------------ |
+| `page.controller.ts` | Legacy HTTP endpoints for home, search, product, collection, and content pages |
 
-## Inputs And Outputs
+## Status
 
-- Inputs: page identifiers and locale context
-- Outputs: resolved page data payloads
+**Superseded by `page-data` domain.** New page orchestration uses the bootstrap pipeline (`/page-data/bootstrap`), which returns `PageBootstrapModel` with slot manifests. These legacy endpoints remain for backward compatibility but should not be used for new features.
 
-## Notes
+## Interactions
 
-- New orchestration work is centered in `page-data`, not here.
+- **Page Data Domain**: The modern replacement that adds slot planning, experience, and merchandising
