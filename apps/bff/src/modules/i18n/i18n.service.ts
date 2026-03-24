@@ -191,6 +191,7 @@ export class I18nService {
 
     return String(formatted);
   }
+
   private toLocaleTag(language: LanguageCode, region: string): string {
     const locale = this.config.getLocaleByLanguage(language);
     if (!locale) {

@@ -5,7 +5,10 @@ import type {
   LocaleContext,
 } from "@commerce/shared-types";
 import { Injectable } from "@nestjs/common";
-import type { I18nConfigPort } from "../../ports/i18n-config.port";
+import type {
+  DefaultStoreContext,
+  I18nConfigPort,
+} from "../../ports/i18n-config.port";
 import {
   defaultLocaleContext,
   domainConfig,
@@ -55,5 +58,23 @@ export class MockI18nConfigAdapter implements I18nConfigPort {
 
   getSupportedLanguageCodes(): LanguageCode[] {
     return [...supportedLanguageCodes];
+  }
+
+  getDefaultStoreContext(): DefaultStoreContext {
+    return {
+      storeKey: "default-store",
+      experienceProfileId: "exp-default-v1",
+      storeFlagIconSrc: "/icons/eu.svg",
+      storeFlagIconLabel: "European Union",
+      themeKey: "theme-default",
+      themeRevision: "fallback",
+      themeTokenPack: "theme-default",
+      language: "en",
+      defaultLanguage: "en",
+      supportedLanguages: [...supportedLanguageCodes],
+      cartUxMode: "drawer",
+      cartPath: "/cart",
+      openCartOnAdd: true,
+    };
   }
 }

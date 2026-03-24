@@ -116,7 +116,7 @@ export class SlotDataService {
             slotId,
             rendererKey: "page.pdp-reviews",
             props: {
-              reviews: this.contentSupplement.getReviews(
+              reviews: await this.contentSupplement.getReviews(
                 handle,
                 localeContext.locale,
               ),
@@ -147,7 +147,7 @@ export class SlotDataService {
             slotId,
             rendererKey: "page.pdp-faq",
             props: {
-              items: this.contentSupplement.getFaq(localeContext.locale),
+              items: await this.contentSupplement.getFaq(localeContext.locale),
             },
             presentation: presentationFromQuery(query),
             revalidateTags: [`faq:${handle}`],

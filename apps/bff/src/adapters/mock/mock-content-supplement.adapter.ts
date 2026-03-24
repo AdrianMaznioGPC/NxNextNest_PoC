@@ -7,7 +7,10 @@ import type {
 
 @Injectable()
 export class MockContentSupplementAdapter implements ContentSupplementPort {
-  getReviews(productHandle: string, locale: string): ReviewItem[] {
+  async getReviews(
+    productHandle: string,
+    locale: string,
+  ): Promise<ReviewItem[]> {
     const isSpanish = locale.startsWith("es");
     return [
       {
@@ -31,7 +34,7 @@ export class MockContentSupplementAdapter implements ContentSupplementPort {
     ];
   }
 
-  getFaq(locale: string): FaqItem[] {
+  async getFaq(locale: string): Promise<FaqItem[]> {
     const isSpanish = locale.startsWith("es");
     return isSpanish
       ? [

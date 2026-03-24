@@ -4,12 +4,12 @@ import {
   I18N_CONFIG_PORT,
   type I18nConfigPort,
 } from "../../../ports/i18n-config.port";
+import type { StaticRouteSegments } from "../../../ports/slug-catalog.port";
 import {
   SLUG_CATALOG_PORT,
   type SlugCatalogPort,
 } from "../../../ports/slug-catalog.port";
 import { SlugMapperService } from "../../slug/slug-mapper.service";
-import type { StaticRouteSegments } from "../../slug/slug.types";
 
 @Injectable()
 export class SlugIndexService {

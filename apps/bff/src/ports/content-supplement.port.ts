@@ -12,8 +12,8 @@ export type FaqItem = {
 };
 
 export interface ContentSupplementPort {
-  getReviews(productHandle: string, locale: string): ReviewItem[];
-  getFaq(locale: string): FaqItem[];
+  getReviews(productHandle: string, locale: string): Promise<ReviewItem[]>;
+  getFaq(locale: string): Promise<FaqItem[]>;
 }
 
 export const CONTENT_SUPPLEMENT_PORT = Symbol("CONTENT_SUPPLEMENT_PORT");

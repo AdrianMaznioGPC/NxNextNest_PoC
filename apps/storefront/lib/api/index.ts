@@ -1,7 +1,6 @@
 import { TAGS } from "lib/constants";
 import type {
   Cart,
-  CheckoutConfig,
   Collection,
   DomainConfigModel,
   GlobalLayoutData,
@@ -19,6 +18,7 @@ import type {
   SwitchUrlRequest,
   SwitchUrlResponse,
 } from "lib/types";
+
 import {
   unstable_cacheLife as cacheLife,
   unstable_cacheTag as cacheTag,
@@ -117,38 +117,6 @@ export async function getProducts(
   );
 }
 
-export async function getProduct(
-  handle: string,
-  localeContext?: Partial<LocaleContext>,
-): Promise<Product | undefined> {
-  "use cache";
-  cacheTag(TAGS.products);
-  const productsLanguageTag = languageScopedTag("products", localeContext);
-  if (productsLanguageTag) {
-    cacheTag(productsLanguageTag);
-  }
-  cacheLife("days");
-
-  return bffFetch(`/products/${handle}${qs(localeQuery(localeContext))}`);
-}
-
-export async function getProductRecommendations(
-  productId: string,
-  localeContext?: Partial<LocaleContext>,
-): Promise<Product[]> {
-  "use cache";
-  cacheTag(TAGS.products);
-  const productsLanguageTag = languageScopedTag("products", localeContext);
-  if (productsLanguageTag) {
-    cacheTag(productsLanguageTag);
-  }
-  cacheLife("days");
-
-  return bffFetch(
-    `/products/${productId}/recommendations${qs(localeQuery(localeContext))}`,
-  );
-}
-
 // -- Collections -------------------------------------------------------------
 
 export async function getCollections(
@@ -166,82 +134,6 @@ export async function getCollections(
   cacheLife("days");
 
   return bffFetch(`/collections${qs(localeQuery(localeContext))}`);
-}
-
-export async function getCollection(
-  handle: string,
-  localeContext?: Partial<LocaleContext>,
-): Promise<Collection | undefined> {
-  "use cache";
-  cacheTag(TAGS.collections);
-  const collectionsLanguageTag = languageScopedTag(
-    "collections",
-    localeContext,
-  );
-  if (collectionsLanguageTag) {
-    cacheTag(collectionsLanguageTag);
-  }
-  cacheLife("days");
-
-  return bffFetch(`/collections/${handle}${qs(localeQuery(localeContext))}`);
-}
-
-export async function getCollectionByPath(
-  slugs: string[],
-  localeContext?: Partial<LocaleContext>,
-): Promise<Collection | undefined> {
-  "use cache";
-  cacheTag(TAGS.collections);
-  const collectionsLanguageTag = languageScopedTag(
-    "collections",
-    localeContext,
-  );
-  if (collectionsLanguageTag) {
-    cacheTag(collectionsLanguageTag);
-  }
-  cacheLife("days");
-
-  return bffFetch(
-    `/collections/by-path/${slugs.join("/")}${qs(localeQuery(localeContext))}`,
-  );
-}
-
-export async function getCollectionProducts(
-  {
-    collection,
-    reverse,
-    sortKey,
-  }: {
-    collection: string;
-    reverse?: boolean;
-    sortKey?: string;
-  },
-  localeContext?: Partial<LocaleContext>,
-): Promise<Product[]> {
-  "use cache";
-  cacheTag(TAGS.collections, TAGS.products);
-  const collectionsLanguageTag = languageScopedTag(
-    "collections",
-    localeContext,
-  );
-  const productsLanguageTag = languageScopedTag("products", localeContext);
-  if (collectionsLanguageTag && productsLanguageTag) {
-    cacheTag(collectionsLanguageTag, productsLanguageTag);
-  } else if (collectionsLanguageTag) {
-    cacheTag(collectionsLanguageTag);
-  } else if (productsLanguageTag) {
-    cacheTag(productsLanguageTag);
-  }
-  cacheLife("days");
-
-  // Use by-path endpoint for nested collection keys (e.g. "brakes/pads")
-  const path = collection.includes("/")
-    ? `/collections/by-path/${collection}/products`
-    : `/collections/${collection}/products`;
-
-  return bffFetch(
-    `${path}${qs({ sortKey, reverse, ...localeQuery(localeContext) })}`,
-  );
 }
 
 // -- Menu --------------------------------------------------------------------
@@ -262,21 +154,6 @@ export async function getMenu(
 }
 
 // -- Pages -------------------------------------------------------------------
-
-export async function getPage(
-  handle: string,
-  localeContext?: Partial<LocaleContext>,
-): Promise<Page> {
-  "use cache";
-  cacheTag(TAGS.pages);
-  const pagesLanguageTag = languageScopedTag("pages", localeContext);
-  if (pagesLanguageTag) {
-    cacheTag(pagesLanguageTag);
-  }
-  cacheLife("days");
-
-  return bffFetch(`/pages/${handle}${qs(localeQuery(localeContext))}`);
-}
 
 export async function getPages(
   localeContext?: Partial<LocaleContext>,
@@ -393,13 +270,6 @@ export async function getMessages(
 
 // -- Cart --------------------------------------------------------------------
 
-export async function createCart(): Promise<Cart> {
-  return bffFetch("/cart/current", {
-    method: "POST",
-    headers: await cookieHeader(),
-  });
-}
-
 export async function getCart(
   localeContext?: Partial<LocaleContext>,
 ): Promise<Cart | undefined> {
@@ -416,49 +286,7 @@ export async function getCart(
   }
 }
 
-export async function addToCart(
-  lines: { merchandiseId: string; quantity: number }[],
-  localeContext?: Partial<LocaleContext>,
-): Promise<Cart> {
-  return bffFetch(`/cart/current/lines${qs(localeQuery(localeContext))}`, {
-    method: "POST",
-    headers: await cookieHeader(),
-    body: JSON.stringify({ lines }),
-  });
-}
-
-export async function removeFromCart(
-  lineIds: string[],
-  localeContext?: Partial<LocaleContext>,
-): Promise<Cart> {
-  return bffFetch(`/cart/current/lines${qs(localeQuery(localeContext))}`, {
-    method: "DELETE",
-    headers: await cookieHeader(),
-    body: JSON.stringify({ lineIds }),
-  });
-}
-
-export async function updateCart(
-  lines: { id: string; merchandiseId: string; quantity: number }[],
-  localeContext?: Partial<LocaleContext>,
-): Promise<Cart> {
-  return bffFetch(`/cart/current/lines${qs(localeQuery(localeContext))}`, {
-    method: "PATCH",
-    headers: await cookieHeader(),
-    body: JSON.stringify({ lines }),
-  });
-}
-
 // -- Checkout ----------------------------------------------------------------
-
-export async function getCheckoutConfig(
-  localeContext?: Partial<LocaleContext>,
-): Promise<CheckoutConfig> {
-  return bffFetch(`/checkout/config${qs(localeQuery(localeContext))}`, {
-    cache: "no-store",
-    headers: await cookieHeader(),
-  });
-}
 
 export async function placeOrder(
   request: PlaceOrderRequest,

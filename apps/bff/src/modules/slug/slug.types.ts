@@ -30,11 +30,3 @@ export type StaticRoutes = {
   cart: string;
   checkout: string;
 };
-
-export type StaticRouteSegments = {
-  search: string;
-  product: string;
-  categories: string;
-  cart: string;
-  checkout: string;
-};

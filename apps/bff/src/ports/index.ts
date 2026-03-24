@@ -21,7 +21,7 @@ export type {
 export { CUSTOMER_PORT } from "./customer.port";
 export type { CustomerPort } from "./customer.port";
 export { I18N_CONFIG_PORT } from "./i18n-config.port";
-export type { I18nConfigPort } from "./i18n-config.port";
+export type { DefaultStoreContext, I18nConfigPort } from "./i18n-config.port";
 export { MARKETING_DIRECTIVE_PORT } from "./marketing-directive.port";
 export type { MarketingDirectiveProvider } from "./marketing-directive.port";
 export { MENU_PORT } from "./menu.port";

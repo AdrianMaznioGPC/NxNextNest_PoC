@@ -1,5 +1,9 @@
 import type { LocaleContext } from "@commerce/shared-types";
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
+import {
+  I18N_CONFIG_PORT,
+  type I18nConfigPort,
+} from "../../ports/i18n-config.port";
 import { I18nService } from "../i18n/i18n.service";
 import { EXPERIENCE_PROFILES } from "./experience-profile.catalog";
 import type {
@@ -16,6 +20,7 @@ export class ExperienceProfileService {
   constructor(
     private readonly i18n: I18nService,
     private readonly validator: ExperienceValidatorService,
+    @Inject(I18N_CONFIG_PORT) private readonly i18nConfig: I18nConfigPort,
   ) {
     this.validator.validateCatalog();
     this.validator.validateDomainBindings(this.i18n.getDomainConfig());
@@ -33,21 +38,8 @@ export class ExperienceProfileService {
       fallbackDomain;
 
     if (!entry) {
-      return {
-        storeKey: "default-store",
-        experienceProfileId: "exp-default-v1",
-        storeFlagIconSrc: "/icons/eu.svg",
-        storeFlagIconLabel: "European Union",
-        themeKey: "theme-default",
-        themeRevision: "fallback",
-        themeTokenPack: "theme-default",
-        language: "en",
-        defaultLanguage: "en",
-        supportedLanguages: ["en", "es", "nl", "fr"],
-        cartUxMode: "drawer",
-        cartPath: "/cart",
-        openCartOnAdd: true,
-      };
+      const defaults = this.i18nConfig.getDefaultStoreContext();
+      return { ...defaults };
     }
 
     return {
@@ -148,12 +140,15 @@ export class ExperienceProfileService {
       };
     }
 
+    const defaults = this.i18nConfig.getDefaultStoreContext();
     return {
       storeKey,
-      themeKey: fallback?.themeKey ?? "theme-default",
-      themeRevision: fallback?.themeRevision ?? "fallback",
+      themeKey: fallback?.themeKey ?? defaults.themeKey,
+      themeRevision: fallback?.themeRevision ?? defaults.themeRevision,
       themeTokenPack:
-        fallback?.themeTokenPack ?? fallback?.themeKey ?? "theme-default",
+        fallback?.themeTokenPack ??
+        fallback?.themeKey ??
+        defaults.themeTokenPack,
     };
   }
 }

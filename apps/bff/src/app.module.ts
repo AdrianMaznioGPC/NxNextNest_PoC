@@ -9,6 +9,7 @@ import { CollectionController } from "./modules/collection/collection.controller
 import { AddressBookController } from "./modules/customer/address-book.controller";
 import { ExperienceModule } from "./modules/experience/experience.module";
 import { I18nModule } from "./modules/i18n/i18n.module";
+import { SwitchUrlModule } from "./modules/i18n/switch-url.module";
 import { MenuController } from "./modules/menu/menu.controller";
 import { MerchandisingModule } from "./modules/merchandising/merchandising.module";
 import { PageDataModule } from "./modules/page-data/page-data.module";
@@ -39,6 +40,7 @@ const DirectiveModule =
     MerchandisingModule,
     PageDataModule,
     CartModule,
+    SwitchUrlModule,
   ],
   controllers: [
     AppController,

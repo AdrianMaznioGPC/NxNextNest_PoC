@@ -1,25 +1,11 @@
-import {
-  BadRequestException,
-  Body,
-  Controller,
-  Get,
-  Headers,
-  Post,
-  Query,
-  Res,
-} from "@nestjs/common";
-import { createHash } from "node:crypto";
+import { Controller, Get, Headers, Query, Res } from "@nestjs/common";
 import type { FastifyReply } from "fastify";
+import { createHash } from "node:crypto";
 import { I18nService } from "./i18n.service";
-import { SwitchUrlService } from "./switch-url.service";
-import type { SwitchUrlRequest } from "@commerce/shared-types";
 
 @Controller("i18n")
 export class I18nController {
-  constructor(
-    private readonly i18n: I18nService,
-    private readonly switchUrl: SwitchUrlService,
-  ) {}
+  constructor(private readonly i18n: I18nService) {}
 
   @Get("domain-config")
   getDomainConfig(
@@ -66,24 +52,6 @@ export class I18nController {
     }
 
     return payload;
-  }
-
-  @Post("switch-url")
-  async switchUrlForRegionAndLanguage(@Body() payload: SwitchUrlRequest) {
-    if (!payload?.path) {
-      throw new BadRequestException("Field 'path' is required");
-    }
-    if (!payload?.sourceHost) {
-      throw new BadRequestException("Field 'sourceHost' is required");
-    }
-    if (!payload?.targetRegion) {
-      throw new BadRequestException("Field 'targetRegion' is required");
-    }
-    if (!payload?.targetLanguage) {
-      throw new BadRequestException("Field 'targetLanguage' is required");
-    }
-
-    return this.switchUrl.resolveTargetUrl(payload);
   }
 }
 

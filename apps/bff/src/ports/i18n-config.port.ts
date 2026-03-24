@@ -1,9 +1,27 @@
 import type {
+  CartUxMode,
   DomainConfigModel,
   I18nMessagesModel,
   LanguageCode,
   LocaleContext,
 } from "@commerce/shared-types";
+
+/** Fallback store context returned when no domain config matches. */
+export type DefaultStoreContext = {
+  storeKey: string;
+  experienceProfileId: string;
+  storeFlagIconSrc: string;
+  storeFlagIconLabel: string;
+  themeKey: string;
+  themeRevision: string;
+  themeTokenPack: string;
+  language: LanguageCode;
+  defaultLanguage: LanguageCode;
+  supportedLanguages: LanguageCode[];
+  cartUxMode: CartUxMode;
+  cartPath: string;
+  openCartOnAdd: boolean;
+};
 
 export interface I18nConfigPort {
   /** Full domain configuration model */
@@ -32,6 +50,9 @@ export interface I18nConfigPort {
 
   /** All supported language codes */
   getSupportedLanguageCodes(): LanguageCode[];
+
+  /** Fallback store context when no domain config entry matches */
+  getDefaultStoreContext(): DefaultStoreContext;
 }
 
 export const I18N_CONFIG_PORT = Symbol("I18N_CONFIG_PORT");
