@@ -52,6 +52,7 @@ import { SlotPlannerService } from "./slot-planner.service";
   exports: [
     PageDataService,
     BootstrapOrchestratorService,
+    RouteRecognitionService,
     RouteMatcherFactory,
     SlugIndexService,
   ],

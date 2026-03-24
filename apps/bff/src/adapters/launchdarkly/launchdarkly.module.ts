@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { Global, Module } from "@nestjs/common";
 import { MARKETING_DIRECTIVE_PORT } from "../../ports/marketing-directive.port";
 import {
   LAUNCHDARKLY_CONFIG,
@@ -7,6 +7,7 @@ import {
 import { LaunchDarklyDirectiveAdapter } from "./launchdarkly-directive.adapter";
 import type { LaunchDarklyConfig } from "./launchdarkly.types";
 
+@Global()
 @Module({
   providers: [
     {
