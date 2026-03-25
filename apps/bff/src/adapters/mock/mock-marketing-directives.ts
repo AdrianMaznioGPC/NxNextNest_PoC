@@ -191,4 +191,114 @@ export const MOCK_MARKETING_DIRECTIVES: MarketingDirective[] = [
       },
     },
   },
+  {
+    id: "campaign-winter-2025-v1",
+    campaignKey: "winter-2025",
+    priority: 90,
+    storeKeys: ["*"],
+    routeKinds: ["home"],
+    customerProfiles: ["*"],
+    funnelMode: "discovery",
+    audienceTags: ["winter", "seasonal"],
+    blockOverrides: [
+      {
+        blockType: "hero-banner",
+        fields: {
+          heading: "Winter Ready Sale",
+          subheading:
+            "Essential winter automotive parts - Stay safe on winter roads",
+          ctaLabel: "Shop Winter Essentials",
+          ctaUrl: "/categories/winter",
+          image: {
+            url: "https://images.unsplash.com/photo-1772470591331-37b565c516d7?w=1200&h=400&fit=crop",
+            altText: "Winter road covered in snow",
+            width: 1200,
+            height: 400,
+          },
+        },
+      },
+      {
+        blockType: "featured-categories",
+        fields: {
+          heading: "Shop Winter Essentials",
+          categoryHandles: [
+            "winter/tires",
+            "winter/accessories",
+            "winter/fluids",
+          ],
+        },
+      },
+      {
+        blockType: "featured-products",
+        fields: {
+          heading: "Top Winter Picks",
+          productHandles: [
+            "winter-tire-set",
+            "tire-chains",
+            "windshield-ice-scraper",
+          ],
+        },
+      },
+    ],
+    slotFlags: {
+      "page.home": {
+        winterCampaign: true,
+      },
+    },
+  },
+  {
+    id: "campaign-summer-2025-v1",
+    campaignKey: "summer-2025",
+    priority: 90,
+    storeKeys: ["*"],
+    routeKinds: ["home"],
+    customerProfiles: ["*"],
+    funnelMode: "discovery",
+    audienceTags: ["summer", "seasonal"],
+    blockOverrides: [
+      {
+        blockType: "hero-banner",
+        fields: {
+          heading: "Get Ready for Summer Trips",
+          subheading:
+            "Essential gear for road trips and adventures - Hit the road with confidence",
+          ctaLabel: "Shop Summer Essentials",
+          ctaUrl: "/categories/summer",
+          image: {
+            url: "https://images.unsplash.com/photo-1755323929316-fd9e8b8342dd?w=1200&h=400&fit=crop",
+            altText: "Car loaded for summer road trip",
+            width: 1200,
+            height: 400,
+          },
+        },
+      },
+      {
+        blockType: "featured-categories",
+        fields: {
+          heading: "Shop Summer Essentials",
+          categoryHandles: [
+            "summer/travel",
+            "summer/emergency",
+            "summer/detailing",
+          ],
+        },
+      },
+      {
+        blockType: "featured-products",
+        fields: {
+          heading: "Top Summer Picks",
+          productHandles: [
+            "roof-cargo-box",
+            "portable-power-station",
+            "car-detailing-kit",
+          ],
+        },
+      },
+    ],
+    slotFlags: {
+      "page.home": {
+        summerCampaign: true,
+      },
+    },
+  },
 ];

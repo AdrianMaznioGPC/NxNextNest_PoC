@@ -191,6 +191,72 @@ export const products: Product[] = [
     "Thickness",
     ["15mm", "20mm", "25mm"],
   ),
+  product(
+    "p-13",
+    "winter-tire-set",
+    "Premium Winter Tire Set (4-Pack)",
+    "Studless winter tires with advanced snow grip technology. Severe snow rated for extreme conditions.",
+    "1671539269717-6051567ab13d",
+    "699.99",
+    "Size",
+    ["205/55R16", "215/60R17", "225/65R17"],
+    ["winter", "tires", "seasonal"],
+  ),
+  product(
+    "p-14",
+    "tire-chains",
+    "Heavy-Duty Tire Chains",
+    "Easy-install tire chains for extreme winter conditions. Compatible with most passenger vehicles and light trucks.",
+    "1743612216336-8796b169784d",
+    "89.99",
+    "Vehicle Type",
+    ["Passenger Car", "Light Truck", "SUV"],
+    ["winter", "chains", "safety"],
+  ),
+  product(
+    "p-15",
+    "windshield-ice-scraper",
+    "Windshield Ice Scraper",
+    "Heavy-duty ice scraper with foam grip handle and built-in snow brush. Breaks through thick ice and frost.",
+    "1739813914168-61f8e4b41ef9",
+    "14.99",
+    "Type",
+    ["Standard", "Telescoping", "With Brush"],
+    ["winter", "accessories", "ice-removal"],
+  ),
+  product(
+    "p-16",
+    "roof-cargo-box",
+    "Roof Cargo Box",
+    "Aerodynamic roof cargo carrier with 16 cubic feet capacity. Weatherproof and lockable for secure road trip storage.",
+    "1673005479782-7b2e077f665d",
+    "349.99",
+    "Capacity",
+    ["16 cu ft", "18 cu ft", "20 cu ft"],
+    ["summer", "travel", "cargo"],
+  ),
+  product(
+    "p-17",
+    "portable-power-station",
+    "Portable Power Station",
+    "Multi-function portable power station with 300Wh capacity. Features AC outlets, USB ports, jump starting capability, and solar charging input for off-grid adventures.",
+    "1650785652040-5a2fc88ce902",
+    "299.99",
+    "Capacity",
+    ["300Wh", "500Wh", "1000Wh"],
+    ["summer", "emergency", "power"],
+  ),
+  product(
+    "p-18",
+    "car-detailing-kit",
+    "Premium Car Detailing Kit",
+    "Complete car detailing kit with wash soap, wax, microfiber towels, tire shine, and interior cleaner. Everything for a showroom finish.",
+    "1607860108358-47c0441e7adb",
+    "59.99",
+    "Kit Type",
+    ["Basic", "Premium", "Professional"],
+    ["summer", "detailing", "car-care"],
+  ),
 ];
 
 // Leaf (child) collections
@@ -243,6 +309,84 @@ const engineIgnition: Collection = {
   },
   path: "/categories/engine/ignition",
   parentHandle: "engine",
+  updatedAt: new Date().toISOString(),
+};
+
+const winterTires: Collection = {
+  handle: "tires",
+  title: "Winter Tires",
+  description: "Studless winter tires and tire accessories",
+  seo: {
+    title: "Winter Tires",
+    description: "Shop winter tires for safe winter driving",
+  },
+  path: "/categories/winter/tires",
+  parentHandle: "winter",
+  updatedAt: new Date().toISOString(),
+};
+
+const winterAccessories: Collection = {
+  handle: "accessories",
+  title: "Winter Accessories",
+  description: "Tire chains, winter wiper blades, and more",
+  seo: {
+    title: "Winter Accessories",
+    description: "Essential winter driving accessories",
+  },
+  path: "/categories/winter/accessories",
+  parentHandle: "winter",
+  updatedAt: new Date().toISOString(),
+};
+
+const winterFluids: Collection = {
+  handle: "fluids",
+  title: "Winter Fluids",
+  description: "De-icing washer fluid and winter maintenance fluids",
+  seo: {
+    title: "Winter Fluids",
+    description: "Winter windshield washer fluid and de-icers",
+  },
+  path: "/categories/winter/fluids",
+  parentHandle: "winter",
+  updatedAt: new Date().toISOString(),
+};
+
+const summerTravel: Collection = {
+  handle: "travel",
+  title: "Road Trip Essentials",
+  description: "Roof boxes, cargo carriers, and travel accessories",
+  seo: {
+    title: "Road Trip Essentials",
+    description: "Shop roof boxes and cargo carriers for summer travel",
+  },
+  path: "/categories/summer/travel",
+  parentHandle: "summer",
+  updatedAt: new Date().toISOString(),
+};
+
+const summerEmergency: Collection = {
+  handle: "emergency",
+  title: "Emergency Equipment",
+  description: "Jump starters, emergency kits, and safety equipment",
+  seo: {
+    title: "Emergency Equipment",
+    description: "Essential emergency and safety equipment for your vehicle",
+  },
+  path: "/categories/summer/emergency",
+  parentHandle: "summer",
+  updatedAt: new Date().toISOString(),
+};
+
+const summerDetailing: Collection = {
+  handle: "detailing",
+  title: "Car Detailing",
+  description: "Wash, wax, polish, and interior detailing products",
+  seo: {
+    title: "Car Detailing",
+    description: "Professional car detailing products and kits",
+  },
+  path: "/categories/summer/detailing",
+  parentHandle: "summer",
   updatedAt: new Date().toISOString(),
 };
 
@@ -313,6 +457,32 @@ export const collections: Collection[] = [
     path: "/categories/exhaust",
     updatedAt: new Date().toISOString(),
   },
+  {
+    handle: "winter",
+    title: "Winter Essentials",
+    description:
+      "Winter tires, chains, fluids, and accessories for safe winter driving",
+    seo: {
+      title: "Winter Essentials",
+      description: "Complete winter automotive parts and accessories",
+    },
+    path: "/categories/winter",
+    subcollections: [winterTires, winterAccessories, winterFluids],
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    handle: "summer",
+    title: "Summer Essentials",
+    description:
+      "Road trip gear, emergency equipment, and car care products for summer adventures",
+    seo: {
+      title: "Summer Essentials",
+      description: "Complete summer automotive accessories and car care",
+    },
+    path: "/categories/summer",
+    subcollections: [summerTravel, summerEmergency, summerDetailing],
+    updatedAt: new Date().toISOString(),
+  },
 ];
 
 /** Flat list of all collections including children, for lookups */
@@ -338,9 +508,17 @@ export const collectionProductMap: Record<string, string[]> = {
   "brakes/rotors": ["p-2"],
   "engine/filters": ["p-3"],
   "engine/ignition": ["p-4"],
+  "winter/tires": ["p-13"],
+  "winter/accessories": ["p-14", "p-15"],
+  "winter/fluids": [],
+  "summer/travel": ["p-16"],
+  "summer/emergency": ["p-17"],
+  "summer/detailing": ["p-18"],
   // Parent aggregates
   brakes: ["p-1", "p-2"],
   engine: ["p-3", "p-4"],
+  winter: ["p-13", "p-14", "p-15"],
+  summer: ["p-16", "p-17", "p-18"],
   // Top-level leaves (no subcollections)
   suspension: ["p-5", "p-6"],
   lighting: ["p-7", "p-8"],
@@ -393,6 +571,8 @@ for (const p of products) {
 export const menus: Record<string, Menu[]> = {
   "next-js-frontend-header-menu": [
     { title: "All", path: "/categories" },
+    { title: "Winter", path: "/categories/winter" },
+    { title: "Summer", path: "/categories/summer" },
     { title: "Brakes", path: "/categories/brakes" },
     { title: "Engine", path: "/categories/engine" },
     { title: "Suspension", path: "/categories/suspension" },
@@ -525,6 +705,12 @@ export const productSlugCatalog: Record<string, Record<string, string>> = {
     "exhaust-tip-clamp-on": "exhaust-tip-clamp-on",
     "short-ram-intake": "short-ram-intake",
     "wheel-spacers": "wheel-spacers",
+    "winter-tire-set": "winter-tire-set",
+    "tire-chains": "tire-chains",
+    "windshield-ice-scraper": "windshield-ice-scraper",
+    "roof-cargo-box": "roof-cargo-box",
+    "portable-power-station": "portable-power-station",
+    "car-detailing-kit": "car-detailing-kit",
   },
   "es-ES": {
     "ceramic-brake-pads": "pastillas-freno-ceramicas",
@@ -539,6 +725,12 @@ export const productSlugCatalog: Record<string, Record<string, string>> = {
     "exhaust-tip-clamp-on": "punta-escape-abrazadera",
     "short-ram-intake": "admision-short-ram",
     "wheel-spacers": "separadores-rueda",
+    "winter-tire-set": "set-neumaticos-invierno",
+    "tire-chains": "cadenas-nieve",
+    "windshield-ice-scraper": "rascador-hielo-parabrisas",
+    "roof-cargo-box": "caja-techo-carga",
+    "portable-power-station": "estacion-energia-portatil",
+    "car-detailing-kit": "kit-detallado-auto",
   },
   "nl-NL": {
     "ceramic-brake-pads": "keramische-remblokken",
@@ -553,6 +745,12 @@ export const productSlugCatalog: Record<string, Record<string, string>> = {
     "exhaust-tip-clamp-on": "uitlaattip-klemmodel",
     "short-ram-intake": "short-ram-inlaat",
     "wheel-spacers": "wielspacers",
+    "winter-tire-set": "winterbanden-set",
+    "tire-chains": "sneeuwkettingen",
+    "windshield-ice-scraper": "ijskrabber-voorruit",
+    "roof-cargo-box": "dakkoffer",
+    "portable-power-station": "draagbaar-energiestation",
+    "car-detailing-kit": "auto-detailing-kit",
   },
   "fr-FR": {
     "ceramic-brake-pads": "plaquettes-de-frein-ceramique",
@@ -567,6 +765,12 @@ export const productSlugCatalog: Record<string, Record<string, string>> = {
     "exhaust-tip-clamp-on": "embout-echappement-collier",
     "short-ram-intake": "admission-short-ram",
     "wheel-spacers": "elargisseurs-roue",
+    "winter-tire-set": "ensemble-pneus-hiver",
+    "tire-chains": "chaines-neige",
+    "windshield-ice-scraper": "raclette-glace-pare-brise",
+    "roof-cargo-box": "coffre-toit",
+    "portable-power-station": "station-energie-portable",
+    "car-detailing-kit": "kit-detailing-auto",
   },
 };
 
@@ -609,6 +813,14 @@ export const categorySlugCatalog: Record<string, Record<string, string>> = {
     lighting: "lighting",
     exhaust: "exhaust",
     oil: "oil",
+    winter: "winter",
+    "winter/tires": "winter/tires",
+    "winter/accessories": "winter/accessories",
+    "winter/fluids": "winter/fluids",
+    summer: "summer",
+    "summer/travel": "summer/travel",
+    "summer/emergency": "summer/emergency",
+    "summer/detailing": "summer/detailing",
   },
   "es-ES": {
     brakes: "frenos",
@@ -621,6 +833,14 @@ export const categorySlugCatalog: Record<string, Record<string, string>> = {
     lighting: "iluminacion",
     exhaust: "escape",
     oil: "aceite",
+    winter: "invierno",
+    "winter/tires": "invierno/neumaticos",
+    "winter/accessories": "invierno/accesorios",
+    "winter/fluids": "invierno/fluidos",
+    summer: "verano",
+    "summer/travel": "verano/viaje",
+    "summer/emergency": "verano/emergencia",
+    "summer/detailing": "verano/detallado",
   },
   "nl-NL": {
     brakes: "remmen",
@@ -633,6 +853,14 @@ export const categorySlugCatalog: Record<string, Record<string, string>> = {
     lighting: "verlichting",
     exhaust: "uitlaat",
     oil: "olie",
+    winter: "winter",
+    "winter/tires": "winter/banden",
+    "winter/accessories": "winter/accessoires",
+    "winter/fluids": "winter/vloeistoffen",
+    summer: "zomer",
+    "summer/travel": "zomer/reizen",
+    "summer/emergency": "zomer/noodgeval",
+    "summer/detailing": "zomer/detailing",
   },
   "fr-FR": {
     brakes: "freins",
@@ -645,6 +873,14 @@ export const categorySlugCatalog: Record<string, Record<string, string>> = {
     lighting: "eclairage",
     exhaust: "echappement",
     oil: "huile",
+    winter: "hiver",
+    "winter/tires": "hiver/pneus",
+    "winter/accessories": "hiver/accessoires",
+    "winter/fluids": "hiver/fluides",
+    summer: "ete",
+    "summer/travel": "ete/voyage",
+    "summer/emergency": "ete/urgence",
+    "summer/detailing": "ete/detailing",
   },
 };
 

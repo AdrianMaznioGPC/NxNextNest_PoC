@@ -6,18 +6,18 @@ import type {
 import { Injectable, Logger } from "@nestjs/common";
 import { CollectionPort } from "../../ports/collection.port";
 import {
-  collectionProductMap,
-  collections,
-  getAllCollectionsFlat,
-  products,
-} from "./mock-data";
-import {
   localizeCollection,
   localizeCollections,
   localizeProducts,
   telemetryCoverage,
   type LocalizationTelemetry,
 } from "./mock-commerce-localization";
+import {
+  collectionProductMap,
+  collections,
+  getAllCollectionsFlat,
+  products,
+} from "./mock-data";
 
 @Injectable()
 export class MockCollectionAdapter implements CollectionPort {
@@ -33,6 +33,19 @@ export class MockCollectionAdapter implements CollectionPort {
     handle: string,
     localeContext?: LocaleContext,
   ): Promise<Collection | undefined> {
+    // Check if handle is a composite path like "winter/tires"
+    if (handle.includes("/")) {
+      const parts = handle.split("/");
+      const parent = collections.find((c) => c.handle === parts[0]);
+      if (!parent || !parent.subcollections) return undefined;
+      const child = parent.subcollections.find((c) => c.handle === parts[1]);
+      if (!child) return undefined;
+      const localized = localizeCollection(child, localeContext);
+      this.logTelemetry("get_collection", localized.telemetry, { handle });
+      return localized.value;
+    }
+
+    // Regular handle lookup
     const collection = getAllCollectionsFlat().find((c) => c.handle === handle);
     if (!collection) {
       return undefined;

@@ -119,6 +119,41 @@ const PRODUCT_COPY: Record<LanguageCode, Record<string, ProductCopy>> = {
       description:
         "Separadores hubcentric de aluminio billet T6 para una postura mas agresiva.",
     },
+    "winter-tire-set": {
+      title: "Set de neumaticos de invierno (4 unidades)",
+      description:
+        "Neumaticos de invierno sin clavos con tecnologia avanzada de agarre en nieve. Clasificacion severa para condiciones extremas.",
+    },
+    "tire-chains": {
+      title: "Cadenas de nieve reforzadas",
+      description:
+        "Cadenas de nieve faciles de instalar para condiciones invernales extremas. Compatible con la mayoria de vehiculos.",
+    },
+    "windshield-ice-scraper": {
+      title: "Rascador de hielo para parabrisas",
+      description:
+        "Rascador de hielo resistente con mango de espuma y cepillo de nieve integrado. Rompe el hielo y la escarcha gruesa.",
+    },
+    "winter-wiper-blades": {
+      title: "Escobillas limpiaparabrisas de invierno (par)",
+      description:
+        "Escobillas tipo beam con cubierta de goma para evitar acumulacion de hielo. Rendimiento en todas las condiciones.",
+    },
+    "roof-cargo-box": {
+      title: "Caja de techo para carga",
+      description:
+        "Portaequipajes aerodinamico de techo con capacidad de 16 pies cubicos. Resistente al agua y con cerradura para almacenamiento seguro en viajes por carretera.",
+    },
+    "portable-power-station": {
+      title: "Estacion de energia portatil",
+      description:
+        "Estacion de energia portatil multifuncion con capacidad de 300Wh. Incluye tomas de CA, puertos USB, capacidad de arranque y entrada de carga solar para aventuras fuera de la red.",
+    },
+    "car-detailing-kit": {
+      title: "Kit de detallado premium para automovil",
+      description:
+        "Kit completo de detallado con jabon de lavado, cera, toallas de microfibra, abrillantador de neumaticos y limpiador de interiores. Todo para un acabado de salon.",
+    },
   },
   nl: {
     "ceramic-brake-pads": {
@@ -180,6 +215,41 @@ const PRODUCT_COPY: Record<LanguageCode, Record<string, ProductCopy>> = {
       title: "Wielspacers (paar)",
       description:
         "Naafgecentreerde wielspacers van T6 billet aluminium voor een agressievere stance.",
+    },
+    "winter-tire-set": {
+      title: "Premium winterbanden set (4 stuks)",
+      description:
+        "Spijkerloze winterbanden met geavanceerde sneeuwgrip technologie. Severe snow rated voor extreme omstandigheden.",
+    },
+    "tire-chains": {
+      title: "Heavy-duty sneeuwkettingen",
+      description:
+        "Eenvoudig te installeren sneeuwkettingen voor extreme wintercondities. Geschikt voor de meeste personenauto's en lichte vrachtwagens.",
+    },
+    "windshield-ice-scraper": {
+      title: "IJskrabber voor voorruit",
+      description:
+        "Heavy-duty ijskrabber met schuimgrip handvat en ingebouwde sneeuwborstel. Breekt door dik ijs en vorst.",
+    },
+    "winter-wiper-blades": {
+      title: "Winter ruitenwissers set (paar)",
+      description:
+        "Beam-style winterruitenwissers met rubberen hoes om ijsophoping te voorkomen. All-weather prestaties.",
+    },
+    "roof-cargo-box": {
+      title: "Dakkoffer",
+      description:
+        "Aerodynamische dakdrager met 16 kubieke voet capaciteit. Waterdicht en afsluitbaar voor veilige opslag tijdens reizen.",
+    },
+    "portable-power-station": {
+      title: "Draagbaar energiestation",
+      description:
+        "Multifunctioneel draagbaar energiestation met 300Wh capaciteit. Met AC stopcontacten, USB-poorten, startcapaciteit en solar oplaad-ingang voor off-grid avonturen.",
+    },
+    "car-detailing-kit": {
+      title: "Premium auto detailing kit",
+      description:
+        "Compleet detailing kit met waszeep, was, microfiber doeken, bandenglans en interieur reiniger. Alles voor een showroom afwerking.",
     },
   },
   fr: {
@@ -243,6 +313,41 @@ const PRODUCT_COPY: Record<LanguageCode, Record<string, ProductCopy>> = {
       description:
         "Elargisseurs de voie hubcentriques en aluminium T6 pour une stance plus agressive.",
     },
+    "winter-tire-set": {
+      title: "Ensemble de pneus hiver premium (lot de 4)",
+      description:
+        "Pneus hiver sans clous avec technologie avancee d'adherence sur neige. Homologues severe snow pour conditions extremes.",
+    },
+    "tire-chains": {
+      title: "Chaines neige renforcees",
+      description:
+        "Chaines neige faciles a installer pour conditions hivernales extremes. Compatible avec la plupart des vehicules.",
+    },
+    "windshield-ice-scraper": {
+      title: "Raclette a glace pour pare-brise",
+      description:
+        "Raclette a glace robuste avec poignee en mousse et brosse a neige integree. Brise la glace et le givre epais.",
+    },
+    "winter-wiper-blades": {
+      title: "Balais d'essuie-glace hiver (paire)",
+      description:
+        "Balais type beam avec protection caoutchouc contre l'accumulation de glace. Performance tout temps.",
+    },
+    "roof-cargo-box": {
+      title: "Coffre de toit",
+      description:
+        "Coffre de toit aerodynamique avec capacite de 16 pieds cubes. Etanche et verrouillable pour stockage securise lors de voyages.",
+    },
+    "portable-power-station": {
+      title: "Station d'energie portable",
+      description:
+        "Station d'energie portable multifonction avec capacite de 300Wh. Comprend prises CA, ports USB, capacite de demarrage et entree de charge solaire pour aventures hors reseau.",
+    },
+    "car-detailing-kit": {
+      title: "Kit de detailing automobile premium",
+      description:
+        "Kit de detailing complet avec savon de lavage, cire, serviettes en microfibre, brillant pour pneus et nettoyant interieur. Tout pour une finition salle d'exposition.",
+    },
   },
 };
 
@@ -289,6 +394,41 @@ const COLLECTION_COPY: Record<LanguageCode, Record<string, CollectionCopy>> = {
       title: "Aceite",
       description: "Aceites y fluidos para mantenimiento",
     },
+    winter: {
+      title: "Esenciales de invierno",
+      description:
+        "Neumaticos, cadenas, fluidos y accesorios de invierno para conduccion segura",
+    },
+    tires: {
+      title: "Neumaticos de invierno",
+      description: "Neumaticos de invierno sin clavos y accesorios",
+    },
+    accessories: {
+      title: "Accesorios de invierno",
+      description: "Cadenas de nieve, escobillas de invierno y mas",
+    },
+    fluids: {
+      title: "Fluidos de invierno",
+      description:
+        "Liquido limpiaparabrisas descongelante y fluidos de mantenimiento",
+    },
+    summer: {
+      title: "Esenciales de verano",
+      description:
+        "Equipamiento para viajes, equipo de emergencia y productos de cuidado del automovil para aventuras de verano",
+    },
+    travel: {
+      title: "Esenciales para viajes por carretera",
+      description: "Cajas de techo, portaequipajes y accesorios de viaje",
+    },
+    emergency: {
+      title: "Equipo de emergencia",
+      description: "Arrancadores, kits de emergencia y equipo de seguridad",
+    },
+    detailing: {
+      title: "Detallado de automoviles",
+      description: "Lavado, encerado, pulido y productos de detallado interior",
+    },
   },
   nl: {
     brakes: {
@@ -330,6 +470,41 @@ const COLLECTION_COPY: Record<LanguageCode, Record<string, CollectionCopy>> = {
     Oil: {
       title: "Olie",
       description: "Motorolie en onderhoudsvloeistoffen",
+    },
+    winter: {
+      title: "Winter essentials",
+      description:
+        "Winterbanden, kettingen, vloeistoffen en accessoires voor veilig winterrijden",
+    },
+    tires: {
+      title: "Winterbanden",
+      description: "Spijkerloze winterbanden en bandaccessoires",
+    },
+    accessories: {
+      title: "Winter accessoires",
+      description: "Sneeuwkettingen, winterruitenwissers en meer",
+    },
+    fluids: {
+      title: "Winter vloeistoffen",
+      description:
+        "Ontdooiende ruitensproeiervloeistof en onderhoudsvloeistoffen",
+    },
+    summer: {
+      title: "Zomer essentials",
+      description:
+        "Reisuitrusting, noodapparatuur en autoonderhoud producten voor zomeravonturen",
+    },
+    travel: {
+      title: "Roadtrip essentials",
+      description: "Dakkoffers, bagagedragers en reisaccessoires",
+    },
+    emergency: {
+      title: "Noodapparatuur",
+      description: "Startboosters, noodkits en veiligheidsuitrusting",
+    },
+    detailing: {
+      title: "Auto detailing",
+      description: "Wassen, waxen, polijsten en interieur detailing producten",
     },
   },
   fr: {
@@ -373,6 +548,41 @@ const COLLECTION_COPY: Record<LanguageCode, Record<string, CollectionCopy>> = {
       title: "Huile",
       description: "Huiles moteur et fluides d'entretien",
     },
+    winter: {
+      title: "Essentiels hiver",
+      description:
+        "Pneus, chaines, fluides et accessoires hiver pour une conduite securisee",
+    },
+    tires: {
+      title: "Pneus hiver",
+      description: "Pneus hiver sans clous et accessoires",
+    },
+    accessories: {
+      title: "Accessoires hiver",
+      description: "Chaines neige, balais hiver et plus",
+    },
+    fluids: {
+      title: "Fluides hiver",
+      description: "Liquide lave-glace degivrant et fluides d'entretien",
+    },
+    summer: {
+      title: "Essentiels ete",
+      description:
+        "Equipement de voyage, materiel d'urgence et produits d'entretien automobile pour les aventures estivales",
+    },
+    travel: {
+      title: "Essentiels road trip",
+      description: "Coffres de toit, porte-bagages et accessoires de voyage",
+    },
+    emergency: {
+      title: "Equipement d'urgence",
+      description: "Demarreurs, kits d'urgence et equipement de securite",
+    },
+    detailing: {
+      title: "Detailing automobile",
+      description:
+        "Lavage, cirage, polissage et produits de detailing interieur",
+    },
   },
 };
 
@@ -392,6 +602,8 @@ const MENU_TITLE_COPY: Record<LanguageCode, Record<string, string>> = {
     "Privacy Policy": "Politica de privacidad",
     FAQ: "Preguntas frecuentes",
     "All Parts": "Todas las piezas",
+    Winter: "Invierno",
+    Summer: "Verano",
   },
   nl: {
     All: "Alles",
@@ -407,6 +619,8 @@ const MENU_TITLE_COPY: Record<LanguageCode, Record<string, string>> = {
     "Privacy Policy": "Privacybeleid",
     FAQ: "Veelgestelde vragen",
     "All Parts": "Alle onderdelen",
+    Winter: "Winter",
+    Summer: "Zomer",
   },
   fr: {
     All: "Tout",
@@ -422,6 +636,8 @@ const MENU_TITLE_COPY: Record<LanguageCode, Record<string, string>> = {
     "Privacy Policy": "Politique de confidentialite",
     FAQ: "FAQ",
     "All Parts": "Toutes les pieces",
+    Winter: "Hiver",
+    Summer: "Ete",
   },
 };
 
@@ -587,6 +803,13 @@ const OPTION_NAME_COPY: Record<LanguageCode, Record<string, string>> = {
     Finish: "Acabado",
     "Pipe Diameter": "Diametro del tubo",
     Thickness: "Grosor",
+    "Vehicle Type": "Tipo de vehiculo",
+    "Temperature Rating": "Clasificacion de temperatura",
+    Length: "Longitud",
+    Type: "Tipo",
+    Capacity: "Capacidad",
+    "Peak Amps": "Amperaje maximo",
+    "Kit Type": "Tipo de kit",
   },
   nl: {
     Axle: "As",
@@ -599,6 +822,13 @@ const OPTION_NAME_COPY: Record<LanguageCode, Record<string, string>> = {
     Finish: "Afwerking",
     "Pipe Diameter": "Pijpdiameter",
     Thickness: "Dikte",
+    "Vehicle Type": "Voertuigtype",
+    "Temperature Rating": "Temperatuurclassificatie",
+    Length: "Lengte",
+    Type: "Type",
+    Capacity: "Capaciteit",
+    "Peak Amps": "Piek amperage",
+    "Kit Type": "Kit type",
   },
   fr: {
     Axle: "Essieu",
@@ -611,6 +841,13 @@ const OPTION_NAME_COPY: Record<LanguageCode, Record<string, string>> = {
     Finish: "Finition",
     "Pipe Diameter": "Diametre du tube",
     Thickness: "Epaisseur",
+    "Vehicle Type": "Type de vehicule",
+    "Temperature Rating": "Classification de temperature",
+    Length: "Longueur",
+    Type: "Type",
+    Capacity: "Capacite",
+    "Peak Amps": "Amperage de pointe",
+    "Kit Type": "Type de kit",
   },
 };
 
@@ -626,6 +863,15 @@ const OPTION_VALUE_COPY: Record<LanguageCode, Record<string, string>> = {
     Chrome: "Cromado",
     Black: "Negro",
     "Front & Rear Set": "Juego delantero y trasero",
+    "Passenger Car": "Automovil de pasajeros",
+    "Light Truck": "Camioneta ligera",
+    SUV: "SUV",
+    Standard: "Estandar",
+    Telescoping: "Telescopico",
+    "With Brush": "Con cepillo",
+    Basic: "Basico",
+    Premium: "Premium",
+    Professional: "Profesional",
   },
   nl: {
     Front: "Voor",
@@ -637,6 +883,15 @@ const OPTION_VALUE_COPY: Record<LanguageCode, Record<string, string>> = {
     Chrome: "Chroom",
     Black: "Zwart",
     "Front & Rear Set": "Voor- en achterset",
+    "Passenger Car": "Personenauto",
+    "Light Truck": "Lichte vrachtwagen",
+    SUV: "SUV",
+    Standard: "Standaard",
+    Telescoping: "Telescopisch",
+    "With Brush": "Met borstel",
+    Basic: "Basis",
+    Premium: "Premium",
+    Professional: "Professioneel",
   },
   fr: {
     Front: "Avant",
@@ -648,6 +903,15 @@ const OPTION_VALUE_COPY: Record<LanguageCode, Record<string, string>> = {
     Chrome: "Chrome",
     Black: "Noir",
     "Front & Rear Set": "Kit avant et arriere",
+    "Passenger Car": "Voiture particuliere",
+    "Light Truck": "Camionnette",
+    SUV: "SUV",
+    Standard: "Standard",
+    Telescoping: "Telescopique",
+    "With Brush": "Avec brosse",
+    Basic: "Basique",
+    Premium: "Premium",
+    Professional: "Professionnel",
   },
 };
 
