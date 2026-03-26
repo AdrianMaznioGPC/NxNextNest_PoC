@@ -8,19 +8,22 @@ Renders CMS-style content blocks on the home page and content pages. The BFF pro
 
 | File                 | Role                                                               |
 | -------------------- | ------------------------------------------------------------------ |
-| `block-registry.tsx` | Maps `CmsBlock.type` to React component                            |
+| `block-registry.tsx` | Maps `CmsBlock.type` to lazy-loaded React component                |
 | `block-renderer.tsx` | Iterates over block arrays and renders each through the registry   |
 | `blocks/*`           | Individual block components (hero banner, featured products, etc.) |
 
+> **Architecture Note**: The block system uses lazy loading with explicit registration. See [block-registry-refactor.md](./block-registry-refactor.md) for details.
+
 ## Block Types
 
-| Block Type            | Component                                            | Content |
-| --------------------- | ---------------------------------------------------- | ------- |
-| `hero-banner`         | Hero banner with heading, subheading, CTA, and image |
-| `featured-products`   | Product grid with heading                            |
-| `featured-categories` | Category cards with heading                          |
-| `product-carousel`    | Horizontal product carousel                          |
-| `rich-text`           | Free-form HTML content                               |
+| Block Type            | Component                                            | Mode        |
+| --------------------- | ---------------------------------------------------- | ----------- |
+| `hero-banner`         | Hero banner with heading, subheading, CTA, and image | Server      |
+| `featured-products`   | Product grid with heading                            | Server      |
+| `featured-categories` | Category cards with heading                          | Server      |
+| `product-carousel`    | Horizontal product carousel                          | Server      |
+| `rich-text`           | Free-form HTML content                               | Server      |
+| `winter-effects`      | Animated snowfall overlay                            | Client-only |
 
 ## How Block Overrides Work
 

@@ -1,9 +1,8 @@
 import type { HeroBannerBlock } from "lib/types";
 import Image from "next/image";
 import Link from "next/link";
-import { registerBlockRenderer } from "../block-registry";
 
-function HeroBanner({ block }: { block: HeroBannerBlock }) {
+export default function HeroBanner({ block }: { block: HeroBannerBlock }) {
   return (
     <section className="relative w-full overflow-hidden rounded-lg">
       <Image
@@ -29,6 +28,3 @@ function HeroBanner({ block }: { block: HeroBannerBlock }) {
     </section>
   );
 }
-
-registerBlockRenderer("hero-banner", HeroBanner);
-export default HeroBanner;

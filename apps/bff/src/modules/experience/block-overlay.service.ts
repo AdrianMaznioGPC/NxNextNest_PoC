@@ -24,10 +24,31 @@ export class BlockOverlayService {
       signals.blockOverrides.map((o) => [o.blockType, o]),
     );
 
-    return rawBlocks.map((block) => {
+    const existingTypes = new Set<string>(rawBlocks.map((b) => b.type));
+    const result: CmsRawBlock[] = [];
+
+    // Apply overrides to existing blocks
+    for (const block of rawBlocks) {
       const override = overridesByType.get(block.type);
-      if (!override) return block;
-      return { ...block, ...override.fields } as CmsRawBlock;
-    });
+      if (override) {
+        result.push({ ...block, ...override.fields } as CmsRawBlock);
+      } else {
+        result.push(block);
+      }
+    }
+
+    // Inject new blocks that don't exist in the base
+    for (const override of signals.blockOverrides) {
+      if (!existingTypes.has(override.blockType)) {
+        const newBlock = {
+          type: override.blockType as CmsRawBlock["type"],
+          id: `override-${override.blockType}`,
+          ...override.fields,
+        } as CmsRawBlock;
+        result.unshift(newBlock); // Add to beginning so effects render first
+      }
+    }
+
+    return result;
   }
 }

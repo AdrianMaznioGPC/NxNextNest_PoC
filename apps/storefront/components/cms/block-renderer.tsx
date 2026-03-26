@@ -1,6 +1,6 @@
 import type { CmsBlock } from "lib/types";
+import { Suspense } from "react";
 import { getBlockRenderer } from "./block-registry";
-import "./blocks"; // ensures all blocks are registered
 
 export function BlockRenderer({ blocks }: { blocks: CmsBlock[] }) {
   return (
@@ -11,7 +11,11 @@ export function BlockRenderer({ blocks }: { blocks: CmsBlock[] }) {
           console.warn(`No renderer for block type "${block.type}"`);
           return null;
         }
-        return <Component key={block.id} block={block} />;
+        return (
+          <Suspense key={block.id} fallback={null}>
+            <Component block={block} />
+          </Suspense>
+        );
       })}
     </>
   );

@@ -71,3 +71,13 @@ registerBlockResolver("product-carousel", async (raw, ctx) => {
     products,
   };
 });
+
+// winter-effects: no backend data to resolve, pass through
+registerBlockResolver("winter-effects", async (raw) => ({
+  type: "winter-effects" as const,
+  id: raw.id,
+  snowflakeCount: raw.snowflakeCount,
+  speed: raw.speed,
+  wind: raw.wind,
+  radius: raw.radius,
+}));

@@ -1,9 +1,12 @@
-import type { FeaturedProductsBlock } from "lib/types";
-import SmartLink from "components/smart-link";
 import { GridTileImage } from "components/grid/tile";
-import { registerBlockRenderer } from "../block-registry";
+import SmartLink from "components/smart-link";
+import type { FeaturedProductsBlock } from "lib/types";
 
-function FeaturedProducts({ block }: { block: FeaturedProductsBlock }) {
+export default function FeaturedProducts({
+  block,
+}: {
+  block: FeaturedProductsBlock;
+}) {
   if (!block.products.length) return null;
 
   return (
@@ -34,6 +37,3 @@ function FeaturedProducts({ block }: { block: FeaturedProductsBlock }) {
     </section>
   );
 }
-
-registerBlockRenderer("featured-products", FeaturedProducts);
-export default FeaturedProducts;

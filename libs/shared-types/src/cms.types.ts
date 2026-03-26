@@ -32,9 +32,17 @@ export type RichTextBlock = CmsBlockBase<"rich-text"> & {
   html: string;
 };
 
+export type WinterEffectsBlock = CmsBlockBase<"winter-effects"> & {
+  snowflakeCount?: number;
+  speed?: [number, number];
+  wind?: [number, number];
+  radius?: [number, number];
+};
+
 export type CmsBlock =
   | HeroBannerBlock
   | FeaturedProductsBlock
   | FeaturedCategoriesBlock
   | ProductCarouselBlock
-  | RichTextBlock;
+  | RichTextBlock
+  | WinterEffectsBlock;

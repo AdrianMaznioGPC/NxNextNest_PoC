@@ -202,6 +202,15 @@ export const MOCK_MARKETING_DIRECTIVES: MarketingDirective[] = [
     audienceTags: ["winter", "seasonal"],
     blockOverrides: [
       {
+        blockType: "winter-effects",
+        fields: {
+          snowflakeCount: 150,
+          speed: [0.5, 3.0],
+          wind: [-0.5, 2.0],
+          radius: [0.5, 3.0],
+        },
+      },
+      {
         blockType: "hero-banner",
         fields: {
           heading: "Winter Ready Sale",

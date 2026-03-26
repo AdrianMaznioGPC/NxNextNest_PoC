@@ -1,9 +1,12 @@
-import type { ProductCarouselBlock } from "lib/types";
-import SmartLink from "components/smart-link";
 import { GridTileImage } from "components/grid/tile";
-import { registerBlockRenderer } from "../block-registry";
+import SmartLink from "components/smart-link";
+import type { ProductCarouselBlock } from "lib/types";
 
-function ProductCarousel({ block }: { block: ProductCarouselBlock }) {
+export default function ProductCarousel({
+  block,
+}: {
+  block: ProductCarouselBlock;
+}) {
   if (!block.products.length) return null;
 
   // Duplicate products so the carousel loops on wide screens
@@ -44,6 +47,3 @@ function ProductCarousel({ block }: { block: ProductCarouselBlock }) {
     </section>
   );
 }
-
-registerBlockRenderer("product-carousel", ProductCarousel);
-export default ProductCarousel;

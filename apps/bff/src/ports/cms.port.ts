@@ -37,12 +37,22 @@ export type CmsRawRichText = {
   html: string;
 };
 
+export type CmsRawWinterEffects = {
+  type: "winter-effects";
+  id: string;
+  snowflakeCount?: number;
+  speed?: [number, number];
+  wind?: [number, number];
+  radius?: [number, number];
+};
+
 export type CmsRawBlock =
   | CmsRawHeroBanner
   | CmsRawFeaturedProducts
   | CmsRawFeaturedCategories
   | CmsRawProductCarousel
-  | CmsRawRichText;
+  | CmsRawRichText
+  | CmsRawWinterEffects;
 
 export type CmsRawPage = {
   slug: string;

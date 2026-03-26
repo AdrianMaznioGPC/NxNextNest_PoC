@@ -1,8 +1,11 @@
-import type { FeaturedCategoriesBlock } from "lib/types";
 import CategoryCard from "components/layout/category-card";
-import { registerBlockRenderer } from "../block-registry";
+import type { FeaturedCategoriesBlock } from "lib/types";
 
-function FeaturedCategories({ block }: { block: FeaturedCategoriesBlock }) {
+export default function FeaturedCategories({
+  block,
+}: {
+  block: FeaturedCategoriesBlock;
+}) {
   if (!block.categories.length) return null;
 
   return (
@@ -16,6 +19,3 @@ function FeaturedCategories({ block }: { block: FeaturedCategoriesBlock }) {
     </section>
   );
 }
-
-registerBlockRenderer("featured-categories", FeaturedCategories);
-export default FeaturedCategories;
