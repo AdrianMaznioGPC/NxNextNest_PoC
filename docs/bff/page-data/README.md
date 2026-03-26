@@ -8,31 +8,58 @@ If you are new to the codebase, **start here**. This module ties together every 
 
 ## Key Files
 
-| File                                   | Role                                                                                               |
-| -------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `bootstrap-orchestrator.service.ts`    | Top-level orchestrator that runs the full pipeline                                                 |
-| `page-data.controller.ts`              | HTTP endpoints: `/page-data/bootstrap`, `/page-data/slot`, `/page-data/layout`                     |
-| `page-data.service.ts`                 | Legacy page-data service (being replaced by bootstrap)                                             |
-| `slot-planner.service.ts`              | Converts resolved page content into `SlotManifest[]`                                               |
-| `slot-data.service.ts`                 | Handles deferred slot data fetches (`/page-data/slot`)                                             |
-| `assemblers/*`                         | One assembler per route kind (home, category-detail, product-detail, search, cart, checkout, etc.) |
-| `routing/route-recognition.service.ts` | Classifies incoming paths into route kinds using `path-to-regexp`                                  |
-| `routing/route-matcher.factory.ts`     | Compiles per-locale route matchers                                                                 |
+| File                                      | Role                                                                                               |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `bootstrap-orchestrator.service.ts`       | Top-level orchestrator that runs the stage pipeline                                                |
+| `bootstrap/bootstrap-stage.factory.ts`    | Creates ordered pipeline of bootstrap stages                                                       |
+| `bootstrap/bootstrap-response.builder.ts` | Builds final PageBootstrapModel response from context                                              |
+| `bootstrap/bootstrap-context.model.ts`    | Mutable context passed through all stages                                                          |
+| `stages/*`                                | Individual pipeline stages (route recognition, assembly, personalization, etc.)                    |
+| `page-data.controller.ts`                 | HTTP endpoints: `/page-data/bootstrap`, `/page-data/slot`, `/page-data/layout`                     |
+| `page-data.service.ts`                    | Legacy page-data service (being replaced by bootstrap)                                             |
+| `slot-planner.service.ts`                 | Converts resolved page content into `SlotManifest[]`                                               |
+| `slot-data.service.ts`                    | Handles deferred slot data fetches (`/page-data/slot`)                                             |
+| `assemblers/*`                            | One assembler per route kind (home, category-detail, product-detail, search, cart, checkout, etc.) |
+| `routing/route-recognition.service.ts`    | Classifies incoming paths into route kinds using `path-to-regexp`                                  |
+| `routing/route-matcher.factory.ts`        | Compiles per-locale route matchers                                                                 |
 
-## Bootstrap Pipeline (Step by Step)
+## Bootstrap Pipeline Architecture
 
-This is the exact sequence that `BootstrapOrchestratorService.buildBootstrap()` follows:
+The bootstrap pipeline uses a **stage-based architecture** where each stage implements the `BootstrapStage` interface and operates on a shared `BootstrapContext`. This makes the pipeline extensible, testable, and easier to reason about.
 
-1. **Locale resolution** — Resolves the full `LocaleContext` from query params (locale, language, region, currency, market, domain)
-2. **Route recognition** — `RouteRecognitionService` matches the incoming path against compiled `path-to-regexp` rules for the current language. Produces a `routeKind` (e.g., `product-detail`) and extracted params (e.g., `productHandle`)
-3. **Experience resolution** — `ExperienceResolverService.resolve()` determines the experience profile for this store + route + customer/campaign signals. This happens _before_ assembly so assemblers can react to it
-4. **Merchandising resolution** — `MerchandisingResolverService.resolve()` determines the merchandising mode and may inject default sort order
-5. **Page assembly** — The matching assembler (e.g., `ProductDetailPageAssembler`) fetches domain data and builds a `ResolvedPageModel` with content nodes and revalidation tags
-6. **Slot planning** — `SlotPlannerService` converts content nodes into `SlotManifest[]` entries, deciding which slots are inline/blocking vs deferred/reference
-7. **Experience slot overlay** — `ExperienceResolverService.applyToSlots()` adjusts slot `variantKey`, `layoutKey`, `density`, `flags`, or removes slots (`include: false`)
-8. **Merchandising slot overlay** — `MerchandisingResolverService.applyToSlots()` applies its own slot-level overrides (last wins)
-9. **Link localization** — All paths in page content and slot data are normalized for the current language (prefix policy)
-10. **Response assembly** — The final `PageBootstrapModel` is constructed with `page` (metadata), `shell` (messages + experience context), and `slots` (manifest)
+### Pipeline Stages (Execution Order)
+
+The orchestrator executes stages in this fixed order via `BootstrapStageFactory.createPipeline()`:
+
+1. **RouteRecognitionStage** — Resolves `LocaleContext` and matches incoming path against route rules. Sets `ctx.route`, `ctx.localeContext`, `ctx.matchedRuleId`. Detects 404/301 early but does not stop processing (shell data still needed).
+
+2. **ContextResolutionStage** — Resolves experience profile (store, theme, cart UX) and merchandising profile (mode, default sort). Sets `ctx.experience`, `ctx.merchandising`, applies default sort to query if needed. Always runs to populate shell, even for 404/301.
+
+3. **AssemblyCacheStage** — (Future) Checks assembly cache for pre-built content. Currently a stub that always misses.
+
+4. **PageAssemblyStage** — Executes route-specific assembler to build content. Skipped if `ctx.status !== 200`. Validates cart route against `cartUxMode`. Calls assembler with timeout/resilience. Sets `ctx.content`, `ctx.seo`, `ctx.revalidateTags`, `ctx.assemblerKey`. On failure, calls `ctx.earlyReturn(404)`.
+
+5. **SlotPlanningStage** — Converts `ctx.content` into `ctx.slots` manifest. Skipped if status is 404/301. Uses `SlotPlannerService` to determine inline vs deferred slots.
+
+6. **PersonalizationStage** — Applies experience and merchandising overlays to slots (variant keys, layout keys, density, include flags). Skipped if status is 404/301. Experience overlay runs first, merchandising overlay runs second (last wins).
+
+7. **LinkLocalizationStage** — Normalizes all internal paths in content and slots for current locale. Audits link compliance and logs violations. Always runs (even for 404/301) to ensure consistent paths in shell.
+
+### Stage Execution Rules
+
+- Each stage can mutate the `BootstrapContext`
+- Stages check `ctx.shouldStopProcessing()` before executing
+- Stages can implement `shouldRun(ctx)` for conditional execution
+- Early return is signaled via `ctx.earlyReturn(status, redirectTo?)`
+- Timing is tracked per stage for observability
+
+### Adding a New Stage
+
+1. Implement `BootstrapStage` interface in `stages/<name>.stage.ts`
+2. Add `shouldRun(ctx)` if stage should be conditional
+3. Register in `page-data.module.ts` providers
+4. Inject into `BootstrapStageFactory` and add to `createPipeline()` array
+5. Write unit test in `stages/<name>.stage.spec.ts`
 
 ## Endpoints
 
@@ -70,8 +97,19 @@ This is the exact sequence that `BootstrapOrchestratorService.buildBootstrap()` 
 - Cart route with `cartUxMode: "drawer"` → 404 (cart page intentionally blocked)
 - Assembly failures → caught by resilience layer, degrade to 404
 
+## Cache Boundaries
+
+The bootstrap pipeline has several potential cache points:
+
+1. **Assembly Cache** (stage 3) — Future cache for assembled page content. Currently not implemented.
+2. **CDN Cache** — Final response cached at CDN layer based on `page.cacheHints` (TTL, public/private).
+3. **Slot Data Cache** — Deferred slot data may be cached independently via `/page-data/slot` endpoint.
+
+Cache invalidation uses `revalidateTags` from assemblers (e.g., `product:123`, `collection:abc`).
+
 ## See Also
 
+- [Bootstrap Refactor Documentation](../../refactoring/bootstrap-orchestrator-refactor.md) — detailed refactoring plan and design decisions
 - [Page Pipeline Diagrams](../../page-pipeline.md) — visual flow for every page type
 - [Experience Domain](../experience/README.md) — how experience profiles are resolved
 - [Merchandising Domain](../merchandising/README.md) — how merchandising modes work

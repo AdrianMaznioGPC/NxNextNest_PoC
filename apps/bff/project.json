@@ -15,6 +15,10 @@
       "dependsOn": ["build"],
       "command": "node dist/apps/bff/src/main.js",
       "options": { "cwd": "apps/bff" }
+    },
+    "test": {
+      "command": "node --import tsx --test 'src/**/*.spec.ts'",
+      "options": { "cwd": "apps/bff" }
     }
   }
 }

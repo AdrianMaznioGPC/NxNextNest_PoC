@@ -5,10 +5,10 @@
     "start:dev": "nest start --watch"
   },
   "dependencies": {
-    "intl-messageformat": "^11.1.2",
     "@nestjs/common": "^11.0.0",
     "@nestjs/core": "^11.0.0",
     "@nestjs/platform-fastify": "^11.0.0",
+    "intl-messageformat": "^11.1.2",
     "path-to-regexp": "^8.2.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.0"
@@ -16,6 +16,7 @@
   "devDependencies": {
     "@nestjs/cli": "^11.0.0",
     "ts-node": "^10.9.0",
-    "tsconfig-paths": "^4.2.0"
+    "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.21.0"
   }
 }

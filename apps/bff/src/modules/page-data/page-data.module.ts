@@ -14,6 +14,9 @@ import { PageAssemblerRegistry } from "./assemblers/page-assembler.registry";
 import { ProductDetailPageAssembler } from "./assemblers/product-detail-page.assembler";
 import { SearchPageAssembler } from "./assemblers/search-page.assembler";
 import { BootstrapOrchestratorService } from "./bootstrap-orchestrator.service";
+import { BootstrapResponseBuilder } from "./bootstrap/bootstrap-response.builder";
+import { BootstrapStageFactory } from "./bootstrap/bootstrap-stage.factory";
+import { DefaultAssemblerBudgetConfig } from "./models/assembler-budget.config";
 import { PageDataController } from "./page-data.controller";
 import { PageDataService } from "./page-data.service";
 import { RouteMatcherFactory } from "./routing/route-matcher.factory";
@@ -21,6 +24,13 @@ import { RouteRecognitionService } from "./routing/route-recognition.service";
 import { SlugIndexService } from "./routing/slug-index.service";
 import { SlotDataService } from "./slot-data.service";
 import { SlotPlannerService } from "./slot-planner.service";
+import { AssemblyCacheStage } from "./stages/assembly-cache.stage";
+import { ContextResolutionStage } from "./stages/context-resolution.stage";
+import { LinkLocalizationStage } from "./stages/link-localization.stage";
+import { PageAssemblyStage } from "./stages/page-assembly.stage";
+import { PersonalizationStage } from "./stages/personalization.stage";
+import { RouteRecognitionStage } from "./stages/route-recognition.stage";
+import { SlotPlanningStage } from "./stages/slot-planning.stage";
 
 @Module({
   imports: [
@@ -48,6 +58,18 @@ import { SlotPlannerService } from "./slot-planner.service";
     ContentPageAssembler,
     SlotPlannerService,
     SlotDataService,
+    DefaultAssemblerBudgetConfig,
+    // Bootstrap stages
+    RouteRecognitionStage,
+    ContextResolutionStage,
+    AssemblyCacheStage,
+    PageAssemblyStage,
+    SlotPlanningStage,
+    PersonalizationStage,
+    LinkLocalizationStage,
+    // Bootstrap factory and builder
+    BootstrapStageFactory,
+    BootstrapResponseBuilder,
   ],
   exports: [
     PageDataService,
