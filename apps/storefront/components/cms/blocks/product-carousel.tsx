@@ -17,8 +17,8 @@ export default function ProductCarousel({
   ];
 
   return (
-    <section className="py-8">
-      <h2 className="mb-4 px-4 text-2xl font-bold">{block.heading}</h2>
+    <section>
+      <h2 className="mb-4 text-2xl font-bold">{block.heading}</h2>
       <div className="w-full overflow-x-auto pb-6 pt-1">
         <ul className="flex animate-carousel gap-4">
           {carouselProducts.map((product, i) => (

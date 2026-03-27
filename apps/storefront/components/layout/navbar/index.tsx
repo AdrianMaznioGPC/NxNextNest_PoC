@@ -1,4 +1,5 @@
 import CartModal from "components/cart/modal";
+import Container from "components/layout/container";
 import LogoSquare from "components/logo-square";
 import SmartLink from "components/smart-link";
 import type {
@@ -48,61 +49,65 @@ export async function Navbar({
   return (
     <header className="border-b border-border">
       {/* Row 1: Logo | Search | Actions */}
-      <div className="flex items-center justify-between gap-4 p-4 lg:px-6">
-        {/* Mobile menu button */}
-        <div className="block flex-none md:hidden">
-          {DEFER_SHELL_INTERACTIONS ? (
-            <DeferredMobileMenu
-              megaMenu={megaMenu}
-              searchPath={routes.search}
+      <Container>
+        <div className="flex items-center justify-between gap-4 py-4">
+          {/* Mobile menu button */}
+          <div className="block flex-none md:hidden">
+            {DEFER_SHELL_INTERACTIONS ? (
+              <DeferredMobileMenu
+                megaMenu={megaMenu}
+                searchPath={routes.search}
+              />
+            ) : (
+              <MobileMenu megaMenu={megaMenu} searchPath={routes.search} />
+            )}
+          </div>
+
+          {/* Logo */}
+          <SmartLink
+            href={routes.home}
+            intent="shell"
+            className="flex items-center gap-2"
+          >
+            <LogoSquare
+              storeFlagIconSrc={storeContext.storeFlagIconSrc}
+              storeFlagIconLabel={storeContext.storeFlagIconLabel}
             />
-          ) : (
-            <MobileMenu megaMenu={megaMenu} searchPath={routes.search} />
-          )}
-        </div>
+            <span className="hidden text-sm font-medium uppercase lg:block">
+              {SITE_NAME}
+            </span>
+          </SmartLink>
 
-        {/* Logo */}
-        <SmartLink
-          href={routes.home}
-          intent="shell"
-          className="flex items-center gap-2"
-        >
-          <LogoSquare
-            storeFlagIconSrc={storeContext.storeFlagIconSrc}
-            storeFlagIconLabel={storeContext.storeFlagIconLabel}
-          />
-          <span className="hidden text-sm font-medium uppercase lg:block">
-            {SITE_NAME}
-          </span>
-        </SmartLink>
+          {/* Search (center) */}
+          <div className="hidden flex-1 justify-center md:flex">
+            <div className="w-full max-w-xl">
+              <Suspense fallback={<SearchSkeleton />}>
+                <Search actionPath={routes.search} />
+              </Suspense>
+            </div>
+          </div>
 
-        {/* Search (center) */}
-        <div className="hidden flex-1 justify-center md:flex">
-          <div className="w-full max-w-xl">
-            <Suspense fallback={<SearchSkeleton />}>
-              <Search actionPath={routes.search} />
-            </Suspense>
+          {/* Actions (right) */}
+          <div className="flex items-center gap-3">
+            <StoreSelectorTrigger
+              currentRegion={currentRegion}
+              currentLanguage={storeContext.language}
+              supportedLanguages={storeContext.supportedLanguages}
+              regions={regionOptions}
+            />
+            {cartEntry}
           </div>
         </div>
-
-        {/* Actions (right) */}
-        <div className="flex items-center gap-3">
-          <StoreSelectorTrigger
-            currentRegion={currentRegion}
-            currentLanguage={storeContext.language}
-            supportedLanguages={storeContext.supportedLanguages}
-            regions={regionOptions}
-          />
-          {cartEntry}
-        </div>
-      </div>
+      </Container>
 
       {/* Row 2: Browse Products + Featured Links */}
       <nav className="hidden border-t border-border md:block">
-        <div className="flex items-center gap-6 px-4 lg:px-6">
-          <MegaMenu items={megaMenu} categoryListPath={routes.categoryList} />
-          <FeaturedLinksBar links={featuredLinks} />
-        </div>
+        <Container>
+          <div className="flex items-center gap-6">
+            <MegaMenu items={megaMenu} categoryListPath={routes.categoryList} />
+            <FeaturedLinksBar links={featuredLinks} />
+          </div>
+        </Container>
       </nav>
     </header>
   );

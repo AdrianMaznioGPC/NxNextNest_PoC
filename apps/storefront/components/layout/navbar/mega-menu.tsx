@@ -72,7 +72,7 @@ export function MegaMenu({
               </li>
             ))}
 
-            {/* View all */}
+            {/* View all
             <li className="border-t border-neutral-200 pt-2">
               <SmartLink
                 href={categoryListPath}
@@ -81,7 +81,7 @@ export function MegaMenu({
               >
                 {t("viewAllCategories")}
               </SmartLink>
-            </li>
+            </li> */}
           </ul>
 
           {/* Right panel: subcategories for hovered category */}

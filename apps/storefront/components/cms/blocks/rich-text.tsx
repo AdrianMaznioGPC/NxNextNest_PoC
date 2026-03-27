@@ -3,7 +3,7 @@ import type { RichTextBlock } from "lib/types";
 
 export default function RichText({ block }: { block: RichTextBlock }) {
   return (
-    <section className="py-8 px-4">
+    <section>
       <Prose html={block.html} />
     </section>
   );
