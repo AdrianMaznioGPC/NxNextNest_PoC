@@ -235,6 +235,8 @@ export class SlotPlannerService {
           variantKey: "default",
         },
         inlineProps: {
+          breadcrumbs: node.breadcrumbs,
+          title: node.title,
           query: node.query,
           summaryText: node.summaryText,
           sortOptions: node.sortOptions,

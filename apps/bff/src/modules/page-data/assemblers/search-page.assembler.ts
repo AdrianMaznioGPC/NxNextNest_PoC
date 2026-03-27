@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { I18nService } from "../../i18n/i18n.service";
+import { SlugService } from "../../slug/slug.service";
 import { PageDataService } from "../page-data.service";
 import type {
   PageAssembler,
@@ -20,6 +21,7 @@ export class SearchPageAssembler implements PageAssembler {
   constructor(
     private readonly pageData: PageDataService,
     private readonly i18n: I18nService,
+    private readonly slug: SlugService,
   ) {}
 
   async assemble(ctx: PageAssemblyContext): Promise<PageAssemblyResult> {
@@ -31,11 +33,19 @@ export class SearchPageAssembler implements PageAssembler {
       ctx.localeContext,
     );
     const sortOptions = buildSortOptions(ctx.localeContext.locale, this.i18n);
+    const title = this.i18n.t(ctx.localeContext.locale, "page.searchTitle");
+    const homeTitle = this.i18n.t(ctx.localeContext.locale, "page.homeTitle");
+    const routes = this.slug.getStaticRoutes(ctx.localeContext);
+
+    const breadcrumbs = [
+      { title: homeTitle, path: routes.home },
+      { title, path: routes.search },
+    ];
 
     return {
       assemblerKey: "search.v1",
       seo: {
-        title: this.i18n.t(ctx.localeContext.locale, "page.searchTitle"),
+        title,
         description: this.i18n.t(
           ctx.localeContext.locale,
           "page.searchDescription",
@@ -44,6 +54,8 @@ export class SearchPageAssembler implements PageAssembler {
       content: [
         {
           type: "search-results",
+          breadcrumbs,
+          title,
           query: payload.query,
           summaryText: buildSearchSummary(
             payload.query,

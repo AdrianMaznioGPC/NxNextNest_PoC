@@ -61,6 +61,7 @@ export type SlotDataMode = "inline" | "reference";
 export type ExperienceRendererKey =
   | "page.home"
   | "page.category-list"
+  | "page.category-summary"
   | "page.category-subcollections"
   | "page.category-products"
   | "page.product-detail"
@@ -142,24 +143,24 @@ export type PageContentNode =
       containerClassName?: string;
     }
   | {
-      type: "category-list";
+      type: "category-summary";
+      breadcrumbs: Breadcrumb[];
       title: string;
+      description?: string;
+      containerClassName?: string;
+    }
+  | {
+      type: "category-list";
       collections: Collection[];
       containerClassName?: string;
     }
   | {
       type: "category-subcollections";
-      breadcrumbs: Breadcrumb[];
-      title: string;
-      description: string;
       subcollections: Collection[];
       containerClassName?: string;
     }
   | {
       type: "category-products";
-      breadcrumbs: Breadcrumb[];
-      title: string;
-      description: string;
       products: Product[];
       sortOptions: SortOption[];
       filterGroups?: FilterGroup[];
@@ -174,6 +175,8 @@ export type PageContentNode =
     }
   | {
       type: "search-results";
+      breadcrumbs: Breadcrumb[];
+      title: string;
       query: string;
       summaryText?: string;
       products: Product[];

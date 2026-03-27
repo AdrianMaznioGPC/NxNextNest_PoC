@@ -9,6 +9,8 @@ export function rendererKeyForNode(
   switch (type) {
     case "home":
       return "page.home";
+    case "category-summary":
+      return "page.category-summary";
     case "category-list":
       return "page.category-list";
     case "category-subcollections":

@@ -1,8 +1,6 @@
 import type { SortOption } from "@commerce/shared-types";
 import Container from "components/layout/container";
-import { FilterSidebar } from "components/layout/filter-sidebar";
-import { ListingToolbar } from "components/layout/listing-toolbar";
-import { ProductListing } from "components/layout/product-listing";
+import { ListingContainer } from "components/layout/listing-container";
 import type { SlotRenderer } from "../../../slot-types";
 
 const CLEARANCE_SORT_OPTIONS: SortOption[] = [
@@ -46,24 +44,15 @@ const SearchProductsClearanceSlot: SlotRenderer<"page.search-products"> = ({
         </p>
       </div>
 
-      {products.length > 0 ? (
-        <div className="flex gap-6">
-          <FilterSidebar filterGroups={filterGroups} />
-          <div className="flex-1">
-            <ListingToolbar
-              sortOptions={sortOptions}
-              resultsCount={products.length}
-              showViewToggle={true}
-              layoutKey="list"
-            />
-            <ProductListing products={products} defaultView="list" />
-          </div>
-        </div>
-      ) : (
-        <p className="py-8 text-center text-sm text-neutral-700">
-          No clearance products available.
-        </p>
-      )}
+      <ListingContainer
+        products={products}
+        sortOptions={sortOptions}
+        filterGroups={filterGroups}
+        defaultView="list"
+        layoutKey="list"
+        showViewToggle={true}
+        emptyMessage="No clearance products available."
+      />
     </Container>
   );
 };

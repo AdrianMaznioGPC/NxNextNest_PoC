@@ -7,6 +7,8 @@ const nodeRenderers: Record<NodeType, () => Promise<NodeRenderer<any>>> = {
   home: async () => (await import("./nodes/home-node")).HomeNode,
   "category-list": async () =>
     (await import("./nodes/category-list-node")).CategoryListNode,
+  "category-summary": async () =>
+    (await import("./nodes/category-summary-node")).CategorySummaryNode,
   "category-subcollections": async () =>
     (await import("./nodes/category-subcollections-node"))
       .CategorySubcollectionsNode,

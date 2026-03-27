@@ -1,16 +1,16 @@
+import type { LocaleContext, PageContentNode } from "@commerce/shared-types";
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
-import type { LocaleContext, PageBootstrapModel } from "@commerce/shared-types";
 import { BootstrapOrchestratorService } from "./bootstrap-orchestrator.service";
-import { BootstrapStageFactory } from "./bootstrap/bootstrap-stage.factory";
 import { BootstrapResponseBuilder } from "./bootstrap/bootstrap-response.builder";
-import { RouteRecognitionStage } from "./stages/route-recognition.stage";
-import { ContextResolutionStage } from "./stages/context-resolution.stage";
+import { BootstrapStageFactory } from "./bootstrap/bootstrap-stage.factory";
 import { AssemblyCacheStage } from "./stages/assembly-cache.stage";
-import { PageAssemblyStage } from "./stages/page-assembly.stage";
-import { SlotPlanningStage } from "./stages/slot-planning.stage";
-import { PersonalizationStage } from "./stages/personalization.stage";
+import { ContextResolutionStage } from "./stages/context-resolution.stage";
 import { LinkLocalizationStage } from "./stages/link-localization.stage";
+import { PageAssemblyStage } from "./stages/page-assembly.stage";
+import { PersonalizationStage } from "./stages/personalization.stage";
+import { RouteRecognitionStage } from "./stages/route-recognition.stage";
+import { SlotPlanningStage } from "./stages/slot-planning.stage";
 
 const localeContext: LocaleContext = {
   locale: "en-US",
@@ -232,16 +232,95 @@ class MockPageAssemblerRegistry {
     }
 
     return {
-      assemble: async () => ({
-        assemblerKey: routeKind,
-        seo: {
-          title: `${routeKind} page`,
-          description: `This is the ${routeKind} page`,
-        },
-        content: [{ type: routeKind, blocks: [] }],
-        revalidateTags: [routeKind],
-      }),
+      assemble: async () => {
+        const content: PageContentNode[] = buildMockContent(routeKind);
+        return {
+          assemblerKey: routeKind,
+          seo: {
+            title: `${routeKind} page`,
+            description: `This is the ${routeKind} page`,
+          },
+          content,
+          revalidateTags: [routeKind],
+        };
+      },
     };
+  }
+}
+
+function buildMockContent(routeKind: string): PageContentNode[] {
+  switch (routeKind) {
+    case "home":
+      return [{ type: "home", blocks: [] }];
+    case "category-list":
+      return [
+        {
+          type: "category-summary",
+          breadcrumbs: [],
+          title: "All Categories",
+          description: "Browse categories",
+        },
+        {
+          type: "category-list",
+          collections: [],
+        },
+      ];
+    case "search":
+      return [
+        {
+          type: "search-results",
+          breadcrumbs: [],
+          title: "Search",
+          query: "test",
+          products: [],
+          sortOptions: [],
+          filterGroups: [],
+        },
+      ];
+    case "product-detail":
+      return [
+        {
+          type: "product-detail",
+          product: {
+            id: "product",
+            handle: "product",
+            path: "/product",
+            availableForSale: true,
+            title: "Product",
+            description: "",
+            descriptionHtml: "",
+            options: [],
+            priceRange: {
+              minVariantPrice: {
+                amount: "0",
+                currencyCode: "USD",
+              },
+              maxVariantPrice: {
+                amount: "0",
+                currencyCode: "USD",
+              },
+            },
+            variants: [],
+            featuredImage: {
+              url: "",
+              altText: "",
+              width: 0,
+              height: 0,
+            },
+            images: [],
+            seo: {
+              title: "",
+              description: "",
+            },
+            tags: [],
+            updatedAt: "",
+          },
+          breadcrumbs: [],
+          recommendations: [],
+        },
+      ];
+    default:
+      return [{ type: "home", blocks: [] }];
   }
 }
 

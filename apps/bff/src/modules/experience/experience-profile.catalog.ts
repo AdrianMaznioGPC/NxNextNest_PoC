@@ -3,6 +3,7 @@ import type { ExperienceProfile } from "./experience-profile.types";
 export const EXPERIENCE_RENDERER_VARIANTS: Record<string, string[]> = {
   "page.home": ["default"],
   "page.category-list": ["default"],
+  "page.category-summary": ["default"],
   "page.category-subcollections": ["default"],
   "page.category-products": ["default", "clp-list-v1", "clp-clearance-v1"],
   "page.product-detail": ["default"],

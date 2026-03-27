@@ -1,24 +1,23 @@
 import Container from "components/layout/container";
+import { ListingPageHeader } from "components/layout/listing-page-header";
 import type { SlotRenderer } from "../slot-types";
 
 const SearchSummarySlot: SlotRenderer<"page.search-summary"> = ({
+  breadcrumbs,
+  title,
   query,
   summaryText,
   containerClassName,
 }) => {
   return (
     <Container className={containerClassName ?? "py-8"}>
-      <div className="text-black">
-        <h1 className="text-2xl font-semibold">Search</h1>
-        {summaryText ? (
-          <p className="mt-2 text-sm text-neutral-700">{summaryText}</p>
-        ) : query ? (
-          <p className="mt-2 text-sm text-neutral-700">
-            Showing {/* results count will be in toolbar */} results for &quot;
-            {query}&quot;
-          </p>
-        ) : null}
-      </div>
+      <ListingPageHeader
+        breadcrumbs={breadcrumbs}
+        title={title}
+        summaryText={
+          summaryText ?? (query ? `Showing results for "${query}"` : undefined)
+        }
+      />
     </Container>
   );
 };

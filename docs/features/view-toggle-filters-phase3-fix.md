@@ -3,6 +3,7 @@
 ## Issue Reported
 
 After Phase 3 implementation, filters and view toggle were not visible on:
+
 - Product Listing Pages (PLPs)
 - Search results pages
 
@@ -62,6 +63,7 @@ After fixes, the following should now work:
 Visit: `http://winparts.ie.localhost:3000/categories/brakes/pads`
 
 **Expected:**
+
 - Left sidebar with filters (Availability, Price Range)
 - Top toolbar with sort dropdown + view toggle (grid/list icons)
 - Products in grid view by default
@@ -74,6 +76,7 @@ Visit: `http://winparts.ie.localhost:3000/categories/brakes/pads`
 Visit: `http://winparts.ie.localhost:3000/search?q=brake`
 
 **Expected:**
+
 - Same layout as PLPs
 - Filters generated from search results
 - View toggle works
@@ -81,13 +84,13 @@ Visit: `http://winparts.ie.localhost:3000/search?q=brake`
 
 ## Implementation Status
 
-| Phase | Status | Description |
-|-------|--------|-------------|
-| Phase 1 | ✅ Complete | ViewToggle component |
-| Phase 2 | ✅ Complete | FilterSidebar component |
-| Phase 3 | ✅ Complete | Category PLP integration |
-| Phase 4 | ✅ Complete | Search page integration |
-| Phase 5 | 📋 Future | Actual filter processing (currently UI only) |
+| Phase   | Status      | Description                                  |
+| ------- | ----------- | -------------------------------------------- |
+| Phase 1 | ✅ Complete | ViewToggle component                         |
+| Phase 2 | ✅ Complete | FilterSidebar component                      |
+| Phase 3 | ✅ Complete | Category PLP integration                     |
+| Phase 4 | ✅ Complete | Search page integration                      |
+| Phase 5 | 📋 Future   | Actual filter processing (currently UI only) |
 
 ## Files Modified (Phase 3 Fix)
 
@@ -103,11 +106,12 @@ FilterSidebar component includes this check:
 
 ```typescript
 if (!filterGroups.length) {
-  return null;  // Hide sidebar when no filters
+  return null; // Hide sidebar when no filters
 }
 ```
 
 This means:
+
 - If BFF doesn't send `filterGroups`, sidebar is hidden
 - If `filterGroups` is empty array, sidebar is hidden
 - Only shows when actual filter options exist
@@ -120,7 +124,7 @@ The CategoryDetailPageAssembler correctly handles two cases:
 const content =
   payload.subcollections && payload.subcollections.length > 0
     ? [{ type: "category-subcollections", ... }]  // NO filters (navigation)
-    : [{ 
+    : [{
         type: "category-products",
         filterGroups: buildFilterGroups(...),  // YES filters (PLP)
       }];
@@ -132,6 +136,7 @@ const content =
 ## Next Steps
 
 Phase 5 will implement:
+
 - Actual filter processing in BFF collection/search adapters
 - More filter types (brand, category, attributes)
 - Performance optimizations for large product sets

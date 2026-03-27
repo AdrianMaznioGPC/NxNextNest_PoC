@@ -18,6 +18,10 @@ export type SlotPropsMap = {
     Extract<PageContentNode, { type: "category-list" }>,
     "type"
   >;
+  "page.category-summary": Omit<
+    Extract<PageContentNode, { type: "category-summary" }>,
+    "type"
+  >;
   "page.category-subcollections": Omit<
     Extract<PageContentNode, { type: "category-subcollections" }>,
     "type"
@@ -54,6 +58,8 @@ export type SlotPropsMap = {
     }>;
   };
   "page.search-summary": {
+    breadcrumbs: Breadcrumb[];
+    title: string;
     query: string;
     summaryText?: string;
     sortOptions: SortOption[];

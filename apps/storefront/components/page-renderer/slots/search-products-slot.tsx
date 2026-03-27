@@ -1,8 +1,6 @@
 import type { SortOption } from "@commerce/shared-types";
 import Container from "components/layout/container";
-import { FilterSidebar } from "components/layout/filter-sidebar";
-import { ListingToolbar } from "components/layout/listing-toolbar";
-import { ProductListing } from "components/layout/product-listing";
+import { ListingContainer } from "components/layout/listing-container";
 import type { SlotRenderer } from "../slot-types";
 
 // Mock sort options - will be replaced with BFF data later
@@ -41,23 +39,14 @@ const SearchProductsSlot: SlotRenderer<"page.search-products"> = ({
 }) => {
   return (
     <Container className="pb-8">
-      {products.length > 0 ? (
-        <div className="flex gap-6">
-          <FilterSidebar filterGroups={filterGroups} />
-          <div className="flex-1">
-            <ListingToolbar
-              sortOptions={sortOptions}
-              resultsCount={products.length}
-              showViewToggle={true}
-            />
-            <ProductListing products={products} defaultView="grid" />
-          </div>
-        </div>
-      ) : (
-        <p className="py-8 text-center text-sm text-neutral-700">
-          No products found.
-        </p>
-      )}
+      <ListingContainer
+        products={products}
+        sortOptions={sortOptions}
+        filterGroups={filterGroups}
+        defaultView="grid"
+        showViewToggle={true}
+        emptyMessage="No products found."
+      />
     </Container>
   );
 };

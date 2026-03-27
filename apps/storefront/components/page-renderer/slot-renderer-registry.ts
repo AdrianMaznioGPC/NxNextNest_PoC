@@ -1,6 +1,6 @@
-import "server-only";
 import type { ExperienceRendererKey } from "lib/types";
 import type { ReactNode } from "react";
+import "server-only";
 
 type AnySlotComponent = (props: Record<string, unknown>) => ReactNode;
 
@@ -14,6 +14,11 @@ const slotLoaders: Record<ExperienceRendererKey, Record<string, SlotLoader>> = {
   "page.category-list": {
     default: async () =>
       (await import("./slots/category-list-slot")).default as AnySlotComponent,
+  },
+  "page.category-summary": {
+    default: async () =>
+      (await import("./slots/category-summary-slot"))
+        .default as AnySlotComponent,
   },
   "page.category-subcollections": {
     default: async () =>

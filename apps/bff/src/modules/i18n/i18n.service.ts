@@ -93,11 +93,7 @@ export class I18nService {
         set.add("sort");
         continue;
       }
-      if (
-        slot.rendererKey === "page.category-products" ||
-        slot.rendererKey === "page.category-list" ||
-        slot.rendererKey === "page.category-subcollections"
-      ) {
+      if (slot.rendererKey === "page.category-products") {
         set.add("sort");
       }
       if (slot.rendererKey.startsWith("page.")) {
@@ -109,11 +105,7 @@ export class I18nService {
       if (node.type === "search-results") {
         set.add("search");
         set.add("sort");
-      } else if (
-        node.type === "category-products" ||
-        node.type === "category-list" ||
-        node.type === "category-subcollections"
-      ) {
+      } else if (node.type === "category-products") {
         set.add("sort");
       } else {
         set.add("page");

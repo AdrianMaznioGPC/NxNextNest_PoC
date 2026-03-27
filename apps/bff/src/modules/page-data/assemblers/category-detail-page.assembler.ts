@@ -36,23 +36,26 @@ export class CategoryDetailPageAssembler implements PageAssembler {
 
     const sortOptions = buildSortOptions(ctx.localeContext.locale, this.i18n);
     const { collection } = payload;
+    const summaryNode = {
+      type: "category-summary" as const,
+      breadcrumbs: payload.breadcrumbs,
+      title: collection.title,
+      description: collection.description,
+    };
+
     const content =
       payload.subcollections && payload.subcollections.length > 0
         ? [
+            summaryNode,
             {
               type: "category-subcollections" as const,
-              breadcrumbs: payload.breadcrumbs,
-              title: collection.title,
-              description: collection.description,
               subcollections: payload.subcollections,
             },
           ]
         : [
+            summaryNode,
             {
               type: "category-products" as const,
-              breadcrumbs: payload.breadcrumbs,
-              title: collection.title,
-              description: collection.description,
               products: payload.products ?? [],
               sortOptions,
               filterGroups: buildFilterGroups(
