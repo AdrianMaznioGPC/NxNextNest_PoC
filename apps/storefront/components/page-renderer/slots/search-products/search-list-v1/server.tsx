@@ -1,51 +1,62 @@
-import Image from "next/image";
-import SmartLink from "components/smart-link";
+import type { SortOption } from "@commerce/shared-types";
 import Container from "components/layout/container";
+import { FilterSidebar } from "components/layout/filter-sidebar";
+import { ListingToolbar } from "components/layout/listing-toolbar";
+import { ProductListing } from "components/layout/product-listing";
 import type { SlotRenderer } from "../../../slot-types";
+
+const SEARCH_SORT_OPTIONS: SortOption[] = [
+  { title: "Relevance", slug: null, sortKey: "RELEVANCE", reverse: false },
+  {
+    title: "Trending",
+    slug: "trending-desc",
+    sortKey: "BEST_SELLING",
+    reverse: false,
+  },
+  {
+    title: "Price: Low to High",
+    slug: "price-asc",
+    sortKey: "PRICE",
+    reverse: false,
+  },
+  {
+    title: "Price: High to Low",
+    slug: "price-desc",
+    sortKey: "PRICE",
+    reverse: true,
+  },
+  {
+    title: "Newest",
+    slug: "latest-desc",
+    sortKey: "CREATED_AT",
+    reverse: true,
+  },
+];
 
 const SearchProductsListSlot: SlotRenderer<"page.search-products"> = ({
   products,
+  sortOptions = SEARCH_SORT_OPTIONS,
+  filterGroups,
 }) => {
   return (
     <Container className="pb-8">
       {products.length > 0 ? (
-        <ul className="space-y-4">
-          {products.map((product) => (
-            <li
-              key={product.id}
-              className="overflow-hidden rounded-xl border border-neutral-200 bg-white"
-            >
-              <SmartLink
-                href={product.path}
-                className="grid grid-cols-[96px_1fr] gap-4 p-4 sm:grid-cols-[120px_1fr]"
-              >
-                <div className="relative h-24 w-24 overflow-hidden rounded-md sm:h-[120px] sm:w-[120px]">
-                  <Image
-                    alt={product.featuredImage?.altText || product.title}
-                    src={product.featuredImage?.url}
-                    fill
-                    sizes="120px"
-                    className="object-cover"
-                  />
-                </div>
-                <div>
-                  <h2 className="text-base font-semibold text-black">
-                    {product.title}
-                  </h2>
-                  <p className="mt-1 line-clamp-2 text-sm text-neutral-600">
-                    {product.description}
-                  </p>
-                  <p className="mt-3 text-sm font-medium text-black">
-                    {product.priceRange.maxVariantPrice.amount}{" "}
-                    {product.priceRange.maxVariantPrice.currencyCode}
-                  </p>
-                </div>
-              </SmartLink>
-            </li>
-          ))}
-        </ul>
+        <div className="flex gap-6">
+          <FilterSidebar filterGroups={filterGroups} />
+          <div className="flex-1">
+            <ListingToolbar
+              sortOptions={sortOptions}
+              resultsCount={products.length}
+              showViewToggle={true}
+              layoutKey="list"
+            />
+            <ProductListing products={products} defaultView="list" />
+          </div>
+        </div>
       ) : (
-        <p className="text-sm text-neutral-700">No products found.</p>
+        <p className="py-8 text-center text-sm text-neutral-700">
+          No products found.
+        </p>
       )}
     </Container>
   );

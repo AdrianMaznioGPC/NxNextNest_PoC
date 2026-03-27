@@ -1,54 +1,68 @@
-import Image from "next/image";
-import SmartLink from "components/smart-link";
+import type { SortOption } from "@commerce/shared-types";
 import Container from "components/layout/container";
+import { FilterSidebar } from "components/layout/filter-sidebar";
+import { ListingToolbar } from "components/layout/listing-toolbar";
+import { ProductListing } from "components/layout/product-listing";
 import type { SlotRenderer } from "../../../slot-types";
+
+const CLEARANCE_SORT_OPTIONS: SortOption[] = [
+  {
+    title: "Price: Low to High",
+    slug: "price-asc",
+    sortKey: "PRICE",
+    reverse: false,
+  },
+  {
+    title: "Price: High to Low",
+    slug: "price-desc",
+    sortKey: "PRICE",
+    reverse: true,
+  },
+  {
+    title: "Trending",
+    slug: "trending-desc",
+    sortKey: "BEST_SELLING",
+    reverse: false,
+  },
+  {
+    title: "Newest",
+    slug: "latest-desc",
+    sortKey: "CREATED_AT",
+    reverse: true,
+  },
+];
 
 const SearchProductsClearanceSlot: SlotRenderer<"page.search-products"> = ({
   products,
+  sortOptions = CLEARANCE_SORT_OPTIONS,
+  filterGroups,
 }) => {
   return (
     <Container className="pb-8">
+      {/* Clearance banner */}
+      <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-2">
+        <p className="text-sm font-medium text-red-900">
+          Clearance Sale - Limited Stock
+        </p>
+      </div>
+
       {products.length > 0 ? (
-        <ul className="space-y-3">
-          {products.map((product) => (
-            <li
-              key={product.id}
-              className="overflow-hidden rounded-xl border border-neutral-200 bg-white"
-            >
-              <SmartLink
-                href={product.path}
-                className="grid grid-cols-[96px_1fr] gap-4 p-4 sm:grid-cols-[120px_1fr]"
-              >
-                <div className="relative h-24 w-24 overflow-hidden rounded-md sm:h-[120px] sm:w-[120px]">
-                  <Image
-                    alt={product.featuredImage?.altText || product.title}
-                    src={product.featuredImage?.url}
-                    fill
-                    sizes="120px"
-                    className="object-cover"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <div className="inline-flex items-center rounded-control bg-price-badge px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-price-badge-foreground">
-                    Clearance
-                  </div>
-                  <p className="text-sm font-bold text-black">
-                    {product.priceRange.maxVariantPrice.amount}{" "}
-                    {product.priceRange.maxVariantPrice.currencyCode}
-                  </p>
-                  <h2 className="text-base font-semibold text-black">
-                    {product.title}
-                  </h2>
-                  <p className="line-clamp-2 text-sm text-neutral-600">
-                    {product.description}
-                  </p>
-                </div>
-              </SmartLink>
-            </li>
-          ))}
-        </ul>
+        <div className="flex gap-6">
+          <FilterSidebar filterGroups={filterGroups} />
+          <div className="flex-1">
+            <ListingToolbar
+              sortOptions={sortOptions}
+              resultsCount={products.length}
+              showViewToggle={true}
+              layoutKey="list"
+            />
+            <ProductListing products={products} defaultView="list" />
+          </div>
+        </div>
       ) : (
-        <p className="text-sm text-neutral-700">No products found.</p>
+        <p className="py-8 text-center text-sm text-neutral-700">
+          No clearance products available.
+        </p>
       )}
     </Container>
   );

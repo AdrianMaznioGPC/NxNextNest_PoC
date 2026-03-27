@@ -1089,6 +1089,15 @@ const messageCatalogByLocale: Record<
       priceLowToHigh: "Price: Low to high",
       priceHighToLow: "Price: High to low",
     },
+    filter: {
+      availability: "Availability",
+      inStock: "In Stock",
+      priceRange: "Price Range",
+      priceUnder50: "Under $50",
+      price50to100: "$50 - $100",
+      price100to200: "$100 - $200",
+      priceOver200: "Over $200",
+    },
   },
   "es-ES": {
     checkout: {
@@ -1180,6 +1189,15 @@ const messageCatalogByLocale: Record<
       latestArrivals: "Novedades",
       priceLowToHigh: "Precio: de menor a mayor",
       priceHighToLow: "Precio: de mayor a menor",
+    },
+    filter: {
+      availability: "Disponibilidad",
+      inStock: "En stock",
+      priceRange: "Rango de precio",
+      priceUnder50: "Menos de €50",
+      price50to100: "€50 - €100",
+      price100to200: "€100 - €200",
+      priceOver200: "Más de €200",
     },
   },
   "nl-NL": {
@@ -1275,6 +1293,15 @@ const messageCatalogByLocale: Record<
       priceLowToHigh: "Prijs: laag naar hoog",
       priceHighToLow: "Prijs: hoog naar laag",
     },
+    filter: {
+      availability: "Beschikbaarheid",
+      inStock: "Op voorraad",
+      priceRange: "Prijsbereik",
+      priceUnder50: "Onder €50",
+      price50to100: "€50 - €100",
+      price100to200: "€100 - €200",
+      priceOver200: "Meer dan €200",
+    },
   },
   "fr-FR": {
     checkout: {
@@ -1368,6 +1395,15 @@ const messageCatalogByLocale: Record<
       latestArrivals: "Nouveautes",
       priceLowToHigh: "Prix : croissant",
       priceHighToLow: "Prix : decroissant",
+    },
+    filter: {
+      availability: "Disponibilité",
+      inStock: "En stock",
+      priceRange: "Fourchette de prix",
+      priceUnder50: "Moins de €50",
+      price50to100: "€50 - €100",
+      price100to200: "€100 - €200",
+      priceOver200: "Plus de €200",
     },
   },
 };

@@ -1,8 +1,8 @@
-import Grid from "components/grid";
 import Breadcrumbs from "components/layout/breadcrumbs";
 import Container from "components/layout/container";
-import ProductGridItems from "components/layout/product-grid-items";
-import FilterList from "components/layout/search/filter";
+import { FilterSidebar } from "components/layout/filter-sidebar";
+import { ListingToolbar } from "components/layout/listing-toolbar";
+import { ProductListing } from "components/layout/product-listing";
 import type { NodeRenderer } from "../node-types";
 
 export const CategoryProductsNode: NodeRenderer<"category-products"> = ({
@@ -10,19 +10,26 @@ export const CategoryProductsNode: NodeRenderer<"category-products"> = ({
 }) => (
   <Container className={node.containerClassName ?? "py-8"}>
     <Breadcrumbs items={node.breadcrumbs} />
-    <div className="flex items-center justify-between">
+    <div className="mb-6">
       <h1 className="text-3xl font-bold text-black">{node.title}</h1>
-      <div className="w-[200px]">
-        <FilterList list={node.sortOptions} title="Sort by" />
+      <p className="mt-2 text-neutral-500">{node.description}</p>
+    </div>
+
+    <div className="flex gap-6">
+      <FilterSidebar filterGroups={node.filterGroups} />
+      <div className="flex-1">
+        <ListingToolbar
+          sortOptions={node.sortOptions}
+          resultsCount={node.products.length}
+          showViewToggle={true}
+        />
+
+        {!node.products.length ? (
+          <p className="py-3 text-lg">No products found in this category</p>
+        ) : (
+          <ProductListing products={node.products} defaultView="grid" />
+        )}
       </div>
     </div>
-    <p className="mb-8 mt-2 text-neutral-500">{node.description}</p>
-    {!node.products.length ? (
-      <p className="py-3 text-lg">No products found in this category</p>
-    ) : (
-      <Grid className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        <ProductGridItems products={node.products} />
-      </Grid>
-    )}
   </Container>
 );

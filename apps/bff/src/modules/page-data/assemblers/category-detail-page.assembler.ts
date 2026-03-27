@@ -1,12 +1,16 @@
 import { Injectable } from "@nestjs/common";
 import { I18nService } from "../../i18n/i18n.service";
 import { PageDataService } from "../page-data.service";
-import { buildSortOptions, getSorting } from "./page-assembler.utils";
 import type {
   PageAssembler,
   PageAssemblyContext,
   PageAssemblyResult,
 } from "./page-assembler.interface";
+import {
+  buildFilterGroups,
+  buildSortOptions,
+  getSorting,
+} from "./page-assembler.utils";
 
 @Injectable()
 export class CategoryDetailPageAssembler implements PageAssembler {
@@ -51,6 +55,11 @@ export class CategoryDetailPageAssembler implements PageAssembler {
               description: collection.description,
               products: payload.products ?? [],
               sortOptions,
+              filterGroups: buildFilterGroups(
+                payload.products ?? [],
+                ctx.localeContext.locale,
+                this.i18n,
+              ),
             },
           ];
 

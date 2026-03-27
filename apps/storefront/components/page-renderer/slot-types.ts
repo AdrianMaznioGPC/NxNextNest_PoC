@@ -1,10 +1,9 @@
 import type {
+  Breadcrumb,
   CheckoutHeaderSlotProps,
   CheckoutMainSlotProps,
   CheckoutSummarySlotProps,
   ExperienceRendererKey,
-  Breadcrumb,
-  Page,
   PageContentNode,
   Product,
   SortOption,
@@ -62,6 +61,8 @@ export type SlotPropsMap = {
   };
   "page.search-products": {
     products: Product[];
+    sortOptions?: SortOption[];
+    filterGroups?: import("@commerce/shared-types").FilterGroup[];
   };
   "page.search-results": Omit<
     Extract<PageContentNode, { type: "search-results" }>,

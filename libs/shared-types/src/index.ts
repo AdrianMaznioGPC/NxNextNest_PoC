@@ -1,6 +1,7 @@
 export * from "./checkout.types";
 export * from "./cms.types";
 export * from "./commerce.types";
+export * from "./listing.types";
 export * from "./locale.types";
 export * from "./navigation.types";
 export * from "./page-data.types";

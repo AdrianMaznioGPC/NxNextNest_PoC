@@ -8,6 +8,7 @@ import type {
   Page,
   Product,
 } from "./commerce.types";
+import type { FilterGroup } from "./listing.types";
 import type { LinkLocalizationAudit, LocaleContext } from "./locale.types";
 import type {
   MerchandisingMode,
@@ -161,6 +162,7 @@ export type PageContentNode =
       description: string;
       products: Product[];
       sortOptions: SortOption[];
+      filterGroups?: FilterGroup[];
       containerClassName?: string;
     }
   | {
@@ -176,6 +178,7 @@ export type PageContentNode =
       summaryText?: string;
       products: Product[];
       sortOptions: SortOption[];
+      filterGroups?: FilterGroup[];
       containerClassName?: string;
     }
   | {

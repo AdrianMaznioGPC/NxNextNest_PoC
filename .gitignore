@@ -54,5 +54,8 @@ opencode.json
 .github/prompts/
 .github/skills/
 
+# agent work tracking
+.work/
+
 # nx console temp artifacts
 Users*Tempnx-console-tmp*/

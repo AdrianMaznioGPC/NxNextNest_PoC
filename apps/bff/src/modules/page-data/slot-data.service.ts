@@ -16,6 +16,10 @@ import { LinkLocalizationPolicyService } from "../slug/link-localization-policy.
 import { CachePolicyService } from "../system/cache-policy.service";
 import { LoadSheddingService } from "../system/load-shedding.service";
 import { ScalabilityMetricsService } from "../system/scalability-metrics.service";
+import {
+  buildFilterGroups,
+  buildSortOptions,
+} from "./assemblers/page-assembler.utils";
 import { withLanguageScopedTags } from "./cache-tag.utils";
 import { PageDataService } from "./page-data.service";
 
@@ -178,6 +182,12 @@ export class SlotDataService {
             rendererKey: "page.search-products",
             props: {
               products: searchPage.products,
+              sortOptions: buildSortOptions(localeContext.locale, this.i18n),
+              filterGroups: buildFilterGroups(
+                searchPage.products,
+                localeContext.locale,
+                this.i18n,
+              ),
             },
             presentation: presentationFromQuery(query),
             revalidateTags: ["products"],
